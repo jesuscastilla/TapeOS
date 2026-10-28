@@ -69,6 +69,14 @@ if ($confirm -ne 's' -and $confirm -ne 'S' -and $confirm -ne 'si' -and $confirm 
     exit
 }
 
+# 3b. Modo Google Apps (Play Store)
+Write-Host ""
+Write-Host "[3b/4] Modo Google Apps" -ForegroundColor Yellow
+Write-Host "  • SÍ (recomendado): ChromeOS con Play Store y aplicaciones Android."
+Write-Host "  • NO: ChromeOS ligero sin Google Apps (solo navegador y aplicaciones web)."
+$gaChoice = Read-Host "¿Instalar Google Apps (Play Store)? (S/n)"
+$enableGoogleApps = -not ($gaChoice -match '^[nN]')
+
 # 4. Pipeline Completo
 Write-Host ""
 Write-Host "[Paso A] Descargando imagen oficial..." -ForegroundColor Cyan
@@ -77,13 +85,14 @@ $zipPath = Join-Path $downloadDir $recoveryInfo.FileName
 Start-TapeOSDownload -Url $recoveryInfo.Url -DestinationFile $zipPath | Out-Null
 
 Write-Host ""
-Write-Host "[Paso B] Descomprimiendo y aplicando parches TapeOS (Legacy EFI + swtpm + GPU)..." -ForegroundColor Cyan
+Write-Host "[Paso B] Descomprimiendo y aplicando parches TapeOS (Legacy EFI + swtpm + GPU; Google Apps: $(if ($enableGoogleApps) { 'SÍ' } else { 'NO' }))..." -ForegroundColor Cyan
 $patched = Invoke-TapeOSImagePatch `
     -RecoveryZipPath $zipPath `
     -OutputDir "C:\TapeOS\patched" `
     -EnableIA32 ($hw.Firmware.IsIA32UEFI) `
     -EnableLegacyGPU $true `
-    -EnableSwtpm $true
+    -EnableSwtpm $true `
+    -EnableGoogleApps $enableGoogleApps
 
 Write-Host ""
 Write-Host "[Paso C] Grabando en pendrive USB $($targetUsb.DeviceID)..." -ForegroundColor Cyan

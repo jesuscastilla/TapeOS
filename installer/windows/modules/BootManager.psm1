@@ -18,14 +18,17 @@ function New-TapeOSGrubConfig {
         [string]$ImgPath = "C:\TapeOS\chromeos.img",
         [bool]$LegacyBIOS = $false,
         [bool]$IA32UEFI = $false,
+        [bool]$EnableGoogleApps = $true,
         [string[]]$CustomKernelParams = @()
     )
 
     $parent = Split-Path -Path $OutputPath -Parent
     if (-not (Test-Path $parent)) { New-Item -Path $parent -ItemType Directory -Force | Out-Null }
 
-    # Parámetros por defecto de TapeOS
-    $cmdline = @("cros_debug", "options=enable_updates")
+    # Parámetros por defecto de TapeOS (opciones de framework, formato Brunch)
+    $frameworkOptions = @("enable_updates")
+    if (-not $EnableGoogleApps) { $frameworkOptions += "no_google_apps" }
+    $cmdline = @("cros_debug", ("options=" + ($frameworkOptions -join ",")))
 
     if ($LegacyBIOS) {
         $cmdline += "cros_legacy"
@@ -47,6 +50,7 @@ function New-TapeOSGrubConfig {
     }
 
     $cmdlineStr = ($cmdline -join " ")
+    $normalTitle = if ($EnableGoogleApps) { "TapeOS (ChromeOS) - Normal Boot" } else { "TapeOS (ChromeOS) - Sin Google Apps" }
 
     $grubTemplate = @"
 # ===================================================================
@@ -68,7 +72,7 @@ insmod ext2
 insmod ntfs
 insmod all_video
 
-menuentry "TapeOS (ChromeOS) - Normal Boot" --class chromeos --class gnu-linux {
+menuentry "$normalTitle" --class chromeos --class gnu-linux {
     echo "Iniciando TapeOS Framework..."
     search --no-floppy --file --set=root /TapeOS/chromeos.img
     loopback loop /TapeOS/chromeos.img

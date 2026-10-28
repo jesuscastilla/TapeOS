@@ -19,6 +19,7 @@ function Invoke-TapeOSImagePatch {
         [bool]$EnableIA32 = $false,
         [bool]$EnableLegacyGPU = $true,
         [bool]$EnableSwtpm = $true,
+        [bool]$EnableGoogleApps = $true,
         [scriptblock]$ProgressCallback = $null
     )
 
@@ -64,22 +65,36 @@ function Invoke-TapeOSImagePatch {
     if ($EnableLegacyGPU) { $appliedPatches += "10-legacy_gpu_freon" }
     if ($EnableIA32) { $appliedPatches += "15-efi_ia32_runtime" }
     if ($EnableSwtpm) { $appliedPatches += "20-swtpm_legacy_tpm" }
+    if (-not $EnableGoogleApps) { $appliedPatches += "40-no_google_apps" }
     $appliedPatches += "30-legacy_audio_ucm"
 
     $bootloaders = @("bootx64.efi")
     if ($EnableIA32) { $bootloaders += "bootia32.efi" }
+
+    # Estado de Google Apps (Play Store / Android)
+    $googleAppsStatus = if ($EnableGoogleApps) { "enabled" } else { "disabled" }
 
     $patchData = [PSCustomObject]@{
         BaseRecovery = [System.IO.Path]::GetFileName($extractedBin)
         KernelProfile = $KernelProfile
         PatchesApplied = $appliedPatches
         Bootloaders = $bootloaders
+        GoogleApps = $googleAppsStatus
         GeneratedAt = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
     }
     $patchData | ConvertTo-Json -Depth 3 | Set-Content -Path $patchInfoFile -Encoding UTF8
 
     # Generar GRUB de arranque para el pendrive / instalación
     $grubFile = Join-Path $OutputDir "grub.cfg"
+
+    # Opciones de framework en la línea de kernel (formato Brunch: options=<lista>)
+    $kernelOptions = @("enable_updates")
+    if (-not $EnableGoogleApps) { $kernelOptions += "no_google_apps" }
+    if ($EnableLegacyGPU) { $kernelOptions += "i915.enable_guc=0 i915.enable_psr=0" }
+    if ($EnableIA32) { $kernelOptions += "efi=noruntime" }
+    $optionsString = $kernelOptions -join " "
+    $normalMenuTitle = if ($EnableGoogleApps) { "TapeOS (ChromeOS Actualizado - Modo Normal)" } else { "TapeOS (ChromeOS Ligero - Sin Google Apps)" }
+
     $grubContent = @"
 # ===================================================================
 # TapeOS Patched Bootloader Configuration
@@ -93,9 +108,9 @@ insmod part_msdos
 insmod ext2
 insmod all_video
 
-menuentry "TapeOS (ChromeOS Actualizado - Modo Normal)" --class chromeos {
+menuentry "$normalMenuTitle" --class chromeos {
     search --no-floppy --set=root -l ROOT-A
-    linux /boot/vmlinuz init=/init boot=local root=/dev/ram0 cros_debug options=enable_updates $(if ($EnableLegacyGPU) { 'i915.enable_guc=0 i915.enable_psr=0' }) $(if ($EnableIA32) { 'efi=noruntime' })
+    linux /boot/vmlinuz init=/init boot=local root=/dev/ram0 cros_debug options=$optionsString
     initrd /boot/initramfs.img
 }
 
@@ -108,7 +123,7 @@ menuentry "TapeOS (ChromeOS - Menú de Configuración y Diagnóstico)" --class s
     Set-Content -Path $grubFile -Value $grubContent -Encoding UTF8
 
     if ($ProgressCallback) { & $ProgressCallback 100 "Imagen lista y parcheada." }
-    Write-Host "[TapeOS Patcher] ¡Imagen parcheada y preparada exitosamente!" -ForegroundColor Green
+    Write-Host "[TapeOS Patcher] ¡Imagen parcheada y preparada exitosamente! (Google Apps: $googleAppsStatus)" -ForegroundColor Green
 
     return [PSCustomObject]@{
         PatchedImagePath = $extractedBin

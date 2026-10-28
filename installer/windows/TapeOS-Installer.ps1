@@ -33,7 +33,7 @@ $catalog = Get-TapeOSCatalog
 # Ventana Principal
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "TapeOS Installer — Suite Automatizada de ChromeOS para PC (Legacy & Moderno)"
-$form.Size = New-Object System.Drawing.Size(900, 740)
+$form.Size = New-Object System.Drawing.Size(900, 820)
 $form.StartPosition = "CenterScreen"
 $form.FormBorderStyle = "FixedDialog"
 $form.MaximizeBox = $false
@@ -147,10 +147,33 @@ $lblProgressText.Location = New-Object System.Drawing.Point(15, 87)
 $lblProgressText.AutoSize = $true
 $crosGroup.Controls.Add($lblProgressText)
 
+# 2b. Grupo: Google Apps (Play Store)
+$gaGroup = New-Object System.Windows.Forms.GroupBox
+$gaGroup.Text = " 2b. Google Apps (Play Store) "
+$gaGroup.Location = New-Object System.Drawing.Point(20, 350)
+$gaGroup.Size = New-Object System.Drawing.Size(845, 70)
+$gaGroup.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+$form.Controls.Add($gaGroup)
+
+$radioGoogleApps = New-Object System.Windows.Forms.RadioButton
+$radioGoogleApps.Text = "✅ Con Google Apps — Play Store y aplicaciones Android (recomendado)"
+$radioGoogleApps.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$radioGoogleApps.Location = New-Object System.Drawing.Point(20, 30)
+$radioGoogleApps.AutoSize = $true
+$radioGoogleApps.Checked = $true
+$gaGroup.Controls.Add($radioGoogleApps)
+
+$radioNoGoogleApps = New-Object System.Windows.Forms.RadioButton
+$radioNoGoogleApps.Text = "🚫 Sin Google Apps — ChromeOS ligero, solo navegador y aplicaciones web"
+$radioNoGoogleApps.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$radioNoGoogleApps.Location = New-Object System.Drawing.Point(440, 30)
+$radioNoGoogleApps.AutoSize = $true
+$gaGroup.Controls.Add($radioNoGoogleApps)
+
 # 3. Grupo: Destino y Grabación en Pendrive USB
 $usbGroup = New-Object System.Windows.Forms.GroupBox
 $usbGroup.Text = " 3. Grabación Directa en Pendrive USB "
-$usbGroup.Location = New-Object System.Drawing.Point(20, 350)
+$usbGroup.Location = New-Object System.Drawing.Point(20, 430)
 $usbGroup.Size = New-Object System.Drawing.Size(845, 115)
 $usbGroup.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
 $form.Controls.Add($usbGroup)
@@ -203,7 +226,7 @@ $btnRefreshUsb.Add_Click({ Refresh-UsbList })
 
 # 4. Consola de Log y Estado
 $logBox = New-Object System.Windows.Forms.TextBox
-$logBox.Location = New-Object System.Drawing.Point(20, 475)
+$logBox.Location = New-Object System.Drawing.Point(20, 555)
 $logBox.Size = New-Object System.Drawing.Size(845, 140)
 $logBox.Multiline = $true
 $logBox.ScrollBars = "Vertical"
@@ -221,7 +244,7 @@ $btnFullAuto.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawi
 $btnFullAuto.BackColor = [System.Drawing.Color]::FromArgb(26, 115, 232)
 $btnFullAuto.ForeColor = [System.Drawing.Color]::White
 $btnFullAuto.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-$btnFullAuto.Location = New-Object System.Drawing.Point(445, 630)
+$btnFullAuto.Location = New-Object System.Drawing.Point(445, 710)
 $btnFullAuto.Size = New-Object System.Drawing.Size(420, 45)
 $btnFullAuto.Cursor = [System.Windows.Forms.Cursors]::Hand
 $form.Controls.Add($btnFullAuto)
@@ -229,7 +252,7 @@ $form.Controls.Add($btnFullAuto)
 $btnExit = New-Object System.Windows.Forms.Button
 $btnExit.Text = "Cerrar"
 $btnExit.Font = New-Object System.Drawing.Font("Segoe UI", 10)
-$btnExit.Location = New-Object System.Drawing.Point(325, 630)
+$btnExit.Location = New-Object System.Drawing.Point(325, 710)
 $btnExit.Size = New-Object System.Drawing.Size(105, 45)
 $btnExit.Add_Click({ $form.Close() })
 $form.Controls.Add($btnExit)
@@ -279,6 +302,12 @@ $btnFullAuto.Add_Click({
             $selectedStr = $form.Invoke([Func[string]]{ $cbRecovery.SelectedItem.ToString() })
             $codename = $selectedStr.Split(' ')[0]
 
+            # Modo Google Apps elegido en la interfaz
+            $enableGoogleApps = $form.Invoke([Func[bool]]{ $radioGoogleApps.Checked })
+            $form.Invoke([Action]{
+                $logBox.AppendText("Modo Google Apps: $(if ($enableGoogleApps) { 'Activado (Play Store + Android)' } else { 'Desactivado (ChromeOS ligero)' })`r`n")
+            })
+
             # 1. Obtener URL si no se había consultado
             $form.Invoke([Action]{ $logBox.AppendText("`r`n[Paso 1/4] Consultando última versión oficial de Google para '$codename'...`r`n") })
             $info = Get-TapeOSLatestRecoveryInfo -BoardCodename $codename
@@ -300,7 +329,7 @@ $btnFullAuto.Add_Click({
 
             # 3. Parchear imagen
             $form.Invoke([Action]{ 
-                $logBox.AppendText("[Paso 3/4] Descomprimiendo y aplicando parches TapeOS (Legacy EFI, swtpm, GPU)...`r`n") 
+                $logBox.AppendText("[Paso 3/4] Descomprimiendo y aplicando parches TapeOS (Legacy EFI, swtpm, GPU, Google Apps: $(if ($enableGoogleApps) { 'SÍ' } else { 'NO' }))...`r`n") 
             })
             $patched = Invoke-TapeOSImagePatch `
                 -RecoveryZipPath $destZip `
@@ -308,6 +337,7 @@ $btnFullAuto.Add_Click({
                 -EnableIA32 ($hwReport.Firmware.IsIA32UEFI) `
                 -EnableLegacyGPU $true `
                 -EnableSwtpm $true `
+                -EnableGoogleApps $enableGoogleApps `
                 -ProgressCallback {
                     param($pct, $msg)
                     $form.Invoke([Action]{

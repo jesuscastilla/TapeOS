@@ -31,6 +31,8 @@ El método recomendado para la mayoría de usuarios:
    - **USB Booteable**: Para probar TapeOS en modo Live desde un pendrive antes de instalarlo internamente.
    - **Tamaño**: Ajusta los GB deseados (32 GB recomendado).
    - **Opciones Legacy**: Activa las casillas de GPU antigua o UEFI de 32 bits si tienes un equipo antiguo.
+    - **Google Apps**: Elige entre **Con Google Apps** (Play Store + aplicaciones Android, recomendado) o **Sin Google Apps** (ChromeOS ligero, solo navegador y aplicaciones web).
+
 5. Pulsa **"Iniciar Instalación Interactiva"**.
 6. ¡Listo! Reinicia el PC y en el menú de arranque de Windows verás la opción **"TapeOS (ChromeOS)"**.
 
@@ -45,7 +47,7 @@ Para entornos automatizados o administración remota:
    ```powershell
    .\TapeOS-CLI.ps1
    ```
-3. Sigue las instrucciones paso a paso en pantalla (diagnóstico, selección de modo, tamaño y confirmación).
+3. Sigue las instrucciones paso a paso en pantalla: diagnóstico, modo Google Apps (con Play Store o sin ellas), tamaño y confirmación.
 
 ---
 

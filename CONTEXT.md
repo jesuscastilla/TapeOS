@@ -21,6 +21,7 @@
 | **ia32 / UEFI 32-bit** | Firmware UEFI de 32 bits en procesadores de 64 bits (típico en convertibles y netbooks Intel Atom Bay Trail / Cherry Trail). |
 | **Freon / minigbm** | Subsistema gráfico y gestor de buffers de pantalla de ChromeOS nativo (sin servidor X11 ni Wayland externo). |
 | **ARC++ vs ARCVM** | Android Container (`ARC++`, más ligero para hardware retro) vs Android Virtual Machine (`ARCVM`, para hardware moderno). |
+| **no_google_apps** | Opción de framework de TapeOS (formato `options=` de Brunch) que elimina la sección ARC del config unibuild: ChromeOS sin Play Store ni contenedor Android (modo ligero). |
 
 ---
 
@@ -101,3 +102,9 @@ TapeOS/
 - **Tipo:** Configuración
 - **Cambio:** Repositorio publicado en `https://github.com/jesuscastilla/TapeOS` (público, remoto `origin`). Licencia cambiada de Apache 2.0 a **GPLv3** (coherente con Brunch upstream, `LICENSE` con texto íntegro). Badge de issues corregido; workflow de release sin glob `dist/*.tar.gz`; `TapeOS.code-workspace` añadido a Git.
 - **Impacto:** CI de GitHub Actions operativo sobre `main`; los ficheros de `brunch_sources/` siguen ignorados y no se publican.
+
+## [29-10-2026] — Opción de instalación con o sin Google Apps (Play Store)
+
+- **Tipo:** Vista | Arquitectura
+- **Cambio:** El instalador Windows (GUI y CLI) permite elegir instalar ChromeOS **con Google Apps** (Play Store + Android) o **sin ellas** (modo ligero). Nueva opción de framework `no_google_apps` en `options=` del kernel (patrón Brunch) y nuevo parche `core/patches/40-no_google_apps.sh` que elimina la sección ARC del config unibuild (JSON o configfs.img).
+- **Impacto:** `ImagePatcher.psm1`, `BootManager.psm1`, `TapeOS-Installer.ps1`, `TapeOS-CLI.ps1`, `docs/WINDOWS_INSTALL_GUIDE.md`, `README.md`.

@@ -2,6 +2,15 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.2] — 29-10-2026
+
+### Novedades
+- **Opción de Google Apps en el instalador**: elección entre instalar ChromeOS **con Google Apps (Play Store + Android)** o **sin ellas (modo ligero)**:
+  - Selector en la GUI (radio buttons) y pregunta en el CLI.
+  - Nueva opción de framework `no_google_apps` en la línea del kernel (`options=`), coherente con el patrón de Brunch.
+  - Nuevo parche `core/patches/40-no_google_apps.sh` que elimina la sección ARC del config unibuild (JSON o configfs.img) para que ChromeOS no arranque el contenedor Android.
+  - El modo elegido queda registrado en `tapeos_patches.json` y reflejado en el menú de GRUB generado.
+
 ## [v1.0.0-alpha.1] — 29-10-2026
 
 ### Correcciones de publicación
