@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Gestor de Discos e Imágenes para TapeOS Windows Installer
 .DESCRIPTION

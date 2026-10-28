@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Módulo de Detección de Hardware para TapeOS
 .DESCRIPTION

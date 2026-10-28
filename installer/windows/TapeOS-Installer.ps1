@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     TapeOS Interactive Windows Installer (Suite Completa)
 .DESCRIPTION

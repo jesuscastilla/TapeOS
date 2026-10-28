@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Módulo de Descarga Oficial de Imágenes de Recuperación de ChromeOS
 .DESCRIPTION

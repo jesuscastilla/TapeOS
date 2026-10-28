@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Catálogo y Gestor de Imágenes de Recuperación de ChromeOS para TapeOS
 .DESCRIPTION

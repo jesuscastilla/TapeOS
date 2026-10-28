@@ -2,6 +2,12 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.3] — 29-10-2026
+
+### Correcciones
+- **Codificación UTF-8 con BOM + CRLF** en todos los scripts PowerShell del instalador: Windows PowerShell 5.1 muestra ahora correctamente los acentos y emojis de la interfaz (antes podían verse caracteres extraños).
+- **Nota de soporte**: si al hacer doble clic en `Run-Installer.cmd` aparece el error `0x800700C1` ("%1 no es una aplicación Win32 válida"), es una asociación de archivos `.cmd` rota en Windows. Repárala con `cmd /c assoc .cmd=cmdfile` y `cmd /c ftype cmdfile="%1" %*`, o ejecuta el instalador directamente: `powershell -NoProfile -ExecutionPolicy Bypass -File .\TapeOS-Installer.ps1`.
+
 ## [v1.0.0-alpha.2] — 29-10-2026
 
 ### Novedades

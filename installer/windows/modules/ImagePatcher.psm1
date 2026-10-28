@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Módulo de Parcheo de Imágenes de ChromeOS para TapeOS
 .DESCRIPTION

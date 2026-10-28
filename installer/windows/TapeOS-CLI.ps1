@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     TapeOS Interactive Command Line Wizard (TUI)
 .DESCRIPTION

@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Gestor de Arranque y Dual-Boot para TapeOS
 .DESCRIPTION

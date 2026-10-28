@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Módulo de Grabación Directa en Pendrives USB para TapeOS
 .DESCRIPTION
