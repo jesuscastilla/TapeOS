@@ -30,3 +30,22 @@ jobs:
           draft: false
           prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
           generate_release_notes: true
+
+  build-windows-exe:
+    name: Build Windows Installer EXE (self-contained)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build EXE with ps2exe
+        shell: powershell
+        run: |
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          .\tools\build-exe.ps1 -Version "$($env:GITHUB_REF_NAME.TrimStart('v'))" -OutputDir dist
+
+      - name: Upload EXE to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.exe

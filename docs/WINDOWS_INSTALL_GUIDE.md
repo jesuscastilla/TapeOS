@@ -15,6 +15,16 @@ Esta guía describe cómo instalar **TapeOS** directamente desde Windows utiliza
 
 ---
 
+## ⚡ Método 0: Ejecutable (EXE) autocontenido
+
+La forma más sencilla para el usuario final:
+
+1. Descarga **`TapeOS-Installer-<versión>.exe`** desde la sección [Releases](https://github.com/jesuscastilla/TapeOS/releases).
+2. Haz doble clic. El ejecutable incluye la interfaz y los 7 módulos (no necesita PowerShell configurado ni asociaciones de archivos) y pedirá permisos de administrador (UAC).
+3. Si Windows SmartScreen muestra un aviso (aplicación sin firmar), pulsa **"Más información" -> "Ejecutar de todos modos"**.
+
+---
+
 ## 🛠️ Método 1: Instalador Gráfico Interactivo (GUI)
 
 El método recomendado para la mayoría de usuarios:

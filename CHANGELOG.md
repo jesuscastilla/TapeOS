@@ -2,6 +2,13 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.4] — 29-10-2026
+
+### Novedades
+- **Ejecutable autocontenido para Windows** (`TapeOS-Installer-<versión>.exe`): empaqueta la GUI y los 7 módulos en un único EXE generado con ps2exe. No requiere PowerShell configurado ni asociaciones de archivos, y eleva UAC automáticamente.
+- Nueva herramienta de build **`tools/build-exe.ps1`** e icono propio en `tools/assets/tapeos.ico`.
+- **Workflow de release ampliado**: el EXE se construye en `windows-latest` y se adjunta a cada release junto al ZIP.
+
 ## [v1.0.0-alpha.3] — 29-10-2026
 
 ### Correcciones

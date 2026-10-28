@@ -108,3 +108,9 @@ TapeOS/
 - **Tipo:** Vista | Arquitectura
 - **Cambio:** El instalador Windows (GUI y CLI) permite elegir instalar ChromeOS **con Google Apps** (Play Store + Android) o **sin ellas** (modo ligero). Nueva opción de framework `no_google_apps` en `options=` del kernel (patrón Brunch) y nuevo parche `core/patches/40-no_google_apps.sh` que elimina la sección ARC del config unibuild (JSON o configfs.img).
 - **Impacto:** `ImagePatcher.psm1`, `BootManager.psm1`, `TapeOS-Installer.ps1`, `TapeOS-CLI.ps1`, `docs/WINDOWS_INSTALL_GUIDE.md`, `README.md`.
+
+## [29-10-2026] — Ejecutable Windows autocontenido (EXE)
+
+- **Tipo:** Vista | Configuración
+- **Cambio:** Nueva build `tools/build-exe.ps1` que empaqueta la GUI y los 7 módulos en un único `TapeOS-Installer-<version>.exe` con ps2exe (+icono `tools/assets/tapeos.ico`). El workflow de release construye el EXE en `windows-latest` y lo adjunta a cada release.
+- **Impacto:** Los usuarios finales ya no dependen de asociaciones de archivos ni de PowerShell; cada release incluye EXE + ZIP.
