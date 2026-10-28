@@ -4,11 +4,11 @@
 ### Suite Automatizada de ChromeOS para PC (Edición Moderna & Legacy EFI)
 **Evolución interactiva de Brunch: Detecta tu hardware, descarga la última versión oficial de ChromeOS, aplica parches retro y la graba directamente en tu pendrive en 1 solo clic.**
 
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-blue.svg)](LICENSE)
 [![Platform: Windows / Linux](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-brightgreen.svg)]()
 [![Hardware: Modern & Legacy](https://img.shields.io/badge/Hardware-Modern%20%26%20Legacy%20EFI-orange.svg)]()
 [![Google CDN: Realtime API](https://img.shields.io/badge/ChromeOS-Chromium%20Dash%20API-informational.svg)]()
-[![GitHub Issues](https://img.shields.io/github/issues/TapeOS/TapeOS?color=red)](../../issues)
+[![GitHub Issues](https://img.shields.io/github/issues/jesuscastilla/TapeOS?color=red)](../../issues)
 
 [Visión General](#-visión-general) •
 [Pipeline Automatizado](#-pipeline-automatizado-en-1-clic) •
@@ -120,4 +120,4 @@ Si vas a trabajar en este proyecto con **VS Code** o cualquier IDE:
 
 ## 📄 Licencia
 
-TapeOS se distribuye bajo la licencia **Apache 2.0**. Componentes derivados de ChromiumOS o del kernel de Linux mantienen sus licencias originales respectivas (BSD / GPLv2).
+TapeOS se distribuye bajo la licencia **GNU GPLv3**, la misma del proyecto [Brunch](https://github.com/sebanc/brunch) del que evoluciona. Componentes derivados de ChromiumOS o del kernel de Linux mantienen sus licencias originales respectivas (BSD / GPLv2).

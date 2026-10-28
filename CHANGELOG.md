@@ -2,6 +2,14 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.1] — 29-10-2026
+
+### Correcciones de publicación
+- Licencia del proyecto cambiada a **GPLv3** (coherente con Brunch upstream).
+- Badge de issues apuntando al repositorio correcto (`jesuscastilla/TapeOS`).
+- Workflow de release corregido (eliminado glob `dist/*.tar.gz` inexistente).
+- Añadido `TapeOS.code-workspace` al control de versiones.
+
 ## [v1.0.0-alpha] — 28-10-2026
 
 ### Novedades

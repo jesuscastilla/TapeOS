@@ -1,6 +1,6 @@
 # Contexto del Proyecto — TapeOS (`G:\TapeOS`)
 
-> **Estado actual (28-10-2026).** Proyecto nuevo: versión y evolución independiente del marco de trabajo
+> **Estado actual (29-10-2026).** Proyecto nuevo: versión y evolución independiente del marco de trabajo
 > **Brunch** ([`sebanc/brunch`](https://github.com/sebanc/brunch)). Objetivo fundamental: permitir la
 > instalación de **versiones modernas y actualizadas de ChromeOS** (v120–v149+) en **ordenadores antiguos con EFI**,
 > complementado por una **suite de instalación interactiva nativa para Windows** que cubre el ciclo completo
@@ -95,3 +95,9 @@ TapeOS/
 - **Tipo:** Arquitectura | Vista | API | Dependencia
 - **Cambio:** Creación oficial de TapeOS, fork evolucionado de Brunch. Se implementó la suite completa de instalación en Windows (`installer/windows/`), con detección de hardware, consulta de la API Chromium Dash de Google para recoveries actualizados, motor de descarga con barra de progreso, parcheo retro (Legacy EFI, `swtpm`, GPUs Intel/AMD clásicas) y flasher directo a USB.
 - **Impacto:** Proyecto nuevo e independiente en `G:\TapeOS`, sin dependencias obligatorias de WSL2 para el usuario final de Windows.
+
+## [29-10-2026] — Publicación en GitHub y cambio de licencia a GPLv3
+
+- **Tipo:** Configuración
+- **Cambio:** Repositorio publicado en `https://github.com/jesuscastilla/TapeOS` (público, remoto `origin`). Licencia cambiada de Apache 2.0 a **GPLv3** (coherente con Brunch upstream, `LICENSE` con texto íntegro). Badge de issues corregido; workflow de release sin glob `dist/*.tar.gz`; `TapeOS.code-workspace` añadido a Git.
+- **Impacto:** CI de GitHub Actions operativo sobre `main`; los ficheros de `brunch_sources/` siguen ignorados y no se publican.

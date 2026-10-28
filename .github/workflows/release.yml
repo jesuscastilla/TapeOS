@@ -24,7 +24,6 @@ jobs:
         with:
           files: |
             dist/*.zip
-            dist/*.tar.gz
           draft: false
           prerelease: false
           generate_release_notes: true
