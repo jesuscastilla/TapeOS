@@ -1,0 +1,17 @@
+{
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "powershell.scriptAnalysis.enable": true,
+  "python.analysis.autoImportCompletions": true,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/out": false,
+    "**/dist": false
+  }
+}

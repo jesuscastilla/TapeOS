@@ -1,0 +1,30 @@
+name: TapeOS Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-release:
+    name: Build TapeOS Framework & Installer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Prepare Release Assets
+        run: |
+          mkdir -p dist
+          # Bundle the Windows Installer into a standalone zip package
+          zip -r dist/TapeOS-Windows-Installer.zip installer/windows docs/WINDOWS_INSTALL_GUIDE.md README.md LICENSE
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.zip
+            dist/*.tar.gz
+          draft: false
+          prerelease: false
+          generate_release_notes: true

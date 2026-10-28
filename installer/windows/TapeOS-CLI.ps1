@@ -1,0 +1,101 @@
+<#
+.SYNOPSIS
+    TapeOS Interactive Command Line Wizard (TUI)
+.DESCRIPTION
+    Asistente por consola para Windows: Detección -> Descarga de Recovery -> Parcheo -> Grabación en USB.
+#>
+
+$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+if (-not $isAdmin) {
+    Start-Process powershell.exe -ArgumentList ("-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"") -Verb RunAs
+    exit
+}
+
+$moduleDir = Join-Path $PSScriptRoot "modules"
+Import-Module (Join-Path $moduleDir "HardwareDetector.psm1") -Force
+Import-Module (Join-Path $moduleDir "RecoveryCatalog.psm1") -Force
+Import-Module (Join-Path $moduleDir "RecoveryDownloader.psm1") -Force
+Import-Module (Join-Path $moduleDir "ImagePatcher.psm1") -Force
+Import-Module (Join-Path $moduleDir "UsbFlasher.psm1") -Force
+Import-Module (Join-Path $moduleDir "DiskManager.psm1") -Force
+
+Clear-Host
+Write-Host "==================================================================" -ForegroundColor Cyan
+Write-Host "       TapeOS End-to-End Automated ChromeOS USB Creator           " -ForegroundColor White
+Write-Host "   Detecta -> Descarga Oficial -> Parchea Legacy -> Graba en USB  " -ForegroundColor Gray
+Write-Host "==================================================================" -ForegroundColor Cyan
+Write-Host ""
+
+# 1. Detección
+Write-Host "[1/4] Analizando hardware del equipo..." -ForegroundColor Yellow
+$hw = Get-TapeOSHardwareReport
+$rec = $hw.Recommendations
+
+Write-Host "  • CPU:        $($hw.CPU.Name)" -ForegroundColor Green
+Write-Host "  • Firmware:   $($hw.Firmware.Type)" -ForegroundColor Green
+Write-Host "  • GPU:        $(($hw.GPU | ForEach-Object { $_.Name }) -join ', ')" -ForegroundColor Green
+Write-Host "  • Sugerido:   Recovery [$($rec.RecoveryCodename.ToUpper())] con Kernel [$($rec.Kernel)]" -ForegroundColor Magenta
+Write-Host ""
+
+# 2. Consulta y Descarga
+Write-Host "[2/4] Consultando última versión oficial en Google Chromium Dash..." -ForegroundColor Yellow
+$recoveryInfo = Get-TapeOSLatestRecoveryInfo -BoardCodename $rec.RecoveryCodename
+Write-Host "  • Board:      $($recoveryInfo.Board)" -ForegroundColor Cyan
+Write-Host "  • Versión:    Milestone $($recoveryInfo.Milestone) (Última versión oficial estable)" -ForegroundColor Cyan
+Write-Host "  • Archivo:    $($recoveryInfo.FileName)" -ForegroundColor Gray
+Write-Host ""
+
+# 3. Selección de Pendrive USB
+Write-Host "[3/4] Detectando pendrives USB conectados..." -ForegroundColor Yellow
+$usbDrives = Get-TapeOSUsbDrives
+if ($usbDrives.Count -eq 0) {
+    Write-Warning "No se detectó ningún pendrive USB. Por favor conecta uno y reinicia este asistente."
+    pause
+    exit
+}
+
+for ($i = 0; $i -lt $usbDrives.Count; $i++) {
+    Write-Host "  [$i] $($usbDrives[$i].DisplayName)" -ForegroundColor White
+}
+
+$choice = Read-Host "Selecciona el pendrive destino [0-$($usbDrives.Count - 1)]"
+$targetUsb = $usbDrives[[int]$choice]
+
+Write-Host ""
+Write-Host "⚠️ ATENCIÓN: El pendrive $($targetUsb.DisplayName) SERÁ BORRADO POR COMPLETO." -ForegroundColor Red
+$confirm = Read-Host "¿Confirmas que deseas descargar, parchear y grabar TapeOS en este USB? (s/N)"
+if ($confirm -ne 's' -and $confirm -ne 'S' -and $confirm -ne 'si' -and $confirm -ne 'yes') {
+    Write-Host "Operación cancelada." -ForegroundColor Gray
+    exit
+}
+
+# 4. Pipeline Completo
+Write-Host ""
+Write-Host "[Paso A] Descargando imagen oficial..." -ForegroundColor Cyan
+$downloadDir = "C:\TapeOS\downloads"
+$zipPath = Join-Path $downloadDir $recoveryInfo.FileName
+Start-TapeOSDownload -Url $recoveryInfo.Url -DestinationFile $zipPath | Out-Null
+
+Write-Host ""
+Write-Host "[Paso B] Descomprimiendo y aplicando parches TapeOS (Legacy EFI + swtpm + GPU)..." -ForegroundColor Cyan
+$patched = Invoke-TapeOSImagePatch `
+    -RecoveryZipPath $zipPath `
+    -OutputDir "C:\TapeOS\patched" `
+    -EnableIA32 ($hw.Firmware.IsIA32UEFI) `
+    -EnableLegacyGPU $true `
+    -EnableSwtpm $true
+
+Write-Host ""
+Write-Host "[Paso C] Grabando en pendrive USB $($targetUsb.DeviceID)..." -ForegroundColor Cyan
+Start-TapeOSUsbFlash -ImageFilePath $patched.PatchedImagePath -PhysicalDriveId $targetUsb.DeviceID -ProgressCallback {
+    param($pct, $speedMBs, $written, $total)
+    Write-Progress -Activity "Grabando TapeOS en pendrive USB ($speedMBs MB/s)" -Status "$pct% completado" -PercentComplete $pct
+}
+
+Write-Progress -Activity "Grabando TapeOS en pendrive USB" -Completed
+Write-Host ""
+Write-Host "==================================================================" -ForegroundColor Green
+Write-Host "   ¡PROCESO COMPLETADO! Tu pendrive TapeOS está listo para arrancar " -ForegroundColor White
+Write-Host "==================================================================" -ForegroundColor Green
+Write-Host "Presiona cualquier tecla para salir..."
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")

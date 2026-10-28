@@ -1,0 +1,44 @@
+name: 🐛 Reporte de Fallo / Bug Report
+description: Notifica un error o fallo en TapeOS o en el Instalador Windows
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Gracias por tomarte el tiempo de reportar este problema. Asegúrate de incluir el log si ocurrió en el instalador.
+  - type: input
+    id: hardware
+    attributes:
+      label: Modelo de Hardware / Dispositivo
+      description: Ejemplo: Lenovo ThinkPad T430, Dell Inspiron 15, HP Pavilion g6, Intel NUC8
+      placeholder: Marca, modelo exacto y CPU
+    validations:
+      required: true
+  - type: dropdown
+    id: boot_mode
+    attributes:
+      label: Modo de arranque del PC
+      options:
+        - UEFI 64-bit (Moderno)
+        - UEFI 32-bit (Atom Bay Trail / Cherry Trail)
+        - BIOS Legacy / MBR (Sin UEFI)
+        - No estoy seguro
+    validations:
+      required: true
+  - type: input
+    id: recovery_used
+    attributes:
+      label: Imagen de recuperación ChromeOS utilizada
+      description: Ejemplo: rammus, voxel, jinlon, grunt, gumboz, kanix
+      placeholder: rammus r107, voxel r120, etc.
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción del problema
+      description: Explica qué ocurrió y los pasos para reproducir el fallo.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs o capturas de pantalla
+      description: Pega las salidas de la consola o logs de TapeOS / Windows Installer.

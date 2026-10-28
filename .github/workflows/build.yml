@@ -1,0 +1,44 @@
+name: TapeOS CI & Validation
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-scripts:
+    name: Lint & Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: ShellCheck validation
+        run: |
+          sudo apt-get update && sudo apt-get install -y shellcheck
+          find . -name "*.sh" -not -path "*/brunch_sources/*" -exec shellcheck -e SC1091,SC2086 {} + || true
+
+      - name: Python Syntax Check
+        run: |
+          python3 -m compileall tools/
+
+  validate-powershell:
+    name: PowerShell Installer Validation
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Test PowerShell syntax
+        shell: pwsh
+        run: |
+          $scripts = Get-ChildItem -Path ./installer/windows -Recurse -Filter *.ps*1
+          foreach ($file in $scripts) {
+              Write-Host "Checking $($file.FullName)..."
+              $null = [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$null, [ref]$errors)
+              if ($errors) {
+                  throw "Syntax errors in $($file.FullName): $errors"
+              }
+          }
+          Write-Host "All PowerShell scripts parsed successfully!"

@@ -1,0 +1,43 @@
+# TapeOS Git Ignore
+
+# Upstream reference directory (downloaded brunch repo)
+brunch_sources/
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+*.swp
+*~
+
+# Build outputs and distributions
+out/
+dist/
+build/
+*.tmp
+*.log
+
+# Disk images, recovery archives and large binaries
+*.img
+*.bin
+*.iso
+*.vhd
+*.vhdx
+*.qcow2
+*.tar.gz
+*.tar.xz
+*.zip
+*.7z
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# Temporary installer files
+installer/windows/temp/
+installer/windows/downloads/

@@ -1,0 +1,26 @@
+# Auto detect text files and normalize line endings
+* text=auto
+
+# Linux scripts MUST maintain LF line endings
+*.sh text eol=lf
+*.bash text eol=lf
+init text eol=lf
+brunch-init text eol=lf
+brunch-setup text eol=lf
+tapeos-init text eol=lf
+tapeos-setup text eol=lf
+*.cfg text eol=lf
+*.patch text eol=lf
+
+# Windows scripts
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+*.psm1 text eol=crlf
+
+# Binary files
+*.der binary
+*.png binary
+*.jpg binary
+*.ico binary
+*.efi binary
