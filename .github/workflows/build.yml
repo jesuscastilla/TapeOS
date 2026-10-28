@@ -36,7 +36,9 @@ jobs:
           $scripts = Get-ChildItem -Path ./installer/windows -Recurse -Filter *.ps*1
           foreach ($file in $scripts) {
               Write-Host "Checking $($file.FullName)..."
-              $null = [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$null, [ref]$errors)
+              $tokens = $null
+              $errors = $null
+              $null = [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$tokens, [ref]$errors)
               if ($errors) {
                   throw "Syntax errors in $($file.FullName): $errors"
               }
