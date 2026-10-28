@@ -87,8 +87,8 @@ installer/windows/
 2. Haz doble clic en el ejecutable **`TapeOS-Installer.exe`** (descargado de la sección Releases) o, si usas el ZIP, en **`installer\windows\Run-Installer.cmd`**.
 3. El instalador detectará tu PC y seleccionará el recovery adecuado.
 4. Elige si quieres **Google Apps (Play Store + Android)** o el modo ligero **sin ellas**.
-5. Selecciona tu pendrive en el menú desplegable.
-6. Haz clic en **`⚡ Descargar, Parchear y Grabar en USB (1-Clic)`**.
+5. Selecciona el destino: **grabar en pendrive USB** o **crear solo el archivo .img** (sin grabar).
+6. Haz clic en **`⚡ Descargar, Parchear y Crear (1-Clic)`**.
 7. ¡Listo! Al terminar, reinicia tu PC y arranca desde el pendrive (tecla F12, F11 o Esc según tu placa base).
 
 ---

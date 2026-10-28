@@ -170,23 +170,24 @@ $radioNoGoogleApps.Location = New-Object System.Drawing.Point(440, 30)
 $radioNoGoogleApps.AutoSize = $true
 $gaGroup.Controls.Add($radioNoGoogleApps)
 
-# 3. Grupo: Destino y Grabación en Pendrive USB
+# 3. Grupo: Destino (Pendrive USB o archivo .img)
 $usbGroup = New-Object System.Windows.Forms.GroupBox
-$usbGroup.Text = " 3. Grabación Directa en Pendrive USB "
+$usbGroup.Text = " 3. Destino de Instalación (Pendrive USB o Archivo .img) "
 $usbGroup.Location = New-Object System.Drawing.Point(20, 430)
-$usbGroup.Size = New-Object System.Drawing.Size(845, 115)
+$usbGroup.Size = New-Object System.Drawing.Size(845, 165)
 $usbGroup.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
 $form.Controls.Add($usbGroup)
 
-$lblUsbSelect = New-Object System.Windows.Forms.Label
-$lblUsbSelect.Text = "Pendrive Destino:"
-$lblUsbSelect.Font = New-Object System.Drawing.Font("Segoe UI", 9)
-$lblUsbSelect.Location = New-Object System.Drawing.Point(15, 30)
-$lblUsbSelect.AutoSize = $true
-$usbGroup.Controls.Add($lblUsbSelect)
+$radioUsb = New-Object System.Windows.Forms.RadioButton
+$radioUsb.Text = "💾 Grabar directamente en un pendrive USB"
+$radioUsb.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$radioUsb.Location = New-Object System.Drawing.Point(20, 28)
+$radioUsb.AutoSize = $true
+$radioUsb.Checked = $true
+$usbGroup.Controls.Add($radioUsb)
 
 $cbUsbDrives = New-Object System.Windows.Forms.ComboBox
-$cbUsbDrives.Location = New-Object System.Drawing.Point(160, 27)
+$cbUsbDrives.Location = New-Object System.Drawing.Point(160, 25)
 $cbUsbDrives.Size = New-Object System.Drawing.Size(510, 25)
 $cbUsbDrives.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
 $cbUsbDrives.Font = New-Object System.Drawing.Font("Segoe UI", 9)
@@ -195,17 +196,70 @@ $usbGroup.Controls.Add($cbUsbDrives)
 $btnRefreshUsb = New-Object System.Windows.Forms.Button
 $btnRefreshUsb.Text = "🔄 Refrescar"
 $btnRefreshUsb.Font = New-Object System.Drawing.Font("Segoe UI", 8.5)
-$btnRefreshUsb.Location = New-Object System.Drawing.Point(680, 26)
+$btnRefreshUsb.Location = New-Object System.Drawing.Point(680, 24)
 $btnRefreshUsb.Size = New-Object System.Drawing.Size(150, 27)
 $usbGroup.Controls.Add($btnRefreshUsb)
+
+$radioImageOnly = New-Object System.Windows.Forms.RadioButton
+$radioImageOnly.Text = "📁 Solo crear archivo de imagen (.img) — sin grabar en ningún pendrive"
+$radioImageOnly.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$radioImageOnly.Location = New-Object System.Drawing.Point(20, 58)
+$radioImageOnly.AutoSize = $true
+$usbGroup.Controls.Add($radioImageOnly)
+
+$txtImageDir = New-Object System.Windows.Forms.TextBox
+$txtImageDir.Text = "C:\TapeOS\images"
+$txtImageDir.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$txtImageDir.Location = New-Object System.Drawing.Point(160, 55)
+$txtImageDir.Size = New-Object System.Drawing.Size(510, 25)
+$txtImageDir.Enabled = $false
+$usbGroup.Controls.Add($txtImageDir)
+
+$btnBrowseDir = New-Object System.Windows.Forms.Button
+$btnBrowseDir.Text = "📂 Examinar..."
+$btnBrowseDir.Font = New-Object System.Drawing.Font("Segoe UI", 8.5)
+$btnBrowseDir.Location = New-Object System.Drawing.Point(680, 54)
+$btnBrowseDir.Size = New-Object System.Drawing.Size(150, 27)
+$btnBrowseDir.Enabled = $false
+$usbGroup.Controls.Add($btnBrowseDir)
 
 $lblUsbWarning = New-Object System.Windows.Forms.Label
 $lblUsbWarning.Text = "⚠️ ATENCIÓN: El pendrive seleccionado será formateado para instalar TapeOS booteable con ChromeOS."
 $lblUsbWarning.ForeColor = [System.Drawing.Color]::FromArgb(180, 40, 40)
 $lblUsbWarning.Font = New-Object System.Drawing.Font("Segoe UI", 8.5)
-$lblUsbWarning.Location = New-Object System.Drawing.Point(160, 65)
-$lblUsbWarning.Size = New-Object System.Drawing.Size(670, 35)
+$lblUsbWarning.Location = New-Object System.Drawing.Point(160, 92)
+$lblUsbWarning.Size = New-Object System.Drawing.Size(670, 30)
 $usbGroup.Controls.Add($lblUsbWarning)
+
+$lblImgHint = New-Object System.Windows.Forms.Label
+$lblImgHint.Text = "El archivo .img podrá grabarse más tarde con Rufus, Win32DiskImager o desde TapeOS (modo USB)."
+$lblImgHint.ForeColor = [System.Drawing.Color]::FromArgb(60, 64, 67)
+$lblImgHint.Font = New-Object System.Drawing.Font("Segoe UI", 8.5)
+$lblImgHint.Location = New-Object System.Drawing.Point(160, 126)
+$lblImgHint.Size = New-Object System.Drawing.Size(670, 25)
+$usbGroup.Controls.Add($lblImgHint)
+
+# Eventos de cambio de destino
+$radioUsb.Add_Click({
+    $cbUsbDrives.Enabled = $true
+    $btnRefreshUsb.Enabled = $true
+    $txtImageDir.Enabled = $false
+    $btnBrowseDir.Enabled = $false
+})
+$radioImageOnly.Add_Click({
+    $cbUsbDrives.Enabled = $false
+    $btnRefreshUsb.Enabled = $false
+    $txtImageDir.Enabled = $true
+    $btnBrowseDir.Enabled = $true
+})
+$btnBrowseDir.Add_Click({
+    $dlg = New-Object System.Windows.Forms.FolderBrowserDialog
+    $dlg.Description = "Selecciona la carpeta donde guardar la imagen TapeOS (.img)"
+    $dlg.SelectedPath = $txtImageDir.Text
+    if ($dlg.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
+        $txtImageDir.Text = $dlg.Path
+    }
+})
 
 # Función para recargar unidades USB
 function Refresh-UsbList {
@@ -226,20 +280,20 @@ $btnRefreshUsb.Add_Click({ Refresh-UsbList })
 
 # 4. Consola de Log y Estado
 $logBox = New-Object System.Windows.Forms.TextBox
-$logBox.Location = New-Object System.Drawing.Point(20, 555)
-$logBox.Size = New-Object System.Drawing.Size(845, 140)
+$logBox.Location = New-Object System.Drawing.Point(20, 605)
+$logBox.Size = New-Object System.Drawing.Size(845, 95)
 $logBox.Multiline = $true
 $logBox.ScrollBars = "Vertical"
 $logBox.ReadOnly = $true
 $logBox.BackColor = [System.Drawing.Color]::FromArgb(20, 24, 30)
 $logBox.ForeColor = [System.Drawing.Color]::FromArgb(0, 255, 128)
 $logBox.Font = New-Object System.Drawing.Font("Consolas", 8.5)
-$logBox.Text = "=== TapeOS Automated Installation Engine Ready ===`r`nSelecciona tu hardware o pulsa 'Crear Pendrive en 1 Clic' para ejecutar el proceso completo.`r`n"
+$logBox.Text = "=== TapeOS Automated Installation Engine Ready ===`r`nElige el destino (pendrive USB o solo archivo .img) y pulsa 'Crear en 1 Clic' para ejecutar el proceso completo.`r`n"
 $form.Controls.Add($logBox)
 
 # Botones de Acción Inferiores
 $btnFullAuto = New-Object System.Windows.Forms.Button
-$btnFullAuto.Text = "⚡ Descargar, Parchear y Grabar en USB (1-Clic)"
+$btnFullAuto.Text = "⚡ Descargar, Parchear y Crear (1-Clic)"
 $btnFullAuto.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
 $btnFullAuto.BackColor = [System.Drawing.Color]::FromArgb(26, 115, 232)
 $btnFullAuto.ForeColor = [System.Drawing.Color]::White
@@ -272,22 +326,32 @@ $btnCheckOnline.Add_Click({
 
 # Evento: Flujo Completo Automatizado
 $btnFullAuto.Add_Click({
-    $selectedUsbIdx = $cbUsbDrives.SelectedIndex
-    $usbList = Get-TapeOSUsbDrives
-    if ($usbList.Count -eq 0 -or $selectedUsbIdx -ge $usbList.Count) {
-        [System.Windows.Forms.MessageBox]::Show(
-            "Por favor conecta un pendrive USB válido y pulsa 'Refrescar'.",
-            "Pendrive no detectado",
-            [System.Windows.Forms.MessageBoxButtons]::OK,
-            [System.Windows.Forms.MessageBoxIcon]::Warning
-        )
-        return
+    $imageOnlyMode = $radioImageOnly.Checked
+    if (-not $imageOnlyMode) {
+        $selectedUsbIdx = $cbUsbDrives.SelectedIndex
+        $usbList = Get-TapeOSUsbDrives
+        if ($usbList.Count -eq 0 -or $selectedUsbIdx -ge $usbList.Count) {
+            [System.Windows.Forms.MessageBox]::Show(
+                "Por favor conecta un pendrive USB válido y pulsa 'Refrescar'.",
+                "Pendrive no detectado",
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Warning
+            )
+            return
+        }
+        $targetUsb = $usbList[$selectedUsbIdx]
+        $confirmText = "¿Estás seguro de que deseas grabar TapeOS en:`r`n$($targetUsb.DisplayName)?`r`n`r`nTODOS LOS DATOS DEL PENDRIVE SE BORRARÁN."
+        $confirmTitle = "Confirmación de Grabación"
+    } else {
+        $targetUsb = $null
+        $imgDest = $txtImageDir.Text.Trim()
+        if (-not $imgDest) { $imgDest = "C:\TapeOS\images" }
+        $confirmText = "Se descargará y parcheará la imagen de ChromeOS y se guardará como archivo .img en:`r`n$imgDest`r`n`r`nNo se grabará en ningún pendrive."
+        $confirmTitle = "Confirmación — Crear archivo .img"
     }
-
-    $targetUsb = $usbList[$selectedUsbIdx]
     $confirm = [System.Windows.Forms.MessageBox]::Show(
-        "¿Estás seguro de que deseas grabar TapeOS en:`r`n$($targetUsb.DisplayName)?`r`n`r`nTODOS LOS DATOS DEL PENDRIVE SE BORRARÁN.",
-        "Confirmación de Grabación",
+        $confirmText,
+        $confirmTitle,
         [System.Windows.Forms.MessageBoxButtons]::YesNo,
         [System.Windows.Forms.MessageBoxIcon]::Warning
     )
@@ -307,6 +371,10 @@ $btnFullAuto.Add_Click({
             $form.Invoke([Action]{
                 $logBox.AppendText("Modo Google Apps: $(if ($enableGoogleApps) { 'Activado (Play Store + Android)' } else { 'Desactivado (ChromeOS ligero)' })`r`n")
             })
+
+            # Modo destino: pendrive USB o solo archivo .img
+            $imageOnlyMode = $form.Invoke([Func[bool]]{ $radioImageOnly.Checked })
+            $imageDestDir = $form.Invoke([Func[string]]{ $txtImageDir.Text })
 
             # 1. Obtener URL si no se había consultado
             $form.Invoke([Action]{ $logBox.AppendText("`r`n[Paso 1/4] Consultando última versión oficial de Google para '$codename'...`r`n") })
@@ -346,31 +414,56 @@ $btnFullAuto.Add_Click({
                     })
                 }
 
-            # 4. Grabar en pendrive USB
-            $form.Invoke([Action]{ 
-                $logBox.AppendText("[Paso 4/4] Grabando imagen parcheada directamente en $($targetUsb.DeviceID)...`r`n") 
-            })
-            Start-TapeOSUsbFlash `
-                -ImageFilePath $patched.PatchedImagePath `
-                -PhysicalDriveId $targetUsb.DeviceID `
-                -ProgressCallback {
-                    param($pct, $speedMBs, $written, $total)
-                    $form.Invoke([Action]{
-                        $progressBar.Value = [math]::Min(100, [int]$pct)
-                        $lblStatusUrl.Text = "Grabando en USB: $pct% ($speedMBs MB/s)"
-                    })
-                } | Out-Null
+            if ($imageOnlyMode) {
+                # 4. Guardar como archivo .img (sin grabar)
+                $form.Invoke([Action]{ 
+                    $logBox.AppendText("[Paso 4/4] Guardando imagen parcheada como archivo .img (sin grabar)...`r`n") 
+                })
+                $destDir = $imageDestDir.Trim()
+                if (-not $destDir) { $destDir = "C:\TapeOS\images" }
+                New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+                $imgName = "TapeOS-$($info.Board)-M$($info.Milestone)-$(if ($enableGoogleApps) { 'googleapps' } else { 'lite' }).img"
+                $imgPath = Join-Path $destDir $imgName
+                Copy-Item -Path $patched.PatchedImagePath -Destination $imgPath -Force
+                if (Test-Path $patched.ConfigFile) { Copy-Item -Path $patched.ConfigFile -Destination (Join-Path $destDir "grub.cfg") -Force }
 
-            $form.Invoke([Action]{
-                $progressBar.Value = 100
-                $logBox.AppendText("`r`n✅ ¡PROCESO COMPLETADO EXITOSAMENTE!`r`nEl pendrive está listo para arrancar en cualquier equipo con EFI.`r`n")
-                [System.Windows.Forms.MessageBox]::Show(
-                    "¡TapeOS ha sido grabado exitosamente en tu pendrive!`r`n`r`nYa puedes reiniciar el equipo y arrancar desde el pendrive USB (tecla F12/F11/Esc en el logo).",
-                    "Grabación Completada",
-                    [System.Windows.Forms.MessageBoxButtons]::OK,
-                    [System.Windows.Forms.MessageBoxIcon]::Information
-                )
-            })
+                $form.Invoke([Action]{
+                    $progressBar.Value = 100
+                    $logBox.AppendText("`r`n✅ ¡IMAGEN CREADA EXITOSAMENTE!`r`nArchivo: $imgPath`r`nPodrás grabarla más tarde con Rufus, Win32DiskImager o con TapeOS (modo USB).`r`n")
+                    [System.Windows.Forms.MessageBox]::Show(
+                        "¡Imagen TapeOS creada sin grabar!`r`n`r`nRuta: $imgPath`r`n`r`nPara usarla, grábola en un pendrive con Rufus, Win32DiskImager o desde TapeOS (modo USB).",
+                        "Imagen .img creada",
+                        [System.Windows.Forms.MessageBoxButtons]::OK,
+                        [System.Windows.Forms.MessageBoxIcon]::Information
+                    )
+                })
+            } else {
+                # 4. Grabar en pendrive USB
+                $form.Invoke([Action]{ 
+                    $logBox.AppendText("[Paso 4/4] Grabando imagen parcheada directamente en $($targetUsb.DeviceID)...`r`n") 
+                })
+                Start-TapeOSUsbFlash `
+                    -ImageFilePath $patched.PatchedImagePath `
+                    -PhysicalDriveId $targetUsb.DeviceID `
+                    -ProgressCallback {
+                        param($pct, $speedMBs, $written, $total)
+                        $form.Invoke([Action]{
+                            $progressBar.Value = [math]::Min(100, [int]$pct)
+                            $lblStatusUrl.Text = "Grabando en USB: $pct% ($speedMBs MB/s)"
+                        })
+                    } | Out-Null
+
+                $form.Invoke([Action]{
+                    $progressBar.Value = 100
+                    $logBox.AppendText("`r`n✅ ¡PROCESO COMPLETADO EXITOSAMENTE!`r`nEl pendrive está listo para arrancar en cualquier equipo con EFI.`r`n")
+                    [System.Windows.Forms.MessageBox]::Show(
+                        "¡TapeOS ha sido grabado exitosamente en tu pendrive!`r`n`r`nYa puedes reiniciar el equipo y arrancar desde el pendrive USB (tecla F12/F11/Esc en el logo).",
+                        "Grabación Completada",
+                        [System.Windows.Forms.MessageBoxButtons]::OK,
+                        [System.Windows.Forms.MessageBoxIcon]::Information
+                    )
+                })
+            }
         } catch {
             $err = $_.Exception.Message
             $form.Invoke([Action]{

@@ -2,6 +2,12 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.5] — 29-10-2026
+
+### Novedades
+- **Firma digital del EXE**: nueva tool `tools/sign-exe.ps1` (signtool de Windows SDK o `Set-AuthenticodeSignature`, con timestamp RFC 3161) y `tools/new-signing-cert.ps1` para crear el certificado propio. El CI firma el EXE automáticamente si los secretos `SIGNING_PFX_BASE64` / `SIGNING_PFX_PASSWORD` están configurados, y cada release incluye `tapeos-signing.cer` (clave pública) para instalar como Editor de Confianza.
+- **Modo "solo crear archivo .img" (sin grabar)**: la GUI y la CLI permiten elegir como destino un archivo de imagen (`TapeOS-<board>-M<milestone>-googleapps|lite.img`) en lugar de un pendrive USB. El proceso descarga y parchea la imagen y la guarda en la carpeta elegida (con su `grub.cfg`), lista para grabar más tarde con Rufus/Win32DiskImager o con TapeOS.
+
 ## [v1.0.0-alpha.4] — 29-10-2026
 
 ### Novedades

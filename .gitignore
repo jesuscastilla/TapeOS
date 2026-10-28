@@ -41,3 +41,7 @@ ENV/
 # Temporary installer files
 installer/windows/temp/
 installer/windows/downloads/
+
+# Code signing artifacts (clave privada: NUNCA subir)
+.signing/
+*.pfx

@@ -114,3 +114,9 @@ TapeOS/
 - **Tipo:** Vista | Configuración
 - **Cambio:** Nueva build `tools/build-exe.ps1` que empaqueta la GUI y los 7 módulos en un único `TapeOS-Installer-<version>.exe` con ps2exe (+icono `tools/assets/tapeos.ico`). El workflow de release construye el EXE en `windows-latest` y lo adjunta a cada release.
 - **Impacto:** Los usuarios finales ya no dependen de asociaciones de archivos ni de PowerShell; cada release incluye EXE + ZIP.
+
+## [29-10-2026] — Firma digital del EXE y modo "solo crear .img"
+
+- **Tipo:** Configuración | Vista
+- **Cambio:** Herramientas `tools/sign-exe.ps1` (firma Authenticode con timestamp) y `tools/new-signing-cert.ps1` (certificado propio); CI firma el EXE si hay secretos de firma; releases incluyen `tapeos-signing.cer`. Nueva opción de destino en GUI y CLI: crear solo el archivo `.img` sin grabar en pendrive (`TapeOS-<board>-M<milestone>-googleapps|lite.img` + `grub.cfg`).
+- **Impacto:** `TapeOS-Installer.ps1`, `TapeOS-CLI.ps1`, workflow de release, docs.

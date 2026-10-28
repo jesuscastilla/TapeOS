@@ -21,7 +21,7 @@ La forma más sencilla para el usuario final:
 
 1. Descarga **`TapeOS-Installer-<versión>.exe`** desde la sección [Releases](https://github.com/jesuscastilla/TapeOS/releases).
 2. Haz doble clic. El ejecutable incluye la interfaz y los 7 módulos (no necesita PowerShell configurado ni asociaciones de archivos) y pedirá permisos de administrador (UAC).
-3. Si Windows SmartScreen muestra un aviso (aplicación sin firmar), pulsa **"Más información" -> "Ejecutar de todos modos"**.
+3. Si Windows SmartScreen muestra un aviso, instala el certificado de TapeOS (`tapeos-signing.cer`, adjunto en la release) como **Editor de confianza**: doble clic -> "Instalar certificado" -> Equipo local -> "Colocar todos los certificados en el siguiente almacén" -> **Editores de confianza**. También puedes pulsar **"Más información" -> "Ejecutar de todos modos"**.
 
 ---
 
@@ -41,6 +41,7 @@ El método recomendado para la mayoría de usuarios:
    - **USB Booteable**: Para probar TapeOS en modo Live desde un pendrive antes de instalarlo internamente.
    - **Tamaño**: Ajusta los GB deseados (32 GB recomendado).
    - **Opciones Legacy**: Activa las casillas de GPU antigua o UEFI de 32 bits si tienes un equipo antiguo.
+    - **Destino**: Elige entre **grabar en un pendrive USB** o **solo crear el archivo .img** (sin grabar); en este último caso indica la carpeta de destino.
     - **Google Apps**: Elige entre **Con Google Apps** (Play Store + aplicaciones Android, recomendado) o **Sin Google Apps** (ChromeOS ligero, solo navegador y aplicaciones web).
 
 5. Pulsa **"Iniciar Instalación Interactiva"**.

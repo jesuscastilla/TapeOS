@@ -45,28 +45,51 @@ Write-Host "  • Versión:    Milestone $($recoveryInfo.Milestone) (Última ver
 Write-Host "  • Archivo:    $($recoveryInfo.FileName)" -ForegroundColor Gray
 Write-Host ""
 
-# 3. Selección de Pendrive USB
-Write-Host "[3/4] Detectando pendrives USB conectados..." -ForegroundColor Yellow
-$usbDrives = Get-TapeOSUsbDrives
-if ($usbDrives.Count -eq 0) {
-    Write-Warning "No se detectó ningún pendrive USB. Por favor conecta uno y reinicia este asistente."
-    pause
-    exit
-}
-
-for ($i = 0; $i -lt $usbDrives.Count; $i++) {
-    Write-Host "  [$i] $($usbDrives[$i].DisplayName)" -ForegroundColor White
-}
-
-$choice = Read-Host "Selecciona el pendrive destino [0-$($usbDrives.Count - 1)]"
-$targetUsb = $usbDrives[[int]$choice]
-
+# 3. Destino de instalación
 Write-Host ""
-Write-Host "⚠️ ATENCIÓN: El pendrive $($targetUsb.DisplayName) SERÁ BORRADO POR COMPLETO." -ForegroundColor Red
-$confirm = Read-Host "¿Confirmas que deseas descargar, parchear y grabar TapeOS en este USB? (s/N)"
-if ($confirm -ne 's' -and $confirm -ne 'S' -and $confirm -ne 'si' -and $confirm -ne 'yes') {
-    Write-Host "Operación cancelada." -ForegroundColor Gray
-    exit
+Write-Host "[3/4] Destino de instalación" -ForegroundColor Yellow
+Write-Host "  [1] Grabar directamente en un pendrive USB"
+Write-Host "  [2] Solo crear archivo de imagen (.img) — sin grabar en ningún pendrive"
+$destChoice = Read-Host "Elige destino (1/2)"
+if ($destChoice -ne '1' -and $destChoice -ne '2') { $destChoice = '1' }
+
+$targetUsb = $null
+$imageDestDir = $null
+
+if ($destChoice -eq '1') {
+    Write-Host ""
+    Write-Host "[3/4] Detectando pendrives USB conectados..." -ForegroundColor Yellow
+    $usbDrives = Get-TapeOSUsbDrives
+    if ($usbDrives.Count -eq 0) {
+        Write-Warning "No se detectó ningún pendrive USB. Por favor conecta uno y reinicia este asistente."
+        pause
+        exit
+    }
+
+    for ($i = 0; $i -lt $usbDrives.Count; $i++) {
+        Write-Host "  [$i] $($usbDrives[$i].DisplayName)" -ForegroundColor White
+    }
+
+    $choice = Read-Host "Selecciona el pendrive destino [0-$($usbDrives.Count - 1)]"
+    $targetUsb = $usbDrives[[int]$choice]
+
+    Write-Host ""
+    Write-Host "⚠️ ATENCIÓN: El pendrive $($targetUsb.DisplayName) SERÁ BORRADO POR COMPLETO." -ForegroundColor Red
+    $confirm = Read-Host "¿Confirmas que deseas descargar, parchear y grabar TapeOS en este USB? (s/N)"
+    if ($confirm -ne 's' -and $confirm -ne 'S' -and $confirm -ne 'si' -and $confirm -ne 'yes') {
+        Write-Host "Operación cancelada." -ForegroundColor Gray
+        exit
+    }
+} else {
+    Write-Host ""
+    Write-Host "[3/4] Modo solo imagen: no se grabará en ningún pendrive." -ForegroundColor Cyan
+    $imageDestDir = Read-Host "Carpeta donde guardar el archivo .img [C:\TapeOS\images]"
+    if (-not $imageDestDir.Trim()) { $imageDestDir = "C:\TapeOS\images" }
+    $confirm = Read-Host "¿Confirmas que deseas descargar y parchear la imagen? (s/N)"
+    if ($confirm -ne 's' -and $confirm -ne 'S' -and $confirm -ne 'si' -and $confirm -ne 'yes') {
+        Write-Host "Operación cancelada." -ForegroundColor Gray
+        exit
+    }
 }
 
 # 3b. Modo Google Apps (Play Store)
@@ -94,17 +117,34 @@ $patched = Invoke-TapeOSImagePatch `
     -EnableSwtpm $true `
     -EnableGoogleApps $enableGoogleApps
 
-Write-Host ""
-Write-Host "[Paso C] Grabando en pendrive USB $($targetUsb.DeviceID)..." -ForegroundColor Cyan
-Start-TapeOSUsbFlash -ImageFilePath $patched.PatchedImagePath -PhysicalDriveId $targetUsb.DeviceID -ProgressCallback {
-    param($pct, $speedMBs, $written, $total)
-    Write-Progress -Activity "Grabando TapeOS en pendrive USB ($speedMBs MB/s)" -Status "$pct% completado" -PercentComplete $pct
+if ($destChoice -eq '1') {
+    Write-Host ""
+    Write-Host "[Paso C] Grabando en pendrive USB $($targetUsb.DeviceID)..." -ForegroundColor Cyan
+    Start-TapeOSUsbFlash -ImageFilePath $patched.PatchedImagePath -PhysicalDriveId $targetUsb.DeviceID -ProgressCallback {
+        param($pct, $speedMBs, $written, $total)
+        Write-Progress -Activity "Grabando TapeOS en pendrive USB ($speedMBs MB/s)" -Status "$pct% completado" -PercentComplete $pct
+    }
+
+    Write-Progress -Activity "Grabando TapeOS en pendrive USB" -Completed
+    Write-Host ""
+    Write-Host "==================================================================" -ForegroundColor Green
+    Write-Host "   ¡PROCESO COMPLETADO! Tu pendrive TapeOS está listo para arrancar " -ForegroundColor White
+    Write-Host "==================================================================" -ForegroundColor Green
+} else {
+    Write-Host ""
+    Write-Host "[Paso C] Guardando imagen parcheada como archivo .img (sin grabar)..." -ForegroundColor Cyan
+    New-Item -ItemType Directory -Path $imageDestDir -Force | Out-Null
+    $imgName = "TapeOS-$($recoveryInfo.Board)-M$($recoveryInfo.Milestone)-$(if ($enableGoogleApps) { 'googleapps' } else { 'lite' }).img"
+    $imgPath = Join-Path $imageDestDir $imgName
+    Copy-Item -Path $patched.PatchedImagePath -Destination $imgPath -Force
+    if (Test-Path $patched.ConfigFile) { Copy-Item -Path $patched.ConfigFile -Destination (Join-Path $imageDestDir "grub.cfg") -Force }
+    Write-Host ""
+    Write-Host "==================================================================" -ForegroundColor Green
+    Write-Host "   ¡IMAGEN CREADA! Ruta: $imgPath" -ForegroundColor White
+    Write-Host "   Grábala cuando quieras con Rufus, Win32DiskImager o con TapeOS" -ForegroundColor Gray
+    Write-Host "   (modo USB). Incluye grub.cfg de arranque en la misma carpeta." -ForegroundColor Gray
+    Write-Host "==================================================================" -ForegroundColor Green
 }
 
-Write-Progress -Activity "Grabando TapeOS en pendrive USB" -Completed
-Write-Host ""
-Write-Host "==================================================================" -ForegroundColor Green
-Write-Host "   ¡PROCESO COMPLETADO! Tu pendrive TapeOS está listo para arrancar " -ForegroundColor White
-Write-Host "==================================================================" -ForegroundColor Green
 Write-Host "Presiona cualquier tecla para salir..."
 $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
