@@ -17,7 +17,7 @@ jobs:
         run: |
           mkdir -p dist
           # Bundle the Windows Installer into a standalone zip package
-          zip -r dist/TapeOS-Windows-Installer.zip installer/windows docs/WINDOWS_INSTALL_GUIDE.md README.md LICENSE
+          zip -r "dist/TapeOS-Windows-Installer-${GITHUB_REF_NAME#v}.zip" installer/windows docs/WINDOWS_INSTALL_GUIDE.md README.md LICENSE CHANGELOG.md
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -25,5 +25,5 @@ jobs:
           files: |
             dist/*.zip
           draft: false
-          prerelease: false
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
           generate_release_notes: true
