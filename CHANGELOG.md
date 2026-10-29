@@ -2,6 +2,13 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.38] — 30-10-2026
+
+### Nobedáêh
+- **Imagen completa sin WSL en el destino**: `build-tapeos-img.sh` genera `TapeOS-<board>-M<ms>-brunch.img` (16 GB) con Brunch + todos los parches y el GRUB ya aplicados. Se graba en cualquier maquina con Rufus/Win32DiskImager o con el propio asistente (rama de grabacion directa de imagen, sin WSL).
+- **Copia rapida por offsets**: `write-brunch-fast.sh` usa bs=4M con offsets alineados y bs=512 en sectores para los no alineados (arregla la corrupcion de GPT detectada con bs=1M).
+- **Construccion fiable**: la imagen se genera dentro del ext4 de WSL (`/tmp`) y se copia a NTFS al final (DrvFs/9P corrompe los offsets grandes).
+
 ## [v1.0.0-alpha.37] — 30-10-2026
 
 ### Nobedáêh

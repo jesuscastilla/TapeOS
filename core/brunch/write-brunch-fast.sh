@@ -6,11 +6,16 @@ SRC="$1"; DST="$2"
 BRDIR="${TAPEOOS_BRUNCH_DIR:-$(cd "$(dirname "$0")/../.." && pwd)/dist/brunch}"
 
 fast_dd() {
-    local img="$1" ob="$2" db="$3" bytes="$4" rem
-    dd if="$img" iflag=skip_bytes skip="$ob" of="$DST" oflag=seek_bytes seek="$db" bs=1M conv=notrunc count=$(( bytes / 1048576 )) status=none 2>/dev/null || true
-    rem=$(( bytes % 1048576 ))
-    if [ "$rem" -gt 0 ]; then
-        dd if="$img" iflag=skip_bytes skip=$(( ob + bytes - rem )) of="$DST" oflag=seek_bytes seek=$(( db + bytes - rem )) bs=1 count="$rem" status=none 2>/dev/null || true
+    local img="$1" ob="$2" db="$3" bytes="$4" rem os ds sc
+    if [ $(( ob % 4096 )) -eq 0 ] && [ $(( db % 4096 )) -eq 0 ] && [ $(( bytes % 4096 )) -eq 0 ]; then
+        dd if="$img" iflag=skip_bytes skip="$ob" of="$DST" oflag=seek_bytes seek="$db" bs=4M conv=notrunc status=none 2>/dev/null || true
+        rem=$(( bytes % 4194304 ))
+        if [ "$rem" -gt 0 ]; then
+            dd if="$img" iflag=skip_bytes skip=$(( ob + bytes - rem )) of="$DST" oflag=seek_bytes seek=$(( db + bytes - rem )) bs=1 count="$rem" status=none 2>/dev/null || true
+        fi
+    else
+        os=$(( ob / 512 )); ds=$(( db / 512 )); sc=$(( bytes / 512 ))
+        dd if="$img" bs=512 skip="$os" of="$DST" seek="$ds" count="$sc" conv=notrunc status=none 2>/dev/null || true
     fi
 }
 
