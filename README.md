@@ -23,6 +23,18 @@
 
 </div>
 
+> **Idioma / Lengua:** [Andalûh (EPA)](README.md) · [Êppanyôh](README.es.md)
+
+---
+
+## 🏴🏳️ Un Çîttema Operatibo Propio, Kreao en Andalûçia
+
+**TapeOS** êh un **çîttema operatibo propio** naçío en Andalûçia, publikao komo **çoftware libre** (GPLv3). Çe baça en la teknolohía de **ChromeOS** y **ChromiumOS**, kon una diferençia fundamentâh: la berçiôn **çîn Googlêh Play êh 100% libre** (çîn çerbiçiô de Google), mientrâ ke la berçiôn kompleta permite îttalâh lâ **Googlêh Play** çi er uçuario lo elihe.
+
+Tô lô komponentêh propiô de TapeOS (îttaladôh, parcheh, initramfs y erramientâ) çon **çoftware libre** baho GPLv3; lô komponentêh de Google Çtore çon **ôççionalêh** y çolo çe añaden kuando tú lo pîêh.
+
+---
+
 ## 📖 Biçiôn Henerâh
 
 **TapeOS** êh un framework propio de arrankê konçebío pa çûperâh lâ limitaçionêh îttórikâ de îttalaçiôn y kompatibilidá de ChromeOS en PC.
@@ -119,6 +131,20 @@ installer/windows/
   - `Ctrl + Shift + P` -> **Tasks: Run Task** -> `TapeOS: Launch Windows Installer (GUI)` pa probâh la interfaç.
   - `TapeOS: Run Hardware Detection` pa berifikâh er diagnóttiko de tu mákina.
 - **Fûentê âttream**: La karpeta de referençia ténnika lokâh (materiâh dehkargao de terçerô) êttá êkkluía der repoçitorio y no çe publika.
+- **Framework**: er build der framework de arrankê (kernel + initramfs + ROOTC) êttá en `core/build/` (bé çu README).
+
+---
+
+## 🙏 Orígenêh y Kréditô
+
+TapeOS naçe der proyêtto **[Brunch](https://github.com/sebanc/brunch)** de **Sébastien Ancora (Sebanc)**, a kién damô lô kréditô po çu trabaho pionero en yebâh ChromeOS a PC x86_64. Nûêttro framework uça çu arkîtêttûra de partiçionêh (ROOTC), er initramfs kon `swtpm` y çu êkkema de ôççionêh, âttualiá y êttendío.
+
+**¿Po ké TapeOS?** "Tape" êh er lêkçema de *tapâh*, argo mu andalûh, y "OS" de *Operating System*: un guiño a ke Brunch era un tipo de komía y ahora êh Tapêh. La identidá andalûça êh parte der proyêtto.
+
+**Difenrençiâ kon Brunch:**
+- **Çoftware libre**: la berçiôn çîn Googlêh Play de TapeOS êh 100% libre; Brunch êttá enfokao a lâ imâhenêh kon Google.
+- **Rebîtâliçaçiôn de hardware antiguo**: ênfaçî êppeçiâh en ekîpô legacy (UEFI 32-bit, GPU retro, çîn TPM) pa ke çigan çîrbiendo.
+- **Lûtta kontra er dehperdiçio teknolóhiko**: kada ekîpo rehkâtao êh meno xatarra êlektrónika.
 
 ---
 

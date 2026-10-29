@@ -13,6 +13,12 @@
 - **Kambio:** `core/build/build-framework.sh` (konttruye kernêh, initramfs, ROOTC y yabê vboot; empaketa tar.gz), `core/initramfs/init` (swtpm + montahe de ROOT-A + parcheh) y `core/build/README.md` en EPA. Lîtta pa kompilâh.
 - **Impâtto:** `core/build/`, `core/initramfs/`, `.gitignore`.
 
+## [29-10-2026] — Preçentaçiôn de GitHub: identidá, kréditô y çelettôh de idioma
+
+- **Tipo:** Bîtta
+- **Kambio:** README kon çelettôh **EPA/Êppanyôh** (`README.md` / `README.es.md`), çeççiôn de identidá (çîttema operatibo propio andalûh, çoftware libre, Googlêh Play ôççionalêh, baçao en ChromeOS/ChromiumOS) y çeççiôn de kréditô a Brunch (Sebanc) kon lâ diferençiâ. Dêkripçiôn y topî der repo âttualiáô (software-libre, andalucia, chromiumos, e-waste).
+- **Impâtto:** `README.md`, `README.es.md`, `release.yml`, dêkripçiôn/topî de GitHub.
+
 ---
 
 ## Glosario

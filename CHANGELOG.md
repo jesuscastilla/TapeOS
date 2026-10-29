@@ -2,6 +2,11 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.25] — 29-10-2026
+
+### Nobedáêh
+- **Preçentaçiôn de GitHub renobá**: çeççiôn de identidá («çîttema operatibo propio, kreao en Andalûçia, çoftware libre kon Googlêh Play ôççionalêh»), çelettôh de idioma **EPA/Êppanyôh** (`README.md` + `README.es.md`), çeççiôn de **orígenêh y kréditô** a Brunch (Sebanc) kon lâ diferençiâ (çoftware libre, rebîtâliçaçiôn de hardware y lûtta kontra er dehperdiçio teknolóhiko) y dêkripçiôn/topî der repo âttualiáô.
+
 ## [v1.0.0-alpha.24] — 29-10-2026
 
 ### Nobedáêh
