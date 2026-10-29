@@ -85,6 +85,11 @@ function Start-TapeOSDownload {
     Write-Host "URL: $Url" -ForegroundColor Gray
     Write-Host "Destino: $DestinationFile" -ForegroundColor Gray
 
+    # Asegurar TLS 1.2 en hosts antiguos (Windows PowerShell 5.1)
+    try {
+        [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    } catch { }
+
     $webClient = New-Object System.Net.WebClient
     
     # Manejar eventos de progreso
@@ -96,13 +101,8 @@ function Start-TapeOSDownload {
     }
 
     try {
-        $task = $webClient.DownloadFileTaskAsync([System.Uri]$Url, $DestinationFile)
-        while (-not $task.IsCompleted -and -not $task.IsFaulted) {
-            Start-Sleep -Milliseconds 200
-        }
-        if ($task.IsFaulted) {
-            throw $task.Exception
-        }
+        # Descarga sincrona: segura dentro del hilo de trabajo (sin TPL async)
+        $webClient.DownloadFile([System.Uri]$Url, $DestinationFile)
         Write-Host "[TapeOS Downloader] Descarga completada con éxito." -ForegroundColor Green
         return $DestinationFile
     } finally {

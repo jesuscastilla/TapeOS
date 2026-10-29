@@ -2,6 +2,12 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.11] — 29-10-2026
+
+### Correcciones
+- **Evitado el cierre silencioso de la app**: captura global de excepciones (ThreadException + try/catch en el flujo del botón "Crear") con diálogo de error visible y **archivo de log** en `%ProgramData%\TapeOS\tapeos-installer.log`.
+- **Descargador endurecido**: sustituida la descarga TPL async (`DownloadFileTaskAsync`, fuente de fallos en hosts PS 5.1 sin consola) por `DownloadFile` síncrono en el hilo de trabajo (la barra de progreso sigue funcionando vía eventos). Añadido forzado de TLS 1.2.
+
 ## [v1.0.0-alpha.10] — 29-10-2026
 
 ### Correcciones y Mejoras de UX

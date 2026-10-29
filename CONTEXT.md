@@ -150,3 +150,9 @@ TapeOS/
 - **Tipo:** Vista
 - **Cambio:** El modo **Instalador** pasa a ser el predeterminado en la GUI (controles de USB deshabilitados al inicio). Si se elige Live-USB sin pendrive, la app ofrece cambiar a Instalador con un diálogo Sí/No.
 - **Impacto:** `TapeOS-Installer.ps1`.
+
+## [29-10-2026] — Cierre silencioso corregido: log global y descarga síncrona
+
+- **Tipo:** Configuración
+- **Cambio:** Captura global de excepciones con log (`%ProgramData%\TapeOS\tapeos-installer.log`) y diálogo visible en la GUI; el botón "Crear" queda envuelto en try/catch con logging por pasos. `RecoveryDownloader` pasa a `DownloadFile` síncrono (+TLS 1.2), eliminando el patrón TPL async que puede matar el host PS 5.1 sin consola.
+- **Impacto:** `TapeOS-Installer.ps1`, `RecoveryDownloader.psm1`.

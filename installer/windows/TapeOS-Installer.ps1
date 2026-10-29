@@ -16,6 +16,40 @@ if (-not $isAdmin) {
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
+# =============================================================================
+# Log y captura global de errores: evita que la app se cierre en silencio.
+# El log se escribe en %ProgramData%\TapeOS\tapeos-installer.log
+# =============================================================================
+$script:__tapeosLogFile = Join-Path $env:ProgramData "TapeOS\tapeos-installer.log"
+try {
+    New-Item -ItemType Directory -Force -Path (Split-Path $script:__tapeosLogFile) | Out-Null
+} catch { }
+
+function Write-TapeOSLog {
+    param([string]$Msg)
+    try {
+        Add-Content -Path $script:__tapeosLogFile -Value ("[{0}] {1}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"), $Msg) -Encoding UTF8
+    } catch { }
+}
+
+Write-TapeOSLog "=== TapeOS GUI iniciada ==="
+
+try {
+    [System.Windows.Forms.Application]::SetUnhandledExceptionMode([System.Windows.Forms.UnhandledExceptionMode]::CatchException)
+    [System.Windows.Forms.Application]::add_ThreadException({
+        param($sender, $e)
+        Write-TapeOSLog ("UNHANDLED ThreadException: " + $e.Exception.ToString())
+        try {
+            [System.Windows.Forms.MessageBox]::Show(
+                "Error inesperado:`r`n$($e.Exception.Message)",
+                "TapeOS",
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Error
+            ) | Out-Null
+        } catch { }
+    })
+} catch { }
+
 # Cargar todos los módulos de TapeOS
 $moduleDir = Join-Path $PSScriptRoot "modules"
 Import-Module (Join-Path $moduleDir "HardwareDetector.psm1") -Force
@@ -357,6 +391,7 @@ $btnCheckOnline.Add_Click({
 
 # Evento: Flujo Completo Automatizado
 $btnFullAuto.Add_Click({
+    try {
     $imageOnlyMode = $radioImageOnly.Checked
     $selectedUsbIdx = $null
     $usbList = @()
@@ -418,6 +453,7 @@ $btnFullAuto.Add_Click({
             # Modo destino: pendrive USB o solo archivo .img
             $imageOnlyMode = $form.Invoke([Func[bool]]{ $radioImageOnly.Checked })
             $imageDestDir = $form.Invoke([Func[string]]{ $txtImageDir.Text })
+            Write-TapeOSLog ("Pipeline iniciado: codename=$codename, googleapps=$enableGoogleApps, imageOnly=$imageOnlyMode, destino=$imageDestDir")
 
             # 1. Obtener URL si no se había consultado
             $form.Invoke([Action]{ $logBox.AppendText("`r`n[Paso 1/4] Consultando última versión oficial de Google para '$codename'...`r`n") })
@@ -509,6 +545,7 @@ $btnFullAuto.Add_Click({
                 })
             }
         } catch {
+            Write-TapeOSLog ("ERROR pipeline: " + $_.Exception.ToString())
             $err = $_.Exception.Message
             $form.Invoke([Action]{
                 $logBox.AppendText("❌ ERROR: $err`r`n")
@@ -526,6 +563,17 @@ $btnFullAuto.Add_Click({
             })
         }
     })
+    } catch {
+        Write-TapeOSLog ("ERROR en botón Crear: " + $_)
+        try {
+            [System.Windows.Forms.MessageBox]::Show(
+                "Error inesperado al iniciar el proceso:`r`n$($_.Exception.Message)",
+                "TapeOS",
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Error
+            ) | Out-Null
+        } catch { }
+    }
 })
 
 # Mostrar formulario
