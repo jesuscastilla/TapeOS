@@ -245,7 +245,7 @@ $radioUsb.Text = "💾 Live-USB — Grabar en un pendrive USB y arrancar desde �
 $radioUsb.Font = New-Object System.Drawing.Font("Segoe UI", 9)
 $radioUsb.Location = New-Object System.Drawing.Point(20, 28)
 $radioUsb.AutoSize = $true
-$radioUsb.Checked = $true
+$radioUsb.Checked = $false
 $usbGroup.Controls.Add($radioUsb)
 
 $cbUsbDrives = New-Object System.Windows.Forms.ComboBox
@@ -269,8 +269,8 @@ $radioImageOnly.Text = "📀 Instalador — Crear el medio de instalación (.img
 $radioImageOnly.Font = New-Object System.Drawing.Font("Segoe UI", 9)
 $radioImageOnly.Location = New-Object System.Drawing.Point(20, 58)
 $radioImageOnly.AutoSize = $true
-$radioImageOnly.Checked = $true
 $usbGroup.Controls.Add($radioImageOnly)
+$radioImageOnly.Checked = $true
 
 $txtImageDir = New-Object System.Windows.Forms.TextBox
 $txtImageDir.Text = "C:\TapeOS\images"
@@ -310,6 +310,8 @@ $radioUsb.Add_Click({
     $btnRefreshUsb.Enabled = $true
     $txtImageDir.Enabled = $false
     $btnBrowseDir.Enabled = $false
+    Refresh-UsbList
+    $logBox.AppendText("[Modo] Live-USB seleccionado. Dispositivos detectados en la lista.`r`n")
 })
 $radioImageOnly.Add_Click({
     $cbUsbDrives.Enabled = $false

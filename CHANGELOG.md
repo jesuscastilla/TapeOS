@@ -2,6 +2,17 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.13] — 29-10-2026
+
+### Correcciones
+- **Selección de modo corregida**: la inicialización dejaba marcados a la vez los dos radios (Live-USB e Instalador), por lo que la app siempre caía en el modo Instalador. Ahora solo uno queda marcado y al elegir **Live-USB la lista de pendrives se refresca automáticamente**.
+
+## [v1.0.0-alpha.12] — 29-10-2026
+
+### Correcciones
+- **Soporte de adaptadores SSD/HDD-USB (UASP)**: la detección de dispositivos USB combina ahora `BusType USB`, `MediaType External` y el recorrido del árbol PnP hasta la raíz USB (los puentes USB-SATA/NVMe se reportan como SCSI y antes no se detectaban).
+- **Seguridad reforzada**: el flasher verifica que el destino esté en la lista de dispositivos USB detectados antes de escribir.
+
 ## [v1.0.0-alpha.11] — 29-10-2026
 
 ### Correcciones
