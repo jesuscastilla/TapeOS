@@ -186,3 +186,9 @@ TapeOS/
 - **Tipo:** Bîtta
 - **Kambio:** La GUI pâhha a `ClientSize` 900x660 (en lûgâh de `Size` 900x700): lîtta de lôh y botonêh de nabegaçiôn dentro der área de kliênte, bandera dibuhá ar tamaño êhâtto y çin `AutoScroll`/`Stretch`. Er arnêh `tools/wizard-smoke-test.ps1` komprueba lô lîmitê de tô lô kontrolê (`wizard-layout-check.log`) y guarda una kaptûra (`dist/gui-snapshot.png`).
 - **Impâtto:** `installer/windows/TapeOS-Installer.ps1`, `tools/wizard-smoke-test.ps1`, `CHANGELOG.md`.
+
+## [29-10-2026] — Intêrfâh renobá y arrankê çîn êpperâ
+
+- **Tipo:** Bîtta
+- **Kambio:** `EnableVisualStyles` + paleta unifiká + bâttonêh/chips redondeáô + doble buffering en la GUI. La detêççiôn de hardware/katálogo/USB paça al ebento `Shown` kon timer de repôtto (`Initialize-TapeOSDetection`, idempotente) pa ke la bentana apareçca al îttante. Er arnêh de pruebâ rekorta er área de kliênte en la kaptûra y añade diânnôttiko de iniçialiçaçiôn.
+- **Impâtto:** `installer/windows/TapeOS-Installer.ps1`, `tools/wizard-smoke-test.ps1`, `CHANGELOG.md`.

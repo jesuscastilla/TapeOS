@@ -27,6 +27,7 @@ STACK: $($_.ScriptStackTrace)
 $wiz = Get-Content 'G:\TapeOS\installer\windows\TapeOS-Installer.ps1'
 $probe = @'
 $null = $form.Show()
+if (-not $script:hwReport) { Initialize-TapeOSDetection }
 $form.Refresh()
 Start-Sleep -Milliseconds 1500
 try {
@@ -41,13 +42,22 @@ try {
     $veredicto = if ($desb.Count -eq 0) { 'OK' } else { 'OVERFLOW' }
     $lineas = @("TIME: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')", ("CLIENT: " + $cw + "x" + $ch), ("VERDICT: " + $veredicto))
     $lineas += $desb
+    $lineas += ("DIAG-HWREPORT: " + $(if ($script:hwReport) { 'cargado' } else { 'null' }))
+    $lineas += ("DIAG-RECOVERY-ITEMS: " + $cbRecovery.Items.Count)
+    $lineas += ("DIAG-CHIP0-BACKCOLOR: " + $stepLabels[0].BackColor.ToString())
+    $lineas += ("DIAG-HWINFO: " + ($lblHwInfo.Text -replace "`r`n", " | "))
     Set-Content -Path "$env:ProgramData\TapeOS\wizard-layout-check.log" -Encoding UTF8 -Force -Value $lineas
     $snapDir = 'G:\TapeOS\dist'
     if (-not (Test-Path -LiteralPath $snapDir)) { New-Item -ItemType Directory -Path $snapDir -Force | Out-Null }
     try {
-        $bmp = New-Object System.Drawing.Bitmap($cw, $ch)
-        $rect = New-Object System.Drawing.Rectangle(0, 0, $cw, $ch)
-        $form.DrawToBitmap($bmp, $rect)
+        $offX = [int](($form.Width - $cw) / 2)
+        $offY = $form.Height - $ch - $offX
+        $bmpFull = New-Object System.Drawing.Bitmap($form.Width, $form.Height)
+        $rectFull = New-Object System.Drawing.Rectangle(0, 0, $form.Width, $form.Height)
+        $form.DrawToBitmap($bmpFull, $rectFull)
+        $clip = New-Object System.Drawing.Rectangle($offX, $offY, $cw, $ch)
+        $bmp = $bmpFull.Clone($clip, $bmpFull.PixelFormat)
+        $bmpFull.Dispose()
         $bmp.Save((Join-Path $snapDir 'gui-snapshot.png'), [System.Drawing.Imaging.ImageFormat]::Png)
         $bmp.Dispose()
     } catch {

@@ -2,6 +2,18 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.32] — 29-10-2026
+
+### Nobedáêh
+- **Intêrfâh renobá**: êttilô bîttualêh modernô (`EnableVisualStyles`), paleta unifiká (berde korporatibo/blanco/grih berdoço), bâttonêh planô kon êkkinâ redondeâ y êttáô hober, chip de paçô koloreáô (attibo berde) y tarheta de kontenío kon borde çuabe.
+- **Arrankê al îttante**: la detêççiôn de hardware, er katálogo de rekûperaçionêh y la detêççiôn USB çe ehecutan trâh muêttrâh la bentana (funçiôn `Initialize-TapeOSDetection` en er ebento Shown kon timer de repôtto), eliminando la êppera kon pantaya en blanko.
+- **Çîn parpadeo**: doble buffering en toô lô kontrolê der formulario.
+- **Arnêh mehoráo**: kaptûra êhâtta der área de kliênte (çîn marko ni barra de título) y diânnôttiko de iniçialiçaçiôn en er log de balidáçiôn.
+
+### Korreççionêh
+- Mêkla de êttilô de bâttonêh (kláçikô + planô) eliminá: toô lô bâttonêh komparten er mîmmo lênnüahe bîttuâh.
+- Fondo der formulario kon bandera a troçô (franhâ dehkalineâh trâh lô panelêh) çûttituío por fondo nêttro kon franha tricolôh de açênto baho la kabêçera.
+
 ## [v1.0.0-alpha.31] — 29-10-2026
 
 ### Korreççionêh

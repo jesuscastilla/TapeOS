@@ -15,6 +15,7 @@ if (-not $isAdmin) {
 
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
+[System.Windows.Forms.Application]::EnableVisualStyles()
 
 # =============================================================================
 # Log y captura global de errores
@@ -35,6 +36,52 @@ try {
     })
 } catch { }
 
+# =============================================================================
+# Utilidades de ehtilo: bîttalêh modernô, êkkinâ redondeâ y çîn parpadeo
+# =============================================================================
+function Set-TapeOSRounded {
+    param($Control, [int]$Radius = 8)
+    try {
+        $gp = New-Object System.Drawing.Drawing2D.GraphicsPath
+        $d = $Radius * 2
+        $gp.AddArc(0, 0, $d, $d, 180, 90)
+        $gp.AddArc($Control.Width - $d, 0, $d, $d, 270, 90)
+        $gp.AddArc($Control.Width - $d, $Control.Height - $d, $d, $d, 0, 90)
+        $gp.AddArc(0, $Control.Height - $d, $d, $d, 90, 90)
+        $gp.CloseFigure()
+        $Control.Region = New-Object System.Drawing.Region($gp)
+        $gp.Dispose()
+    } catch { }
+}
+function Enable-TapeOSDoubleBuffer {
+    param($Ctrl)
+    try {
+        $prop = $Ctrl.GetType().GetProperty('DoubleBuffered', [System.Reflection.BindingFlags]'NonPublic,Instance')
+        if ($prop) { $prop.SetValue($Ctrl, $true, $null) }
+    } catch { }
+    foreach ($child in $Ctrl.Controls) { Enable-TapeOSDoubleBuffer $child }
+}
+function Set-TapeOSButtonStyle {
+    param($Btn, [string]$Kind = 'secondary')
+    $Btn.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+    $Btn.FlatAppearance.BorderSize = 0
+    $Btn.UseVisualStyleBackColor = $false
+    $Btn.Cursor = [System.Windows.Forms.Cursors]::Hand
+    $Btn.Font = New-Object System.Drawing.Font('Segoe UI', 9.5)
+    if ($Kind -eq 'primary') {
+        $Btn.BackColor = [System.Drawing.Color]::FromArgb(0, 132, 61)
+        $Btn.ForeColor = [System.Drawing.Color]::White
+        $Btn.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(0, 112, 52)
+        $Btn.FlatAppearance.MouseDownBackColor = [System.Drawing.Color]::FromArgb(0, 96, 44)
+    } else {
+        $Btn.BackColor = [System.Drawing.Color]::FromArgb(228, 236, 230)
+        $Btn.ForeColor = [System.Drawing.Color]::FromArgb(31, 41, 55)
+        $Btn.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(215, 226, 218)
+        $Btn.FlatAppearance.MouseDownBackColor = [System.Drawing.Color]::FromArgb(202, 216, 206)
+    }
+    Set-TapeOSRounded -Control $Btn -Radius 6
+}
+
 # Cargar módulos
 $moduleDir = Join-Path $PSScriptRoot "modules"
 Import-Module (Join-Path $moduleDir "HardwareDetector.psm1") -Force
@@ -45,10 +92,10 @@ Import-Module (Join-Path $moduleDir "UsbFlasher.psm1") -Force
 Import-Module (Join-Path $moduleDir "DiskManager.psm1") -Force
 Import-Module (Join-Path $moduleDir "BootManager.psm1") -Force
 
-# Diagnóstico inicial (rápido, en el hilo de UI)
-$hwReport = Get-TapeOSHardwareReport
-$catalog = Get-TapeOSCatalog
-$rec = $hwReport.Recommendations
+# Diagnóstico diferido al evento Shown: la ventana aparece al instante
+$script:hwReport = $null
+$script:catalog = @()
+$script:rec = $null
 
 # DPI-aware: evita el escalado borroso de Windows en pantallas de alta densidad
 try {
@@ -65,18 +112,7 @@ $form.ClientSize = New-Object System.Drawing.Size(900, 660)
 $form.StartPosition = "CenterScreen"
 $form.FormBorderStyle = "FixedDialog"
 $form.MaximizeBox = $false
-
-# Fondo: bandera de Andalucía dibujada al tamaño exacto del área cliente
-$tapeosFlag = New-Object System.Drawing.Bitmap(900, 660)
-$flagG = [System.Drawing.Graphics]::FromImage($tapeosFlag)
-$greenBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(0, 132, 61))
-$whiteBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::White)
-$flagG.FillRectangle($greenBrush, 0, 0, 900, 220)
-$flagG.FillRectangle($whiteBrush, 0, 220, 900, 220)
-$flagG.FillRectangle($greenBrush, 0, 440, 900, 220)
-$flagG.Dispose()
-$form.BackgroundImage = $tapeosFlag
-$form.BackgroundImageLayout = [System.Windows.Forms.ImageLayout]::None
+$form.BackColor = [System.Drawing.Color]::FromArgb(243, 246, 244)
 
 # Cabecera
 $headerPanel = New-Object System.Windows.Forms.Panel
@@ -84,6 +120,25 @@ $headerPanel.Location = New-Object System.Drawing.Point(0, 0)
 $headerPanel.Size = New-Object System.Drawing.Size(900, 66)
 $headerPanel.BackColor = [System.Drawing.Color]::FromArgb(0, 132, 61)
 $form.Controls.Add($headerPanel)
+
+# Franja tricolor de la bandera de Andalucía (acento bajo la cabecera)
+$stripeGreen1 = New-Object System.Windows.Forms.Panel
+$stripeGreen1.Location = New-Object System.Drawing.Point(0, 66)
+$stripeGreen1.Size = New-Object System.Drawing.Size(300, 6)
+$stripeGreen1.BackColor = [System.Drawing.Color]::FromArgb(0, 132, 61)
+$form.Controls.Add($stripeGreen1)
+
+$stripeWhite = New-Object System.Windows.Forms.Panel
+$stripeWhite.Location = New-Object System.Drawing.Point(300, 66)
+$stripeWhite.Size = New-Object System.Drawing.Size(300, 6)
+$stripeWhite.BackColor = [System.Drawing.Color]::White
+$form.Controls.Add($stripeWhite)
+
+$stripeGreen2 = New-Object System.Windows.Forms.Panel
+$stripeGreen2.Location = New-Object System.Drawing.Point(600, 66)
+$stripeGreen2.Size = New-Object System.Drawing.Size(300, 6)
+$stripeGreen2.BackColor = [System.Drawing.Color]::FromArgb(0, 132, 61)
+$form.Controls.Add($stripeGreen2)
 
 $logoPath = $null
 $logoCandidates = @(
@@ -131,6 +186,7 @@ $cbLang.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
 $cbLang.Location = New-Object System.Drawing.Point(740, 10)
 $cbLang.Size = New-Object System.Drawing.Size(140, 25)
 $cbLang.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$cbLang.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 [void]$cbLang.Items.Add("Andaluz")
 [void]$cbLang.Items.Add("Español")
 $cbLang.SelectedIndex = 0
@@ -140,9 +196,9 @@ $headerPanel.Controls.Add($cbLang)
 # Indicador de paçô (6 etapâ)
 # =============================================================================
 $stepIndicator = New-Object System.Windows.Forms.Panel
-$stepIndicator.Location = New-Object System.Drawing.Point(20, 72)
+$stepIndicator.Location = New-Object System.Drawing.Point(20, 78)
 $stepIndicator.Size = New-Object System.Drawing.Size(860, 34)
-$stepIndicator.BackColor = [System.Drawing.Color]::White
+$stepIndicator.BackColor = [System.Drawing.Color]::FromArgb(243, 246, 244)
 $form.Controls.Add($stepIndicator)
 
 $stepLabels = @()
@@ -152,20 +208,31 @@ for ($i = 0; $i -lt 6; $i++) {
     $sl = New-Object System.Windows.Forms.Label
     $sl.Text = $stepNamesEPA[$i]
     $sl.Font = New-Object System.Drawing.Font("Segoe UI", 9)
-    $sl.ForeColor = [System.Drawing.Color]::FromArgb(120, 120, 120)
-    $stepX = 15 + ($i * 140)
-    $sl.Location = New-Object System.Drawing.Point($stepX, 8)
-    $sl.Size = New-Object System.Drawing.Size(135, 20)
+    $sl.ForeColor = [System.Drawing.Color]::FromArgb(80, 104, 90)
+    $sl.BackColor = [System.Drawing.Color]::FromArgb(231, 238, 233)
+    $sl.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
+    $stepX = 10 + ($i * 140)
+    $sl.Location = New-Object System.Drawing.Point($stepX, 4)
+    $sl.Size = New-Object System.Drawing.Size(132, 26)
+    Set-TapeOSRounded -Control $sl -Radius 13
     $stepIndicator.Controls.Add($sl)
     $stepLabels += $sl
 }
 
-# Panel de contenido (una bîtta po paço)
+# Tarjeta de contenido (una bîtta po paço): borde suabe y êkkinâ redondeâ
+$cardShell = New-Object System.Windows.Forms.Panel
+$cardShell.Location = New-Object System.Drawing.Point(20, 118)
+$cardShell.Size = New-Object System.Drawing.Size(860, 340)
+$cardShell.BackColor = [System.Drawing.Color]::FromArgb(214, 222, 217)
+Set-TapeOSRounded -Control $cardShell -Radius 10
+$form.Controls.Add($cardShell)
+
 $contentPanel = New-Object System.Windows.Forms.Panel
-$contentPanel.Location = New-Object System.Drawing.Point(20, 112)
-$contentPanel.Size = New-Object System.Drawing.Size(860, 340)
+$contentPanel.Location = New-Object System.Drawing.Point(1, 1)
+$contentPanel.Size = New-Object System.Drawing.Size(858, 338)
 $contentPanel.BackColor = [System.Drawing.Color]::White
-$form.Controls.Add($contentPanel)
+Set-TapeOSRounded -Control $contentPanel -Radius 9
+$cardShell.Controls.Add($contentPanel)
 
 # --- PAÇO 1: Detêççiôn de hardware ---
 $pnl1 = New-Object System.Windows.Forms.Panel
@@ -173,23 +240,18 @@ $pnl1.Location = New-Object System.Drawing.Point(0, 0)
 $pnl1.Size = $contentPanel.Size
 $pnl1.BackColor = [System.Drawing.Color]::White
 
-$wifiSummary = if ($hwReport.Network.WiFi.Count -gt 0) { (($hwReport.Network.WiFi | ForEach-Object { $_.Name }) -join ', ') } else { '—' }
-$btSummary = if ($hwReport.Network.Bluetooth.Count -gt 0) { (($hwReport.Network.Bluetooth | ForEach-Object { $_.Name }) -join ', ') } else { '—' }
-$audioSummary = if ($hwReport.Audio.Count -gt 0) { (($hwReport.Audio | ForEach-Object { $_.Name }) -join ', ') } else { '—' }
-$touchSummary = if ($hwReport.Touchscreen.Count -gt 0) { (($hwReport.Touchscreen | ForEach-Object { $_.Name }) -join ', ') } else { '—' }
-$patchList = (($hwReport.FrameworkPatches | ForEach-Object { $_.Option }) -join ', ')
-$gpuSummary = (($hwReport.GPU | ForEach-Object { "$($_.Name) $(if ($_.VendorId -eq '10DE') { '(NVIDIA)' } elseif ($_.VendorId -eq '1002') { '(AMD)' } elseif ($_.VendorId -eq '8086') { '(Intel)' } else { '' })" }) -join ', ')
-
 $lblHwTitle = New-Object System.Windows.Forms.Label
 $lblHwTitle.Text = "Detêççiôn de hardware"
-$lblHwTitle.Font = New-Object System.Drawing.Font("Segoe UI", 14, [System.Drawing.FontStyle]::Bold)
+$lblHwTitle.Font = New-Object System.Drawing.Font("Segoe UI", 13, [System.Drawing.FontStyle]::Bold)
+$lblHwTitle.ForeColor = [System.Drawing.Color]::FromArgb(23, 53, 43)
 $lblHwTitle.Location = New-Object System.Drawing.Point(20, 10)
 $lblHwTitle.AutoSize = $true
 $pnl1.Controls.Add($lblHwTitle)
 
 $lblHwInfo = New-Object System.Windows.Forms.Label
-$lblHwInfo.Text = "..."
+$lblHwInfo.Text = "Deteôtando el hardware..."
 $lblHwInfo.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$lblHwInfo.ForeColor = [System.Drawing.Color]::FromArgb(51, 65, 58)
 $lblHwInfo.Location = New-Object System.Drawing.Point(20, 42)
 $lblHwInfo.Size = New-Object System.Drawing.Size(820, 190)
 $pnl1.Controls.Add($lblHwInfo)
@@ -202,7 +264,8 @@ $pnl1.Controls.Add($pbStep1)
 
 $lblEta1 = New-Object System.Windows.Forms.Label
 $lblEta1.Text = "Êttimao: 0 ç (kompletao)"
-$lblEta1.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Italic)
+$lblEta1.Font = New-Object System.Drawing.Font("Segoe UI", 8.5, [System.Drawing.FontStyle]::Italic)
+$lblEta1.ForeColor = [System.Drawing.Color]::FromArgb(107, 122, 114)
 $lblEta1.Location = New-Object System.Drawing.Point(20, 264)
 $lblEta1.AutoSize = $true
 $pnl1.Controls.Add($lblEta1)
@@ -217,14 +280,16 @@ $pnl2.BackColor = [System.Drawing.Color]::White
 
 $lblRecTitle = New-Object System.Windows.Forms.Label
 $lblRecTitle.Text = "Rekomendaçiôn de rekûperaçiôn"
-$lblRecTitle.Font = New-Object System.Drawing.Font("Segoe UI", 14, [System.Drawing.FontStyle]::Bold)
+$lblRecTitle.Font = New-Object System.Drawing.Font("Segoe UI", 13, [System.Drawing.FontStyle]::Bold)
+$lblRecTitle.ForeColor = [System.Drawing.Color]::FromArgb(23, 53, 43)
 $lblRecTitle.Location = New-Object System.Drawing.Point(20, 10)
 $lblRecTitle.AutoSize = $true
 $pnl2.Controls.Add($lblRecTitle)
 
 $lblRecInfo = New-Object System.Windows.Forms.Label
 $lblRecInfo.Text = "..."
-$lblRecInfo.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+$lblRecInfo.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
+$lblRecInfo.ForeColor = [System.Drawing.Color]::FromArgb(51, 65, 58)
 $lblRecInfo.Location = New-Object System.Drawing.Point(20, 38)
 $lblRecInfo.Size = New-Object System.Drawing.Size(820, 34)
 $pnl2.Controls.Add($lblRecInfo)
@@ -233,11 +298,8 @@ $cbRecovery = New-Object System.Windows.Forms.ComboBox
 $cbRecovery.Location = New-Object System.Drawing.Point(20, 80)
 $cbRecovery.Size = New-Object System.Drawing.Size(520, 25)
 $cbRecovery.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
-foreach ($item in $catalog) { [void]$cbRecovery.Items.Add("$($item.Codename) — $($item.DisplayName)") }
-$cbRecovery.SelectedIndex = 0
-for ($i = 0; $i -lt $catalog.Count; $i++) {
-    if ($catalog[$i].Codename -eq $rec.RecoveryCodename) { $cbRecovery.SelectedIndex = $i; break }
-}
+$cbRecovery.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$cbRecovery.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $pnl2.Controls.Add($cbRecovery)
 
 $btnCheckOnline = New-Object System.Windows.Forms.Button
@@ -245,10 +307,12 @@ $btnCheckOnline.Text = "🌐 Bûhkâh la Ûrtima Berçiôn"
 $btnCheckOnline.Location = New-Object System.Drawing.Point(560, 78)
 $btnCheckOnline.Size = New-Object System.Drawing.Size(265, 27)
 $pnl2.Controls.Add($btnCheckOnline)
+Set-TapeOSButtonStyle -Btn $btnCheckOnline -Kind 'secondary'
 
 $lblStatusUrl = New-Object System.Windows.Forms.Label
 $lblStatusUrl.Text = "Berçiôn ofiçiâh mâh reçiente: pulça 'Bûhkâh' pa konhûttâh er CDN de Google."
-$lblStatusUrl.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Italic)
+$lblStatusUrl.Font = New-Object System.Drawing.Font("Segoe UI", 8.5, [System.Drawing.FontStyle]::Italic)
+$lblStatusUrl.ForeColor = [System.Drawing.Color]::FromArgb(107, 122, 114)
 $lblStatusUrl.Location = New-Object System.Drawing.Point(20, 114)
 $lblStatusUrl.Size = New-Object System.Drawing.Size(820, 36)
 $pnl2.Controls.Add($lblStatusUrl)
@@ -262,7 +326,8 @@ $pnl2.Controls.Add($pbStep2)
 
 $lblEta2 = New-Object System.Windows.Forms.Label
 $lblEta2.Text = ""
-$lblEta2.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Italic)
+$lblEta2.Font = New-Object System.Drawing.Font("Segoe UI", 8.5, [System.Drawing.FontStyle]::Italic)
+$lblEta2.ForeColor = [System.Drawing.Color]::FromArgb(107, 122, 114)
 $lblEta2.Location = New-Object System.Drawing.Point(20, 182)
 $lblEta2.AutoSize = $true
 $pnl2.Controls.Add($lblEta2)
@@ -277,14 +342,16 @@ $pnl3.BackColor = [System.Drawing.Color]::White
 
 $lblAppsTitle = New-Object System.Windows.Forms.Label
 $lblAppsTitle.Text = "Aplikâçionêh y çoftware"
-$lblAppsTitle.Font = New-Object System.Drawing.Font("Segoe UI", 14, [System.Drawing.FontStyle]::Bold)
+$lblAppsTitle.Font = New-Object System.Drawing.Font("Segoe UI", 13, [System.Drawing.FontStyle]::Bold)
+$lblAppsTitle.ForeColor = [System.Drawing.Color]::FromArgb(23, 53, 43)
 $lblAppsTitle.Location = New-Object System.Drawing.Point(20, 10)
 $lblAppsTitle.AutoSize = $true
 $pnl3.Controls.Add($lblAppsTitle)
 
 $radioLibre = New-Object System.Windows.Forms.RadioButton
 $radioLibre.Text = "🔓 Çoftware Libre — çîn Googlêh Play (rekomendao)"
-$radioLibre.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+$radioLibre.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
+$radioLibre.ForeColor = [System.Drawing.Color]::FromArgb(35, 48, 40)
 $radioLibre.Location = New-Object System.Drawing.Point(20, 45)
 $radioLibre.AutoSize = $true
 $radioLibre.Checked = $true
@@ -292,7 +359,8 @@ $pnl3.Controls.Add($radioLibre)
 
 $radioGoogleApps = New-Object System.Windows.Forms.RadioButton
 $radioGoogleApps.Text = "🛍️ Kon Googlêh Play — Android kompleto"
-$radioGoogleApps.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+$radioGoogleApps.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
+$radioGoogleApps.ForeColor = [System.Drawing.Color]::FromArgb(35, 48, 40)
 $radioGoogleApps.Location = New-Object System.Drawing.Point(20, 75)
 $radioGoogleApps.AutoSize = $true
 $radioGoogleApps.Checked = $false
@@ -300,7 +368,8 @@ $pnl3.Controls.Add($radioGoogleApps)
 
 $lblAppsExplain = New-Object System.Windows.Forms.Label
 $lblAppsExplain.Text = "..."
-$lblAppsExplain.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
+$lblAppsExplain.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$lblAppsExplain.ForeColor = [System.Drawing.Color]::FromArgb(51, 65, 58)
 $lblAppsExplain.Location = New-Object System.Drawing.Point(20, 112)
 $lblAppsExplain.Size = New-Object System.Drawing.Size(820, 150)
 $pnl3.Controls.Add($lblAppsExplain)
@@ -315,14 +384,16 @@ $pnl4.BackColor = [System.Drawing.Color]::White
 
 $lblMediaTitle = New-Object System.Windows.Forms.Label
 $lblMediaTitle.Text = "Medio de îttalaçiôn"
-$lblMediaTitle.Font = New-Object System.Drawing.Font("Segoe UI", 14, [System.Drawing.FontStyle]::Bold)
+$lblMediaTitle.Font = New-Object System.Drawing.Font("Segoe UI", 13, [System.Drawing.FontStyle]::Bold)
+$lblMediaTitle.ForeColor = [System.Drawing.Color]::FromArgb(23, 53, 43)
 $lblMediaTitle.Location = New-Object System.Drawing.Point(20, 10)
 $lblMediaTitle.AutoSize = $true
 $pnl4.Controls.Add($lblMediaTitle)
 
 $radioImageOnly = New-Object System.Windows.Forms.RadioButton
 $radioImageOnly.Text = "📀 Kreâh er medio de îttalaçiôn (.img) — guâddâlo en er dîkko"
-$radioImageOnly.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+$radioImageOnly.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
+$radioImageOnly.ForeColor = [System.Drawing.Color]::FromArgb(35, 48, 40)
 $radioImageOnly.Location = New-Object System.Drawing.Point(20, 45)
 $radioImageOnly.AutoSize = $true
 $radioImageOnly.Checked = $true
@@ -332,6 +403,7 @@ $txtImageDir = New-Object System.Windows.Forms.TextBox
 $txtImageDir.Text = "C:\TapeOS\images"
 $txtImageDir.Location = New-Object System.Drawing.Point(55, 80)
 $txtImageDir.Size = New-Object System.Drawing.Size(540, 25)
+$txtImageDir.Font = New-Object System.Drawing.Font("Segoe UI", 9)
 $pnl4.Controls.Add($txtImageDir)
 
 $btnBrowseDir = New-Object System.Windows.Forms.Button
@@ -339,10 +411,12 @@ $btnBrowseDir.Text = "📂 Ehkaminâh..."
 $btnBrowseDir.Location = New-Object System.Drawing.Point(605, 78)
 $btnBrowseDir.Size = New-Object System.Drawing.Size(200, 27)
 $pnl4.Controls.Add($btnBrowseDir)
+Set-TapeOSButtonStyle -Btn $btnBrowseDir -Kind 'secondary'
 
 $radioUsb = New-Object System.Windows.Forms.RadioButton
 $radioUsb.Text = "💾 Live-USB — Grabâh en un pendraîh USB y arrankâh dêhde él"
-$radioUsb.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+$radioUsb.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
+$radioUsb.ForeColor = [System.Drawing.Color]::FromArgb(35, 48, 40)
 $radioUsb.Location = New-Object System.Drawing.Point(20, 135)
 $radioUsb.AutoSize = $true
 $radioUsb.Checked = $false
@@ -352,6 +426,8 @@ $cbUsbDrives = New-Object System.Windows.Forms.ComboBox
 $cbUsbDrives.Location = New-Object System.Drawing.Point(55, 170)
 $cbUsbDrives.Size = New-Object System.Drawing.Size(540, 25)
 $cbUsbDrives.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
+$cbUsbDrives.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$cbUsbDrives.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $cbUsbDrives.Enabled = $false
 $pnl4.Controls.Add($cbUsbDrives)
 
@@ -361,10 +437,12 @@ $btnRefreshUsb.Location = New-Object System.Drawing.Point(605, 168)
 $btnRefreshUsb.Size = New-Object System.Drawing.Size(200, 27)
 $btnRefreshUsb.Enabled = $false
 $pnl4.Controls.Add($btnRefreshUsb)
+Set-TapeOSButtonStyle -Btn $btnRefreshUsb -Kind 'secondary'
 
 $lblUsbWarning = New-Object System.Windows.Forms.Label
 $lblUsbWarning.Text = "⚠️ OHO: Er pendraîh çelehçionao çe formateará po kompleto pa îttalâh TapeOS."
-$lblUsbWarning.ForeColor = [System.Drawing.Color]::FromArgb(180, 40, 40)
+$lblUsbWarning.ForeColor = [System.Drawing.Color]::FromArgb(178, 59, 59)
+$lblUsbWarning.Font = New-Object System.Drawing.Font("Segoe UI", 9)
 $lblUsbWarning.Location = New-Object System.Drawing.Point(20, 208)
 $lblUsbWarning.Size = New-Object System.Drawing.Size(820, 25)
 $pnl4.Controls.Add($lblUsbWarning)
@@ -379,26 +457,26 @@ $pnl5.BackColor = [System.Drawing.Color]::White
 
 $lblSumTitle = New-Object System.Windows.Forms.Label
 $lblSumTitle.Text = "Reçûmen de la îttalaçiôn"
-$lblSumTitle.Font = New-Object System.Drawing.Font("Segoe UI", 14, [System.Drawing.FontStyle]::Bold)
+$lblSumTitle.Font = New-Object System.Drawing.Font("Segoe UI", 13, [System.Drawing.FontStyle]::Bold)
+$lblSumTitle.ForeColor = [System.Drawing.Color]::FromArgb(23, 53, 43)
 $lblSumTitle.Location = New-Object System.Drawing.Point(20, 10)
 $lblSumTitle.AutoSize = $true
 $pnl5.Controls.Add($lblSumTitle)
 
 $lblSummary = New-Object System.Windows.Forms.Label
 $lblSummary.Text = "..."
-$lblSummary.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+$lblSummary.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
+$lblSummary.ForeColor = [System.Drawing.Color]::FromArgb(35, 48, 40)
 $lblSummary.Location = New-Object System.Drawing.Point(20, 42)
 $lblSummary.Size = New-Object System.Drawing.Size(820, 135)
 $pnl5.Controls.Add($lblSummary)
 
 $btnCreate = New-Object System.Windows.Forms.Button
 $btnCreate.Text = "⚡ Dehkargâh, Parcheâh y Kreâh (1-Klik)"
-$btnCreate.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
-$btnCreate.BackColor = [System.Drawing.Color]::FromArgb(0, 132, 61)
-$btnCreate.ForeColor = [System.Drawing.Color]::White
-$btnCreate.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $btnCreate.Location = New-Object System.Drawing.Point(255, 195)
 $btnCreate.Size = New-Object System.Drawing.Size(350, 45)
+Set-TapeOSButtonStyle -Btn $btnCreate -Kind 'primary'
+$btnCreate.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
 $pnl5.Controls.Add($btnCreate)
 
 $contentPanel.Controls.Add($pnl5)
@@ -411,7 +489,8 @@ $pnl6.BackColor = [System.Drawing.Color]::White
 
 $lblPhase = New-Object System.Windows.Forms.Label
 $lblPhase.Text = "Êpperando..."
-$lblPhase.Font = New-Object System.Drawing.Font("Segoe UI", 12, [System.Drawing.FontStyle]::Bold)
+$lblPhase.Font = New-Object System.Drawing.Font("Segoe UI", 13, [System.Drawing.FontStyle]::Bold)
+$lblPhase.ForeColor = [System.Drawing.Color]::FromArgb(23, 53, 43)
 $lblPhase.Location = New-Object System.Drawing.Point(20, 10)
 $lblPhase.Size = New-Object System.Drawing.Size(820, 25)
 $pnl6.Controls.Add($lblPhase)
@@ -423,7 +502,8 @@ $pnl6.Controls.Add($pbStep5)
 
 $lblEta5 = New-Object System.Windows.Forms.Label
 $lblEta5.Text = "Êttimao: --"
-$lblEta5.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Italic)
+$lblEta5.Font = New-Object System.Drawing.Font("Segoe UI", 8.5, [System.Drawing.FontStyle]::Italic)
+$lblEta5.ForeColor = [System.Drawing.Color]::FromArgb(107, 122, 114)
 $lblEta5.Location = New-Object System.Drawing.Point(20, 82)
 $lblEta5.Size = New-Object System.Drawing.Size(820, 25)
 $pnl6.Controls.Add($lblEta5)
@@ -434,31 +514,31 @@ $contentPanel.Controls.Add($pnl6)
 # Log, botonêh de nabegaçiôn y funçionêh der wîçâh
 # =============================================================================
 $logBox = New-Object System.Windows.Forms.TextBox
-$logBox.Location = New-Object System.Drawing.Point(20, 464)
+$logBox.Location = New-Object System.Drawing.Point(20, 470)
 $logBox.Size = New-Object System.Drawing.Size(860, 88)
 $logBox.Multiline = $true
 $logBox.ScrollBars = "Vertical"
 $logBox.ReadOnly = $true
-$logBox.BackColor = [System.Drawing.Color]::FromArgb(20, 24, 30)
-$logBox.ForeColor = [System.Drawing.Color]::FromArgb(0, 255, 128)
-$logBox.Font = New-Object System.Drawing.Font("Consolas", 8.5)
+$logBox.BackColor = [System.Drawing.Color]::FromArgb(14, 21, 18)
+$logBox.ForeColor = [System.Drawing.Color]::FromArgb(140, 231, 165)
+$logBox.Font = New-Object System.Drawing.Font("Consolas", 9)
+$logBox.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
 $logBox.Text = "=== TapeOS Lîtta ===`r`n"
 $form.Controls.Add($logBox)
 
 $btnBack = New-Object System.Windows.Forms.Button
 $btnBack.Text = "‹ Anteriôh"
-$btnBack.Location = New-Object System.Drawing.Point(20, 564)
+$btnBack.Location = New-Object System.Drawing.Point(20, 570)
 $btnBack.Size = New-Object System.Drawing.Size(150, 40)
 $btnBack.Enabled = $false
+Set-TapeOSButtonStyle -Btn $btnBack -Kind 'secondary'
 $form.Controls.Add($btnBack)
 
 $btnNext = New-Object System.Windows.Forms.Button
 $btnNext.Text = "Çiguiente ›"
-$btnNext.Location = New-Object System.Drawing.Point(730, 564)
+$btnNext.Location = New-Object System.Drawing.Point(730, 570)
 $btnNext.Size = New-Object System.Drawing.Size(150, 40)
-$btnNext.BackColor = [System.Drawing.Color]::FromArgb(0, 132, 61)
-$btnNext.ForeColor = [System.Drawing.Color]::White
-$btnNext.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+Set-TapeOSButtonStyle -Btn $btnNext -Kind 'primary'
 $form.Controls.Add($btnNext)
 
 $stepPanels = @($pnl1, $pnl2, $pnl3, $pnl4, $pnl5, $pnl6)
@@ -473,10 +553,12 @@ function Set-TapeOSStep {
     }
     for ($i = 0; $i -lt $stepLabels.Count; $i++) {
         if ($i -eq $StepIndex) {
-            $stepLabels[$i].ForeColor = [System.Drawing.Color]::FromArgb(0, 132, 61)
+            $stepLabels[$i].ForeColor = [System.Drawing.Color]::White
+            $stepLabels[$i].BackColor = [System.Drawing.Color]::FromArgb(0, 132, 61)
             $stepLabels[$i].Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
         } else {
-            $stepLabels[$i].ForeColor = [System.Drawing.Color]::FromArgb(120, 120, 120)
+            $stepLabels[$i].ForeColor = [System.Drawing.Color]::FromArgb(80, 104, 90)
+            $stepLabels[$i].BackColor = [System.Drawing.Color]::FromArgb(231, 238, 233)
             $stepLabels[$i].Font = New-Object System.Drawing.Font("Segoe UI", 9)
         }
     }
@@ -489,12 +571,12 @@ $(if ($script:langEPA) {
 "• Rekûperaçiôn: $((($cbRecovery.SelectedItem.ToString()).Split(' ')[0]).ToUpper()) $(if ($script:recoveryInfo) { "- Milestone $($script:recoveryInfo.Milestone)" } else { '' })
 • Aplikâçionêh: $(if ($radioLibre.Checked) { 'Çoftware Libre (APK + Aurora Çtore)' } else { 'Googlêh Play (Çtore + Android)' })
 • Medio: $sumMode
-• Parcheh de hardware: $(if ($patchList) { $patchList } else { 'nîn guno' })"
+• Parcheh de hardware: $(if ($script:patchList) { $script:patchList } else { 'nîn guno' })"
 } else {
 "• Recovery: $((($cbRecovery.SelectedItem.ToString()).Split(' ')[0]).ToUpper()) $(if ($script:recoveryInfo) { "- Milestone $($script:recoveryInfo.Milestone)" } else { '' })
 • Aplicaciones: $(if ($radioLibre.Checked) { 'Software Libre (APK + Aurora Store)' } else { 'Google Play (Store + Android)' })
 • Medio: $sumMode
-• Parches de hardware: $(if ($patchList) { $patchList } else { 'ninguno' })"
+• Parches de hardware: $(if ($script:patchList) { $script:patchList } else { 'ninguno' })"
 })
 "@
     }
@@ -522,33 +604,42 @@ function Format-ETA {
 
 function Get-HwSummaryText {
     param([bool]$EPA)
+    if (-not $script:hwReport) {
+        return if ($EPA) { "Deteôtando el hardware...`r`n`r`nÊtte proçeço çuele tardâh çolo unô çegundô." } else { "Detectando el hardware...`r`n`r`nEste proceso suele tardar solo unos segundos." }
+    }
+    $wifiSummary = if ($script:hwReport.Network.WiFi.Count -gt 0) { (($script:hwReport.Network.WiFi | ForEach-Object { $_.Name }) -join ', ') } else { '—' }
+    $btSummary = if ($script:hwReport.Network.Bluetooth.Count -gt 0) { (($script:hwReport.Network.Bluetooth | ForEach-Object { $_.Name }) -join ', ') } else { '—' }
+    $audioSummary = if ($script:hwReport.Audio.Count -gt 0) { (($script:hwReport.Audio | ForEach-Object { $_.Name }) -join ', ') } else { '—' }
+    $touchSummary = if ($script:hwReport.Touchscreen.Count -gt 0) { (($script:hwReport.Touchscreen | ForEach-Object { $_.Name }) -join ', ') } else { '—' }
+    $script:patchList = (($script:hwReport.FrameworkPatches | ForEach-Object { $_.Option }) -join ', ')
+    $gpuSummary = (($script:hwReport.GPU | ForEach-Object { "$($_.Name) $(if ($_.VendorId -eq '10DE') { '(NVIDIA)' } elseif ($_.VendorId -eq '1002') { '(AMD)' } elseif ($_.VendorId -eq '8086') { '(Intel)' } else { '' })" }) -join ', ')
     if ($EPA) {
-        $sbon  = if ($hwReport.Firmware.SecureBoot) { 'Attibo ⚠️' } else { 'Inattibo ✅' }
-        $blon  = if ($hwReport.Security.BitLockerActive) { 'ATTIBO ⚠️' } else { 'Inattibo ✅' }
+        $sbon  = if ($script:hwReport.Firmware.SecureBoot) { 'Attibo ⚠️' } else { 'Inattibo ✅' }
+        $blon  = if ($script:hwReport.Security.BitLockerActive) { 'ATTIBO ⚠️' } else { 'Inattibo ✅' }
         $wifi  = if ($wifiSummary -ne '—') { $wifiSummary } else { 'No detêttao' }
         $bt    = if ($btSummary -ne '—') { $btSummary } else { 'No detêttao' }
         $audio = if ($audioSummary -ne '—') { $audioSummary } else { 'Çoportao' }
         $touch = if ($touchSummary -ne '—') { $touchSummary } else { 'No detêttá' }
-        $patches = if ($patchList) { $patchList } else { 'nîn guno neçeçario' }
+        $patches = if ($script:patchList) { $script:patchList } else { 'nîn guno neçeçario' }
         return @"
-• CPU: $($hwReport.CPU.Name) ($($hwReport.CPU.Generation))
-• Firmware: $($hwReport.Firmware.Type)  |  Secure Boot: $sbon  |  BitLocker: $blon
+• CPU: $($script:hwReport.CPU.Name) ($($script:hwReport.CPU.Generation))
+• Firmware: $($script:hwReport.Firmware.Type)  |  Secure Boot: $sbon  |  BitLocker: $blon
 • GPU: $gpuSummary
 • WiFi: $wifi   |   Bluetooth: $bt
 • Audio: $audio   |   Tâttîh: $touch
 • Parcheh de hardware detêttáô: $patches
 "@
     } else {
-        $sbon  = if ($hwReport.Firmware.SecureBoot) { 'Activo ⚠️' } else { 'Inactivo ✅' }
-        $blon  = if ($hwReport.Security.BitLockerActive) { 'ACTIVO ⚠️' } else { 'Inactivo ✅' }
+        $sbon  = if ($script:hwReport.Firmware.SecureBoot) { 'Activo ⚠️' } else { 'Inactivo ✅' }
+        $blon  = if ($script:hwReport.Security.BitLockerActive) { 'ACTIVO ⚠️' } else { 'Inactivo ✅' }
         $wifi  = if ($wifiSummary -ne '—') { $wifiSummary } else { 'No detectado' }
         $bt    = if ($btSummary -ne '—') { $btSummary } else { 'No detectado' }
         $audio = if ($audioSummary -ne '—') { $audioSummary } else { 'Soportado' }
         $touch = if ($touchSummary -ne '—') { $touchSummary } else { 'No detectado' }
-        $patches = if ($patchList) { $patchList } else { 'ninguno necesario' }
+        $patches = if ($script:patchList) { $script:patchList } else { 'ninguno necesario' }
         return @"
-• CPU: $($hwReport.CPU.Name) ($($hwReport.CPU.Generation))
-• Firmware: $($hwReport.Firmware.Type)  |  Secure Boot: $sbon  |  BitLocker: $blon
+• CPU: $($script:hwReport.CPU.Name) ($($script:hwReport.CPU.Generation))
+• Firmware: $($script:hwReport.Firmware.Type)  |  Secure Boot: $sbon  |  BitLocker: $blon
 • GPU: $gpuSummary
 • WiFi: $wifi   |   Bluetooth: $bt
 • Audio: $audio   |   Táctil: $touch
@@ -578,7 +669,11 @@ function Set-TapeOSLanguage {
     $lblHwTitle.Text = if ($isEPA) { "Detêççiôn de hardware" } else { "Detección de hardware" }
     $lblHwInfo.Text = Get-HwSummaryText $isEPA
     $lblRecTitle.Text = if ($isEPA) { "Rekomendaçiôn de rekûperaçiôn" } else { "Recomendación de recovery" }
-    $lblRecInfo.Text = if ($isEPA) { "Çegún tu hardware, la rekûperaçiôn rekomendá êh [$($rec.RecoveryCodename.ToUpper())] kon kernel [$($rec.Kernel)]." } else { "Según tu hardware, el recovery recomendado es [$($rec.RecoveryCodename.ToUpper())] con kernel [$($rec.Kernel)]." }
+    if ($script:rec) {
+        $lblRecInfo.Text = if ($isEPA) { "Çegún tu hardware, la rekûperaçiôn rekomendá êh [$($script:rec.RecoveryCodename.ToUpper())] kon kernel [$($script:rec.Kernel)]." } else { "Según tu hardware, el recovery recomendado es [$($script:rec.RecoveryCodename.ToUpper())] con kernel [$($script:rec.Kernel)]." }
+    } else {
+        $lblRecInfo.Text = "..."
+    }
     $btnCheckOnline.Text = if ($isEPA) { "🌐 Bûhkâh la Ûrtima Berçiôn" } else { "🌐 Buscar Última Versión" }
     $lblStatusUrl.Text = if ($isEPA) { "Berçiôn ofiçiâh mâh reçiente: pulça 'Bûhkâh' pa konhûttâh er CDN de Google." } else { "Versión oficial más reciente: pulsa 'Buscar' para consultar el CDN de Google." }
     $lblAppsTitle.Text = if ($isEPA) { "Aplikâçionêh y çoftware" } else { "Aplicaciones y software" }
@@ -880,7 +975,7 @@ $btnCreate.Add_Click({
         $null = $pipelinePS.AddParameter("ImageOnlyMode", $imageOnlyMode)
         $null = $pipelinePS.AddParameter("ImageDestDir", $txtImageDir.Text)
         $null = $pipelinePS.AddParameter("TargetUsb", $targetUsb)
-        $null = $pipelinePS.AddParameter("HwReport", $hwReport)
+        $null = $pipelinePS.AddParameter("HwReport", $script:hwReport)
         $null = $pipelinePS.AddParameter("ModuleDir", $moduleDir)
         $null = $pipelinePS.AddParameter("LogFile", $script:__tapeosLogFile)
         $pipelineAsync = $pipelinePS.BeginInvoke()
@@ -910,9 +1005,41 @@ $btnCreate.Add_Click({
 })
 
 # =============================================================================
-# Iniçio der wîçâh
+# Iniçio der wîçâh: la bentana çe muêttra al îttante y la detêççiôn korre ar arrankâh
 # =============================================================================
-Refresh-UsbList
-Set-TapeOSLanguage -Lang "Andaluz"
-Set-TapeOSStep 0
+function Initialize-TapeOSDetection {
+    if ($script:hwReport) { return }
+    try {
+        $script:hwReport = Get-TapeOSHardwareReport
+        $script:catalog = Get-TapeOSCatalog
+        $script:rec = $script:hwReport.Recommendations
+        $cbRecovery.Items.Clear()
+        foreach ($item in $script:catalog) { [void]$cbRecovery.Items.Add("$($item.Codename) — $($item.DisplayName)") }
+        $cbRecovery.SelectedIndex = 0
+        for ($i = 0; $i -lt $script:catalog.Count; $i++) {
+            if ($script:catalog[$i].Codename -eq $script:rec.RecoveryCodename) { $cbRecovery.SelectedIndex = $i; break }
+        }
+        Refresh-UsbList
+        $cbLang.SelectedIndex = 0
+        Set-TapeOSLanguage -Lang $cbLang.SelectedItem.ToString()
+        Set-TapeOSStep 0
+        Write-TapeOSLog "Deteccion de hardware completada (inicializacion de la GUI)."
+    } catch {
+        Write-TapeOSLog ("ERROR en deteccion (inicializacion): " + $_.Exception.ToString())
+        try { [System.Windows.Forms.MessageBox]::Show("Errôh en la detêççiôn de hardware:`r`n$($_.Exception.Message)", "TapeOS", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error) | Out-Null } catch { }
+    }
+}
+
+Enable-TapeOSDoubleBuffer $form
+$form.Add_Shown({ Initialize-TapeOSDetection })
+# Red de seguridad: si el host no dispara Shown (p. ej. Show() en el arnés de pruebas),
+# un timer la ejecuta en cuanto el bucle de mensajes arranca.
+$initTimer = New-Object System.Windows.Forms.Timer
+$initTimer.Interval = 100
+$initTimer.Add_Tick({
+    Initialize-TapeOSDetection
+    $initTimer.Stop()
+    $initTimer.Dispose()
+})
+$initTimer.Start()
 [void]$form.ShowDialog()
