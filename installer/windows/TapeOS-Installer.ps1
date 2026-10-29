@@ -138,7 +138,8 @@ for ($i = 0; $i -lt 5; $i++) {
     $sl.Text = $stepNamesEPA[$i]
     $sl.Font = New-Object System.Drawing.Font("Segoe UI", 9)
     $sl.ForeColor = [System.Drawing.Color]::FromArgb(120, 120, 120)
-    $sl.Location = New-Object System.Drawing.Point(15 + ($i * 166), 14)
+    $stepX = 15 + ($i * 166)
+    $sl.Location = New-Object System.Drawing.Point($stepX, 14)
     $sl.Size = New-Object System.Drawing.Size(160, 20)
     $stepIndicator.Controls.Add($sl)
     $stepLabels += $sl

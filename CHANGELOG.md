@@ -2,6 +2,11 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.29] — 29-10-2026
+
+### Korreççionêh
+- **Arreglao error "op_Addition" al abrir el wizard (PS 5.1)**: `New-Object System.Drawing.Point(15 + ($i * 166), 14)` no parsea el operador `+` en listas de argumentos de `New-Object` en PowerShell 5.1 (el host del EXE). Se precalcula la coordenada en variable. **El wizard nunca llegaba a mostrar la ventana.** Validado con arnés de arranque completo sin excepciones.
+
 ## [v1.0.0-alpha.28] — 29-10-2026
 
 ### Korreççionêh
