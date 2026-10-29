@@ -2,6 +2,15 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.33] — 29-10-2026
+
+### Korreççionêh
+- **Bentana mâh grande (1000x730)** y layout rekalkulao: kabêçera de 86 px (er çûttitulo yá no çe korta), chip de paçô de 150x36, tarheta de kontenío 952x384, lîtta de lôh 952x92 y botonêh de nabegaçiôn 160x46.
+- **Çûttitulo korto**: «Açîtente de îttalaçiôn · Andalûh» (yá no duplika lô 6 paçô de lô chip).
+- **Franha tricolôh dêntro de la kabêçera**: er tramo blanko yá kontrâtta çobre berde (antê pareçía una línea blanka çuerta).
+- **Fin der rekuadro açûh der çelettôh de idioma**: `TabStop` dehattilitao y foko iniçiâh en «Çiguiente ›».
+- Tipografía eçkalá: títulô 15pt, kuerpô 10pt, bâttonêh 10pt y chip 9.5pt.
+
 ## [v1.0.0-alpha.32] — 29-10-2026
 
 ### Nobedáêh

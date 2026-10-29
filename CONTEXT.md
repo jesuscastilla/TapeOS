@@ -192,3 +192,9 @@ TapeOS/
 - **Tipo:** Bîtta
 - **Kambio:** `EnableVisualStyles` + paleta unifiká + bâttonêh/chips redondeáô + doble buffering en la GUI. La detêççiôn de hardware/katálogo/USB paça al ebento `Shown` kon timer de repôtto (`Initialize-TapeOSDetection`, idempotente) pa ke la bentana apareçca al îttante. Er arnêh de pruebâ rekorta er área de kliênte en la kaptûra y añade diânnôttiko de iniçialiçaçiôn.
 - **Impâtto:** `installer/windows/TapeOS-Installer.ps1`, `tools/wizard-smoke-test.ps1`, `CHANGELOG.md`.
+
+## [29-10-2026] — Bentana 1000x730 y kabêçera korrehíâ
+
+- **Tipo:** Bîtta
+- **Kambio:** La GUI pâhha a `ClientSize` 1000x730 kon layout rekalkulao (kabêçera 86 px, chip 150x36, tarheta 952x384, lîtta 952x92, nabegaçiôn 160x46). Çûttitulo korto, franha tricolôh dêntro de la kabêçera, çelettôh de idioma çîn foko iniçiâh y tipografía mâh grande (títulô 15pt, kuerpô 10pt).
+- **Impâtto:** `installer/windows/TapeOS-Installer.ps1`, `tools/wizard-smoke-test.ps1`, `CHANGELOG.md`.
