@@ -2,6 +2,11 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.28] — 29-10-2026
+
+### Korreççionêh
+- **Callback de progreço a pruebâ de balâ**: lâ âttualiçaçionêh de ETA y barra çe prekalkulan fûera de lô `Invoke` (la UI çolo açîna balorêh çimples) y tô lô callback êttán embueltô en try/catch kon log, eliminando er fallo "op_Addition" ke çerraba la app dêhde er hilo de ebentô de dehkarga.
+
 ## [v1.0.0-alpha.27] — 29-10-2026
 
 ### Nobedáêh

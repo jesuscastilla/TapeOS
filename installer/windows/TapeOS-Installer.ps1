@@ -621,12 +621,15 @@ try {
         $dlSw = [System.Diagnostics.Stopwatch]::StartNew()
         Start-TapeOSDownload -Url $info.Url -DestinationFile $destZip -ProgressCallback {
             param($percent, $received, $total)
-            $sp = if ($dlSw.Elapsed.TotalSeconds -gt 1) { $received / $dlSw.Elapsed.TotalSeconds } else { 0 }
-            $eta = if ($sp -gt 0) { ($total - $received) / $sp } else { -1 }
-            $Form.Invoke([Action]{
-                $ProgressBar.Value = [math]::Min(100, [int]$percent)
-                $LblEta.Text = 'Êttimao: ' + (F-Eta $eta)
-            })
+            try {
+                $sp = if ($dlSw.Elapsed.TotalSeconds -gt 1) { $received / $dlSw.Elapsed.TotalSeconds } else { 0 }
+                $eta = if ($sp -gt 0) { ($total - $received) / $sp } else { -1 }
+                $etaStr = 'Êttimao: ' + (F-Eta $eta)
+                $pctInt = [math]::Min(100, [int]$percent)
+                $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = $etaStr })
+            } catch {
+                Write-PipelineLog ("ERROR callback descarga: " + $_.Exception.ToString())
+            }
         } | Out-Null
     }
 
@@ -643,13 +646,16 @@ try {
         -AdditionalFrameworkOptions @($HwReport.FrameworkPatches | ForEach-Object { $_.Option }) `
         -ProgressCallback {
             param($pct, $msg)
-            $el = $ptSw.Elapsed.TotalSeconds
-            $eta = if ($pct -gt 0) { ($el * (100 - $pct) / $pct) } else { -1 }
-            $Form.Invoke([Action]{
-                $ProgressBar.Value = [int]$pct
-                $LblEta.Text = 'Êttimao: ' + (F-Eta $eta)
-                $LogBox.AppendText("  • $msg`r`n")
-            })
+            try {
+                $el = $ptSw.Elapsed.TotalSeconds
+                $eta = if ($pct -gt 0) { ($el * (100 - $pct) / $pct) } else { -1 }
+                $etaStr = 'Êttimao: ' + (F-Eta $eta)
+                $pctInt = [int]$pct
+                $msgLine = "  • $msg`r`n"
+                $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = $etaStr; $LogBox.AppendText($msgLine) })
+            } catch {
+                Write-PipelineLog ("ERROR callback parcheo: " + $_.Exception.ToString())
+            }
         }
 
     # --- FASE 3: Grabaçiôn u medio ---
@@ -663,9 +669,10 @@ try {
         $cpSw = [System.Diagnostics.Stopwatch]::StartNew()
         Copy-Item -Path $patched.PatchedImagePath -Destination $imgPath -Force
         if (Test-Path $patched.ConfigFile) { Copy-Item -Path $patched.ConfigFile -Destination (Join-Path $destDir "grub.cfg") -Force }
+        $elapsedStr = 'Kompletao en ' + (F-Eta $cpSw.Elapsed.TotalSeconds)
         $Form.Invoke([Action]{
             $ProgressBar.Value = 100
-            $LblEta.Text = 'Kompletao en ' + (F-Eta $cpSw.Elapsed.TotalSeconds)
+            $LblEta.Text = $elapsedStr
             $LogBox.AppendText("`r`n✅ ¡MEDIO DE ÎTTALAÇIÔN KREAO!`r`nArxibo: $imgPath`r`n")
             [System.Windows.Forms.MessageBox]::Show(
                 "¡Medio de îttalaçiôn TapeOS kreao!`r`n`r`nRûtta: $imgPath`r`n`r`nPa uçâl-lo, grábalo en un pendraîh kon Rufû, Win32DiskImager u dêhde TapeOS (modo Live-USB).",
@@ -679,11 +686,14 @@ try {
             -PhysicalDriveId $TargetUsb.DeviceID `
             -ProgressCallback {
                 param($pct, $speedMBs, $written, $total)
-                $eta = if ($speedMBs -gt 0) { (($total - $written) / 1MB) / $speedMBs } else { -1 }
-                $Form.Invoke([Action]{
-                    $ProgressBar.Value = [math]::Min(100, [int]$pct)
-                    $LblEta.Text = 'Êttimao: ' + (F-Eta $eta) + " ($speedMBs MB/s)"
-                })
+                try {
+                    $eta = if ($speedMBs -gt 0) { (($total - $written) / 1MB) / $speedMBs } else { -1 }
+                    $etaStr = 'Êttimao: ' + (F-Eta $eta) + " ($speedMBs MB/s)"
+                    $pctInt = [math]::Min(100, [int]$pct)
+                    $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = $etaStr })
+                } catch {
+                    Write-PipelineLog ("ERROR callback grabaçiôn: " + $_.Exception.ToString())
+                }
             } | Out-Null
         $Form.Invoke([Action]{
             $ProgressBar.Value = 100
