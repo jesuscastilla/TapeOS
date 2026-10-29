@@ -2,6 +2,11 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.19] — 29-10-2026
+
+### Correcciones
+- **Grabación en USB reescrita con `WriteFile` nativo**: en medios extraíbles Windows rechaza `FSCTL_LOCK_VOLUME` (error 6), por lo que la escritura directa se hace ahora con la API `WriteFile` de kernel32 sobre el handle del disco físico (GENERIC_READ|GENERIC_WRITE), el mismo método de dd/Win32DiskImager. Se elimina la dependencia de FileStream para el dispositivo.
+
 ## [v1.0.0-alpha.18] — 29-10-2026
 
 ### Correcciones

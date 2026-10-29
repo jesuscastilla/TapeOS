@@ -12,6 +12,12 @@ Add-Type -MemberDefinition @"
 public static extern IntPtr CreateFile(string lpFileName, uint dwDesiredAccess, uint dwShareMode, IntPtr lpSecurityAttributes, uint dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFile);
 [DllImport("kernel32.dll", SetLastError = true)]
 public static extern bool DeviceIoControl(IntPtr hDevice, uint dwIoControlCode, IntPtr lpInBuffer, uint nInBufferSize, IntPtr lpOutBuffer, uint nOutBufferSize, out uint lpBytesReturned, IntPtr lpOverlapped);
+[DllImport("kernel32.dll", SetLastError = true)]
+public static extern bool WriteFile(IntPtr hFile, [In] byte[] lpBuffer, uint nNumberOfBytesToWrite, out uint lpNumberOfBytesWritten, IntPtr lpOverlapped);
+[DllImport("kernel32.dll", SetLastError = true)]
+public static extern bool FlushFileBuffers(IntPtr hFile);
+[DllImport("kernel32.dll", SetLastError = true)]
+public static extern bool CloseHandle(IntPtr hObject);
 "@ -Name NativeMethods -Namespace TapeOSWin32
 
 function Get-TapeOSUsbDrives {
@@ -145,32 +151,34 @@ function Start-TapeOSUsbFlash {
 
     $sourceFileInfo = New-Object System.IO.FileInfo($ImageFilePath)
     $totalBytes = $sourceFileInfo.Length
-    $bufferSize = 4 * 1024 * 1024 # Buffer de 4 MB
+    $bufferSize = 1MB # Chunk compatible con el marshaling de WriteFile
     $buffer = New-Object byte[] $bufferSize
 
     Write-Host "[TapeOS UsbFlasher] Grabando $([math]::Round($totalBytes / 1GB, 2)) GB en $PhysicalDriveId..." -ForegroundColor Yellow
 
+    # Abrir el dispositivo fisico con la API nativa (GENERIC_READ|GENERIC_WRITE).
+    # En medios extraibles no se puede usar FSCTL_LOCK_VOLUME (error 6), asi que
+    # se escribe directamente con WriteFile, igual que dd/Win32DiskImager.
+    $hFile = [TapeOSWin32.NativeMethods]::CreateFile($PhysicalDriveId, [uint32]3221225472, [uint32]3, [IntPtr]::Zero, [uint32]3, [uint32]0, [IntPtr]::Zero)
+    if ($hFile -eq [IntPtr]::Zero -or $hFile -eq [IntPtr]::MinusOne) {
+        $errCode = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+        throw "No se pudo abrir el dispositivo fisico $PhysicalDriveId (error Win32: $errCode). Cierra el Explorador u otras apps que usen el pendrive e intentalo de nuevo."
+    }
+
     $sourceStream = [System.IO.File]::OpenRead($ImageFilePath)
-    $destStream = $null
 
     try {
-        # Abrir el dispositivo fisico con la API nativa (CreateFile) y envolver
-        # el handle en un FileStream: evita la restriccion de FileStream con
-        # rutas "\\.\" en algunos runtimes (.NET Core / 4.8.1+).
-        $hFile = [TapeOSWin32.NativeMethods]::CreateFile($PhysicalDriveId, 0x40000000, 0x3, [IntPtr]::Zero, 3, 0, [IntPtr]::Zero)
-        if ($hFile -eq [IntPtr]::Zero -or $hFile -eq [IntPtr]::MinusOne) {
-            $errCode = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
-            throw "No se pudo abrir el dispositivo fisico $PhysicalDriveId (error Win32: $errCode). Cierra el Explorador u otras apps que usen el pendrive e intentalo de nuevo."
-        }
-        $safeHandle = New-Object Microsoft.Win32.SafeHandles.SafeFileHandle($hFile, $true)
-        $destStream = New-Object System.IO.FileStream($safeHandle, [System.IO.FileAccess]::Write)
-
         $bytesWritten = 0L
         $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
         $lastReportTime = 0
 
         while (($read = $sourceStream.Read($buffer, 0, $buffer.Length)) -gt 0) {
-            $destStream.Write($buffer, 0, $read)
+            $written = [uint32]0
+            $ok = [TapeOSWin32.NativeMethods]::WriteFile($hFile, $buffer, [uint32]$read, [ref]$written, [IntPtr]::Zero)
+            if (-not $ok -or $written -ne $read) {
+                $err = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+                throw "WriteFile fallo (error Win32 $err): se escribieron $written de $read bytes. Cierra el Explorador y cualquier app que use el pendrive y vuelve a intentarlo."
+            }
             $bytesWritten += $read
 
             $elapsedSec = $stopwatch.Elapsed.TotalSeconds
@@ -185,15 +193,17 @@ function Start-TapeOSUsbFlash {
             }
         }
 
-        $destStream.Flush()
+        $null = [TapeOSWin32.NativeMethods]::FlushFileBuffers($hFile)
         $stopwatch.Stop()
         Write-Host "[TapeOS UsbFlasher] Grabación finalizada con éxito en $([math]::Round($stopwatch.Elapsed.TotalSeconds, 1)) segundos." -ForegroundColor Green
         return $true
     } catch {
-        throw "Error al escribir en el disco físico: $($_.Exception.Message) (si es de acceso denegado, cierra el Explorador de archivos y cualquier app que use el pendrive, y vuelve a intentarlo)"
+        throw "Error al escribir en el disco físico: $($_.Exception.Message)"
     } finally {
         if ($sourceStream) { $sourceStream.Close() }
-        if ($destStream) { $destStream.Close() }
+        if ($hFile -ne [IntPtr]::Zero -and $hFile -ne [IntPtr]::MinusOne) {
+            try { $null = [TapeOSWin32.NativeMethods]::CloseHandle($hFile) } catch { }
+        }
         foreach ($vh in $lockHandles) {
             try { $dummyBytes = [uint32]0; $null = [TapeOSWin32.NativeMethods]::DeviceIoControl($vh, [uint32]0x9001C, [IntPtr]::Zero, [uint32]0, [IntPtr]::Zero, [uint32]0, [ref]$dummyBytes, [IntPtr]::Zero) } catch { }
         }
