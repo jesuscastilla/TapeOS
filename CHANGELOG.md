@@ -2,6 +2,11 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.15] — 29-10-2026
+
+### Correcciones críticas
+- **Cierre al pulsar "Crear" definitivamente corregido**: el pipeline ya no se ejecuta en un hilo del `ThreadPool` (que en hosts STA de PowerShell 5.1 muere con "no runspace available" y cierra el proceso en silencio). Ahora se ejecuta en un **runspace dedicado (STA)** lanzado con `BeginInvoke` y vigilado desde la UI con un `Timer` de WinForms, con errores capturados en `EndInvoke`.
+
 ## [v1.0.0-alpha.14] — 29-10-2026
 
 ### Novedades

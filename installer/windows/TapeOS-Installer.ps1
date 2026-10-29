@@ -456,132 +456,185 @@ $btnFullAuto.Add_Click({
     $btnFullAuto.Enabled = $false
     $btnCheckOnline.Enabled = $false
 
-    # Ejecutar en segundo plano para no congelar la UI
-    [System.Threading.ThreadPool]::QueueUserWorkItem({
-        Write-TapeOSLog "Worker iniciado (hilo de fondo)"
-        try {
-            $selectedStr = $form.Invoke([Func[string]]{ $cbRecovery.SelectedItem.ToString() })
-            $codename = $selectedStr.Split(' ')[0]
+    # Ejecutar el pipeline en un runspace dedicado (STA) sin congelar la UI.
+    # (QueueUserWorkItem falla en hosts STA de PS 5.1: "no runspace available",
+    #  y la excepcion no controlada en el hilo de fondo mata el proceso.)
 
-            # Modo Google Apps elegido en la interfaz
-            $enableGoogleApps = $form.Invoke([Func[bool]]{ $radioGoogleApps.Checked })
-            $form.Invoke([Action]{
-                $logBox.AppendText("Modo Google Apps: $(if ($enableGoogleApps) { 'Activado (Play Store + Android)' } else { 'Desactivado (ChromeOS ligero)' })`r`n")
-            })
+    $pCodename = ($cbRecovery.SelectedItem.ToString()).Split(' ')[0]
+    $pGoogleApps = $radioGoogleApps.Checked
+    $pImageOnly = $radioImageOnly.Checked
+    $pImageDir = $txtImageDir.Text
 
-            # Modo destino: pendrive USB o solo archivo .img
-            $imageOnlyMode = $form.Invoke([Func[bool]]{ $radioImageOnly.Checked })
-            $imageDestDir = $form.Invoke([Func[string]]{ $txtImageDir.Text })
-            Write-TapeOSLog ("Pipeline iniciado: codename=$codename, googleapps=$enableGoogleApps, imageOnly=$imageOnlyMode, destino=$imageDestDir")
+    $pipelineScript = @'
+param(
+    [object]$Form, [object]$LogBox, [object]$ProgressBar, [object]$LblStatus,
+    [string]$Codename, [bool]$EnableGoogleApps, [bool]$ImageOnlyMode,
+    [string]$ImageDestDir, [object]$TargetUsb, [object]$HwReport,
+    [string]$ModuleDir, [string]$LogFile
+)
+$ErrorActionPreference = 'Stop'
+function Write-PipelineLog {
+    param([string]$Msg)
+    try { Add-Content -Path $LogFile -Value ("[{0}] {1}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"), $Msg) -Encoding UTF8 } catch { }
+}
+Import-Module (Join-Path $ModuleDir "RecoveryDownloader.psm1") -Force
+Import-Module (Join-Path $ModuleDir "ImagePatcher.psm1") -Force
+Import-Module (Join-Path $ModuleDir "UsbFlasher.psm1") -Force
 
-            # 1. Obtener URL si no se había consultado
-            $form.Invoke([Action]{ $logBox.AppendText("`r`n[Paso 1/4] Consultando última versión oficial de Google para '$codename'...`r`n") })
-            $info = Get-TapeOSLatestRecoveryInfo -BoardCodename $codename
+try {
+    Write-PipelineLog "Pipeline (runspace) iniciado"
+    Write-PipelineLog ("Pipeline: codename=$Codename, googleplay=$EnableGoogleApps, imageOnly=$ImageOnlyMode, destino=$ImageDestDir")
+    $Form.Invoke([Action]{
+        $LogBox.AppendText("Modo Google Play: $(if ($EnableGoogleApps) { 'Activado (Play Store + Android)' } else { 'Desactivado (APK + Aurora Store)' })`r`n")
+    })
+
+    # 1. Consulta
+    $Form.Invoke([Action]{ $LogBox.AppendText("`r`n[Paso 1/4] Consultando ultima version oficial de Google para '$Codename'...`r`n") })
+    $info = Get-TapeOSLatestRecoveryInfo -BoardCodename $Codename
             
-            # 2. Descargar imagen oficial
-            $downloadDir = "C:\TapeOS\downloads"
-            $destZip = Join-Path $downloadDir $info.FileName
-            $form.Invoke([Action]{ 
-                $lblStatusUrl.Text = "Descargando: $($info.FileName)..."
-                $logBox.AppendText("[Paso 2/4] Descargando imagen desde CDN oficial de Google...`r`n") 
-            })
+    # 2. Descarga
+    $downloadDir = "C:\TapeOS\downloads"
+    $destZip = Join-Path $downloadDir $info.FileName
+    $Form.Invoke([Action]{
+        $LblStatus.Text = "Descargando: $($info.FileName)..."
+        $LogBox.AppendText("[Paso 2/4] Descargando imagen desde CDN oficial de Google...`r`n")
+    })
+    Start-TapeOSDownload -Url $info.Url -DestinationFile $destZip -ProgressCallback {
+        param($percent, $received, $total)
+        $Form.Invoke([Action]{ $ProgressBar.Value = [math]::Min(100, [int]$percent) })
+    } | Out-Null
 
-            Start-TapeOSDownload -Url $info.Url -DestinationFile $destZip -ProgressCallback {
-                param($percent, $received, $total)
-                $form.Invoke([Action]{
-                    $progressBar.Value = [math]::Min(100, [int]$percent)
-                })
-            } | Out-Null
-
-            # 3. Parchear imagen
-            $form.Invoke([Action]{ 
-                $logBox.AppendText("[Paso 3/4] Descomprimiendo y aplicando parches TapeOS (Legacy EFI, swtpm, GPU, Google Apps: $(if ($enableGoogleApps) { 'SÍ' } else { 'NO' }))...`r`n") 
-            })
-            $patched = Invoke-TapeOSImagePatch `
-                -RecoveryZipPath $destZip `
-                -OutputDir "C:\TapeOS\patched" `
-                -EnableIA32 ($hwReport.Firmware.IsIA32UEFI) `
-                -EnableLegacyGPU $true `
-                -EnableSwtpm $true `
-                -EnableGoogleApps $enableGoogleApps `
-                -AdditionalFrameworkOptions @($hwReport.FrameworkPatches | ForEach-Object { $_.Option }) `
-                -ProgressCallback {
-                    param($pct, $msg)
-                    $form.Invoke([Action]{
-                        $progressBar.Value = [int]$pct
-                        $logBox.AppendText("  • $msg`r`n")
-                    })
-                }
-
-            if ($imageOnlyMode) {
-                # 4. Guardar como archivo .img (sin grabar)
-                $form.Invoke([Action]{ 
-                    $logBox.AppendText("[Paso 4/4] Creando medio de instalación (.img) sin grabar...`r`n") 
-                })
-                $destDir = $imageDestDir.Trim()
-                if (-not $destDir) { $destDir = "C:\TapeOS\images" }
-                New-Item -ItemType Directory -Path $destDir -Force | Out-Null
-                $imgName = "TapeOS-$($info.Board)-M$($info.Milestone)-$(if ($enableGoogleApps) { 'googleapps' } else { 'aurora' }).img"
-                $imgPath = Join-Path $destDir $imgName
-                Copy-Item -Path $patched.PatchedImagePath -Destination $imgPath -Force
-                if (Test-Path $patched.ConfigFile) { Copy-Item -Path $patched.ConfigFile -Destination (Join-Path $destDir "grub.cfg") -Force }
-
-                $form.Invoke([Action]{
-                    $progressBar.Value = 100
-                    $logBox.AppendText("`r`n✅ ¡MEDIO DE INSTALACIÓN CREADO!`r`nArchivo: $imgPath`r`nGrábalo cuando quieras con Rufus, Win32DiskImager o TapeOS (modo Live-USB).`r`n")
-                    [System.Windows.Forms.MessageBox]::Show(
-                        "¡Medio de instalación TapeOS creado!`r`n`r`nRuta: $imgPath`r`n`r`nPara usarlo, grábalo en un pendrive con Rufus, Win32DiskImager o desde TapeOS (modo Live-USB).",
-                        "Medio de instalación creado",
-                        [System.Windows.Forms.MessageBoxButtons]::OK,
-                        [System.Windows.Forms.MessageBoxIcon]::Information
-                    )
-                })
-            } else {
-                # 4. Grabar en pendrive USB
-                $form.Invoke([Action]{ 
-                    $logBox.AppendText("[Paso 4/4] Grabando imagen parcheada directamente en $($targetUsb.DeviceID)...`r`n") 
-                })
-                Start-TapeOSUsbFlash `
-                    -ImageFilePath $patched.PatchedImagePath `
-                    -PhysicalDriveId $targetUsb.DeviceID `
-                    -ProgressCallback {
-                        param($pct, $speedMBs, $written, $total)
-                        $form.Invoke([Action]{
-                            $progressBar.Value = [math]::Min(100, [int]$pct)
-                            $lblStatusUrl.Text = "Grabando en USB: $pct% ($speedMBs MB/s)"
-                        })
-                    } | Out-Null
-
-                $form.Invoke([Action]{
-                    $progressBar.Value = 100
-                    $logBox.AppendText("`r`n✅ ¡PROCESO COMPLETADO EXITOSAMENTE!`r`nEl pendrive está listo para arrancar en cualquier equipo con EFI.`r`n")
-                    [System.Windows.Forms.MessageBox]::Show(
-                        "¡TapeOS ha sido grabado exitosamente en tu pendrive!`r`n`r`nYa puedes reiniciar el equipo y arrancar desde el pendrive USB (tecla F12/F11/Esc en el logo).",
-                        "Grabación Completada",
-                        [System.Windows.Forms.MessageBoxButtons]::OK,
-                        [System.Windows.Forms.MessageBoxIcon]::Information
-                    )
-                })
-            }
-        } catch {
-            Write-TapeOSLog ("ERROR pipeline: " + $_.Exception.ToString())
-            $err = $_.Exception.Message
-            $form.Invoke([Action]{
-                $logBox.AppendText("❌ ERROR: $err`r`n")
-                [System.Windows.Forms.MessageBox]::Show(
-                    "Ocurrió un error en el proceso:`r`n$err",
-                    "Error",
-                    [System.Windows.Forms.MessageBoxButtons]::OK,
-                    [System.Windows.Forms.MessageBoxIcon]::Error
-                )
-            })
-        } finally {
-            $form.Invoke([Action]{
-                $btnFullAuto.Enabled = $true
-                $btnCheckOnline.Enabled = $true
+    # 3. Parcheo
+    $Form.Invoke([Action]{
+        $LogBox.AppendText("[Paso 3/4] Descomprimiendo y aplicando parches TapeOS (Legacy EFI, swtpm, GPU, Google Play: $(if ($EnableGoogleApps) { 'SÍ' } else { 'NO (APK/Aurora)' }))...`r`n")
+    })
+    $patched = Invoke-TapeOSImagePatch `
+        -RecoveryZipPath $destZip `
+        -OutputDir "C:\TapeOS\patched" `
+        -EnableIA32 ($HwReport.Firmware.IsIA32UEFI) `
+        -EnableLegacyGPU $true `
+        -EnableSwtpm $true `
+        -EnableGoogleApps $EnableGoogleApps `
+        -AdditionalFrameworkOptions @($HwReport.FrameworkPatches | ForEach-Object { $_.Option }) `
+        -ProgressCallback {
+            param($pct, $msg)
+            $Form.Invoke([Action]{
+                $ProgressBar.Value = [int]$pct
+                $LogBox.AppendText("  • $msg`r`n")
             })
         }
+
+    # 4. Medio de instalacion (.img)
+    if ($ImageOnlyMode) {
+        $Form.Invoke([Action]{ $LogBox.AppendText("[Paso 4/4] Creando medio de instalacion (.img) sin grabar...`r`n") })
+        $destDir = $ImageDestDir.Trim()
+        if (-not $destDir) { $destDir = "C:\TapeOS\images" }
+        New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+        $imgName = "TapeOS-$($info.Board)-M$($info.Milestone)-$(if ($EnableGoogleApps) { 'googleapps' } else { 'aurora' }).img"
+        $imgPath = Join-Path $destDir $imgName
+        Copy-Item -Path $patched.PatchedImagePath -Destination $imgPath -Force
+        if (Test-Path $patched.ConfigFile) { Copy-Item -Path $patched.ConfigFile -Destination (Join-Path $destDir "grub.cfg") -Force }
+        $Form.Invoke([Action]{
+            $ProgressBar.Value = 100
+            $LogBox.AppendText("`r`n✅ ¡MEDIO DE INSTALACIÓN CREADO!`r`nArchivo: $imgPath`r`nGrábalo cuando quieras con Rufus, Win32DiskImager o TapeOS (modo Live-USB).`r`n")
+            [System.Windows.Forms.MessageBox]::Show(
+                "¡Medio de instalación TapeOS creado!`r`n`r`nRuta: $imgPath`r`n`r`nPara usarlo, grábalo en un pendrive con Rufus, Win32DiskImager o desde TapeOS (modo Live-USB).",
+                "Medio de instalación creado",
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Information
+            ) | Out-Null
+        })
+    } else {
+        # 4. Grabacion en pendrive USB
+        $Form.Invoke([Action]{ $LogBox.AppendText("[Paso 4/4] Grabando imagen parcheada directamente en $($TargetUsb.DeviceID)...`r`n") })
+        Start-TapeOSUsbFlash `
+            -ImageFilePath $patched.PatchedImagePath `
+            -PhysicalDriveId $TargetUsb.DeviceID `
+            -ProgressCallback {
+                param($pct, $speedMBs, $written, $total)
+                $Form.Invoke([Action]{
+                    $ProgressBar.Value = [math]::Min(100, [int]$pct)
+                    $LblStatus.Text = "Grabando en USB: $pct% ($speedMBs MB/s)"
+                })
+            } | Out-Null
+        $Form.Invoke([Action]{
+            $ProgressBar.Value = 100
+            $LogBox.AppendText("`r`n✅ ¡PROCESO COMPLETADO EXITOSAMENTE!`r`nEl pendrive está listo para arrancar en cualquier equipo con EFI.`r`n")
+            [System.Windows.Forms.MessageBox]::Show(
+                "¡TapeOS ha sido grabado exitosamente en tu pendrive!`r`n`r`nYa puedes reiniciar el equipo y arrancar desde el pendrive USB (tecla F12/F11/Esc en el logo).",
+                "Grabación Completada",
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Information
+            ) | Out-Null
+        })
+    }
+    Write-PipelineLog "Pipeline finalizado con exito."
+} catch {
+    Write-PipelineLog ("ERROR pipeline: " + $_.Exception.ToString())
+    try {
+        $Form.Invoke([Action]{
+            $LogBox.AppendText("❌ ERROR: $($_.Exception.Message)`r`n")
+            [System.Windows.Forms.MessageBox]::Show(
+                "Ocurrió un error en el proceso:`r`n$($_.Exception.Message)",
+                "Error",
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Error
+            ) | Out-Null
+        })
+    } catch { }
+}
+'@
+
+    Write-TapeOSLog "Creando runspace dedicado para el pipeline..."
+    $pipelineRunspace = [runspacefactory]::CreateRunspace()
+    $pipelineRunspace.ApartmentState = "STA"
+    $pipelineRunspace.Open()
+    $pipelinePS = [powershell]::Create()
+    $pipelinePS.Runspace = $pipelineRunspace
+    $null = $pipelinePS.AddScript($pipelineScript)
+    $null = $pipelinePS.AddParameter("Form", $form)
+    $null = $pipelinePS.AddParameter("LogBox", $logBox)
+    $null = $pipelinePS.AddParameter("ProgressBar", $progressBar)
+    $null = $pipelinePS.AddParameter("LblStatus", $lblStatusUrl)
+    $null = $pipelinePS.AddParameter("Codename", $pCodename)
+    $null = $pipelinePS.AddParameter("EnableGoogleApps", $pGoogleApps)
+    $null = $pipelinePS.AddParameter("ImageOnlyMode", $pImageOnly)
+    $null = $pipelinePS.AddParameter("ImageDestDir", $pImageDir)
+    $null = $pipelinePS.AddParameter("TargetUsb", $targetUsb)
+    $null = $pipelinePS.AddParameter("HwReport", $hwReport)
+    $null = $pipelinePS.AddParameter("ModuleDir", $moduleDir)
+    $null = $pipelinePS.AddParameter("LogFile", $script:__tapeosLogFile)
+    $pipelineAsync = $pipelinePS.BeginInvoke()
+
+    # Vigilar la finalizacion desde la UI sin congelarla
+    $watchTimer = New-Object System.Windows.Forms.Timer
+    $watchTimer.Interval = 1000
+    $watchTimer.Add_Tick({
+        if ($pipelineAsync.IsCompleted) {
+            $watchTimer.Stop()
+            $watchTimer.Dispose()
+            try {
+                $null = $pipelinePS.EndInvoke($pipelineAsync)
+                Write-TapeOSLog "Pipeline completado sin errores."
+            } catch {
+                Write-TapeOSLog ("ERROR al finalizar pipeline: " + $_.Exception.ToString())
+                try {
+                    [System.Windows.Forms.MessageBox]::Show(
+                        "Error en el proceso:`r`n$($_.Exception.Message)",
+                        "TapeOS",
+                        [System.Windows.Forms.MessageBoxButtons]::OK,
+                        [System.Windows.Forms.MessageBoxIcon]::Error
+                    ) | Out-Null
+                } catch { }
+            } finally {
+                $pipelinePS.Dispose()
+                $pipelineRunspace.Dispose()
+                $btnFullAuto.Enabled = $true
+                $btnCheckOnline.Enabled = $true
+            }
+        }
     })
+    $watchTimer.Start()
     } catch {
         Write-TapeOSLog ("ERROR en botón Crear: " + $_)
         try {
