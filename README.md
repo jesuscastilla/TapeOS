@@ -23,7 +23,7 @@
 
 </div>
 
-> **Idioma / Lengua:** [Andalûh (EPA)](README.md) · [Êppanyôh](README.es.md)
+> **Idioma / Lengua:** [Andalûh (EPA)](README.md) · [Español](README.es.md)
 
 ---
 
