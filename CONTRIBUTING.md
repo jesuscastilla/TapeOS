@@ -1,6 +1,6 @@
 # Guía de Kontribuçiôn a TapeOS
 
-¡Agradeçemô tu intêh en kolaborâh kon **TapeOS**! Er ôhhetibo êh kreâh la plataforma mâh uniberçâh, aççeçible y fâçîh de uçâh pa ehekutâh ChromeOS en kualkiêh ekîpo x86_64, dêhde dippoçitivô modernô de ûrtima heneraçiôn âtta ordenadorêh antiguô rehkâtáô der dehûço.
+¡Agradeçemô tu intêh en kolaborâh kon **TapeOS**! Er ôhhetibo êh kreâh la plataforma mâh uniberçâh, aççeçible y fâçîh de uçâh pa ehekutâh TapeOS en kualkiêh ekîpo x86_64, dêhde dippoçitivô modernô de ûrtima heneraçiôn âtta ordenadorêh antiguô rehkâtáô der dehûço.
 
 ---
 
