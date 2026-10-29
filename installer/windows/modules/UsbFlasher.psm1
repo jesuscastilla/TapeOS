@@ -10,6 +10,8 @@
 Add-Type -MemberDefinition @"
 [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 public static extern IntPtr CreateFile(string lpFileName, uint dwDesiredAccess, uint dwShareMode, IntPtr lpSecurityAttributes, uint dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFile);
+[DllImport("kernel32.dll", SetLastError = true)]
+public static extern bool DeviceIoControl(IntPtr hDevice, uint dwIoControlCode, IntPtr lpInBuffer, uint nInBufferSize, IntPtr lpOutBuffer, uint nOutBufferSize, out uint lpBytesReturned, IntPtr lpOverlapped);
 "@ -Name NativeMethods -Namespace TapeOSWin32
 
 function Get-TapeOSUsbDrives {
@@ -117,16 +119,28 @@ function Start-TapeOSUsbFlash {
 
     Write-Host "[TapeOS UsbFlasher] Preparando escritura en $PhysicalDriveId..." -ForegroundColor Cyan
 
-    # Desmontar volúmenes lógicos del disco para evitar bloqueos de Windows
+    # Bloquear y desmontar los volumenes del disco para evitar bloqueos de Windows
+    # (FSCTL_LOCK_VOLUME + FSCTL_DISMOUNT_VOLUME, como hacen las herramientas de imagen)
+    $lockHandles = @()
     try {
         $parts = Get-Partition -DiskNumber $targetNumber -ErrorAction SilentlyContinue
         foreach ($p in $parts) {
             if ($p.DriveLetter) {
-                Write-Host "[TapeOS UsbFlasher] Bloqueando y desmontando unidad $($p.DriveLetter):..." -ForegroundColor Gray
+                $volPath = "\\.\" + $p.DriveLetter + ":"
+                Write-Host "[TapeOS UsbFlasher] Bloqueando y desmontando la unidad $($p.DriveLetter):..." -ForegroundColor Gray
+                $vh = [TapeOSWin32.NativeMethods]::CreateFile($volPath, [uint32]0xC0000000, [uint32]0x7, [IntPtr]::Zero, [uint32]3, [uint32]0, [IntPtr]::Zero)
+                if ($vh -eq [IntPtr]::MinusOne -or $vh -eq [IntPtr]::Zero) {
+                    Write-Warning "No se pudo abrir el volumen $volPath (error $([System.Runtime.InteropServices.Marshal]::GetLastWin32Error())). Cierra el Explorador y las apps que usen esa unidad."
+                    continue
+                }
+                $bytesRet = [uint32]0
+                $null = [TapeOSWin32.NativeMethods]::DeviceIoControl($vh, [uint32]0x90018, [IntPtr]::Zero, [uint32]0, [IntPtr]::Zero, [uint32]0, [ref]$bytesRet, [IntPtr]::Zero)
+                $null = [TapeOSWin32.NativeMethods]::DeviceIoControl($vh, [uint32]0x90020, [IntPtr]::Zero, [uint32]0, [IntPtr]::Zero, [uint32]0, [ref]$bytesRet, [IntPtr]::Zero)
+                $lockHandles += $vh
             }
         }
     } catch {
-        # Continuar si falla la consulta
+        Write-Warning "No se pudieron bloquear los volumenes: $_"
     }
 
     $sourceFileInfo = New-Object System.IO.FileInfo($ImageFilePath)
@@ -176,10 +190,13 @@ function Start-TapeOSUsbFlash {
         Write-Host "[TapeOS UsbFlasher] Grabación finalizada con éxito en $([math]::Round($stopwatch.Elapsed.TotalSeconds, 1)) segundos." -ForegroundColor Green
         return $true
     } catch {
-        throw "Error al escribir en el disco físico: $($_.Exception.Message)"
+        throw "Error al escribir en el disco físico: $($_.Exception.Message) (si es de acceso denegado, cierra el Explorador de archivos y cualquier app que use el pendrive, y vuelve a intentarlo)"
     } finally {
         if ($sourceStream) { $sourceStream.Close() }
         if ($destStream) { $destStream.Close() }
+        foreach ($vh in $lockHandles) {
+            try { $dummyBytes = [uint32]0; $null = [TapeOSWin32.NativeMethods]::DeviceIoControl($vh, [uint32]0x9001C, [IntPtr]::Zero, [uint32]0, [IntPtr]::Zero, [uint32]0, [ref]$dummyBytes, [IntPtr]::Zero) } catch { }
+        }
     }
 }
 

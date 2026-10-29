@@ -2,6 +2,11 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.18] — 29-10-2026
+
+### Correcciones
+- **Escritura en disco físico con volúmenes montados**: antes de grabar se **bloquean y desmontan los volúmenes** del pendrive (`FSCTL_LOCK_VOLUME` + `FSCTL_DISMOUNT_VOLUME` vía `DeviceIoControl`), eliminando el "Acceso denegado" al escribir sobre un volumen montado. Al terminar se desbloquean los volúmenes.
+
 ## [v1.0.0-alpha.17] — 29-10-2026
 
 ### Correcciones
