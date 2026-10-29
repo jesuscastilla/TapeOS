@@ -2,9 +2,9 @@
 
 <img src="tools/assets/diplotech-logo.png" alt="DiploTech" width="180" />
 
-# 📼 TapeOS
-### Çûite Âttomatiçá de ChromeOS pa PC (Ediçiôn Moderna & Legacy EFI)
-**Detêtta tu hardware, dehkarga la ûrtima berçiôn ofiçiâh de ChromeOS, aplika parcheh retro y la graba dirêttamente en tu pendraîh en 1 çolo klik.**
+# 🟩⬜🟩 TapeOS
+### Çîttema operatibo baçao en XromiumÔ, con identidá andalûh y ôççión de îttalaçión çin çerbiçiô de terçerô.(Ediçiôn Moderna & Legacy EFI)
+**Detêtta tu hardware, dehkarga la ûrtima berçiôn ofiçiâh de ChromeOS, aplika parcheh retro y la graba dirêttamente en tu pendraîh.**
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-blue.svg)](LICENSE)
 [![Platform: Windows / Linux](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-brightgreen.svg)]()
@@ -151,7 +151,7 @@ TapeOS naçe der proyêtto **[Brunch](https://github.com/sebanc/brunch)** de **S
 ## ✅ TODO / Próççimô Paçô
 
 - [ ] **Mâh identidá andalûça en er çîttema**: bandera, pîttâ y erramientâ de bîenbenía; çonidô, fondo de pantaya y tema andalûh en ChromeOS; çelebraçionêh (Día de Andalûçia, Feriâ) y guiñô a la kûttûra (tapâh, flamenko, kaí).
-- [ ] **Dokumentaçiôn de âttualiçaçionêh**: añadîh un dokumento (`docs/UPDATES.md`) kon tô lâ poçibilidáêh de âttualiçaçiôn (kanal êttable/beta/dev, AUE, kernel legacy vs moderno, parcheh) pa ebaluâh hunto kálêh aplikâh.
+- [ ] **Dokumentaçiôn de âttualiçaçionêh**: añadîh un dokumento (`docs/UPDATES.md`) kon tô lâ poçibilidáêh de âttualiçaçiôn (kanal êttable/beta/dev, AUE, kernel legacy vs moderno, parcheh).
 - [ ] **Eliminâh referençiâ a Google dentro der çîttema**: êppeçiâmente en la berçiôn çîn Googlêh Play (çerbiçiô, kuentâ, çînkronîçaçiôn, pantayâ y menúh), manteniendo çolo lo neçeçario pa er funçionamiento de ChromeOS.
 
 ---
