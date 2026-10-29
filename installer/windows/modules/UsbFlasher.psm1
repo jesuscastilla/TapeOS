@@ -6,6 +6,12 @@
     y graba directamente la imagen de TapeOS sector a sector con informe de progreso.
 #>
 
+# API nativa para abrir dispositivos fisicos (\\.\PhysicalDriveN) en cualquier runtime
+Add-Type -MemberDefinition @"
+[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+public static extern IntPtr CreateFile(string lpFileName, uint dwDesiredAccess, uint dwShareMode, IntPtr lpSecurityAttributes, uint dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFile);
+"@ -Name NativeMethods -Namespace TapeOSWin32
+
 function Get-TapeOSUsbDrives {
     [CmdletBinding()]
     param()
@@ -134,13 +140,16 @@ function Start-TapeOSUsbFlash {
     $destStream = $null
 
     try {
-        # Abrir el dispositivo físico directamente con FileAccess.Write
-        $destStream = New-Object System.IO.FileStream(
-            $PhysicalDriveId,
-            [System.IO.FileMode]::Open,
-            [System.IO.FileAccess]::Write,
-            [System.IO.FileShare]::ReadWrite
-        )
+        # Abrir el dispositivo fisico con la API nativa (CreateFile) y envolver
+        # el handle en un FileStream: evita la restriccion de FileStream con
+        # rutas "\\.\" en algunos runtimes (.NET Core / 4.8.1+).
+        $hFile = [TapeOSWin32.NativeMethods]::CreateFile($PhysicalDriveId, 0x40000000, 0x3, [IntPtr]::Zero, 3, 0, [IntPtr]::Zero)
+        if ($hFile -eq [IntPtr]::Zero -or $hFile -eq [IntPtr]::MinusOne) {
+            $errCode = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+            throw "No se pudo abrir el dispositivo fisico $PhysicalDriveId (error Win32: $errCode). Cierra el Explorador u otras apps que usen el pendrive e intentalo de nuevo."
+        }
+        $safeHandle = New-Object Microsoft.Win32.SafeHandles.SafeFileHandle($hFile, $true)
+        $destStream = New-Object System.IO.FileStream($safeHandle, [System.IO.FileAccess]::Write)
 
         $bytesWritten = 0L
         $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()

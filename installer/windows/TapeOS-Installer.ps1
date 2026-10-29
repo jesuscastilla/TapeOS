@@ -492,17 +492,22 @@ try {
     $Form.Invoke([Action]{ $LogBox.AppendText("`r`n[Paso 1/4] Consultando ultima version oficial de Google para '$Codename'...`r`n") })
     $info = Get-TapeOSLatestRecoveryInfo -BoardCodename $Codename
             
-    # 2. Descarga
+    # 2. Descarga (reutiliza un ZIP previo completo si existe)
     $downloadDir = "C:\TapeOS\downloads"
     $destZip = Join-Path $downloadDir $info.FileName
-    $Form.Invoke([Action]{
-        $LblStatus.Text = "Descargando: $($info.FileName)..."
-        $LogBox.AppendText("[Paso 2/4] Descargando imagen desde CDN oficial de Google...`r`n")
-    })
-    Start-TapeOSDownload -Url $info.Url -DestinationFile $destZip -ProgressCallback {
-        param($percent, $received, $total)
-        $Form.Invoke([Action]{ $ProgressBar.Value = [math]::Min(100, [int]$percent) })
-    } | Out-Null
+    if ((Test-Path $destZip) -and (Get-Item $destZip).Length -gt 100MB) {
+        Write-PipelineLog "ZIP previo encontrado; se reutiliza: $destZip"
+        $Form.Invoke([Action]{ $LogBox.AppendText("[Paso 2/4] Descarga previa encontrada; se reutiliza.`r`n") })
+    } else {
+        $Form.Invoke([Action]{
+            $LblStatus.Text = "Descargando: $($info.FileName)..."
+            $LogBox.AppendText("[Paso 2/4] Descargando imagen desde CDN oficial de Google...`r`n")
+        })
+        Start-TapeOSDownload -Url $info.Url -DestinationFile $destZip -ProgressCallback {
+            param($percent, $received, $total)
+            $Form.Invoke([Action]{ $ProgressBar.Value = [math]::Min(100, [int]$percent) })
+        } | Out-Null
+    }
 
     # 3. Parcheo
     $Form.Invoke([Action]{

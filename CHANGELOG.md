@@ -2,6 +2,12 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.17] — 29-10-2026
+
+### Correcciones
+- **Grabación en disco físico corregida**: la apertura de `\\.\PhysicalDriveN` ahora usa la API nativa **CreateFile** (kernel32) y envuelve el handle en un `FileStream`, evitando la restricción que impide abrir dispositivos Win32 con rutas `\\.\` en ciertos runtimes.
+- **Reutilización de descargas**: si ya existe el ZIP oficial completo de una ejecución anterior, no se vuelve a descargar.
+
 ## [v1.0.0-alpha.16] — 29-10-2026
 
 ### Correcciones
