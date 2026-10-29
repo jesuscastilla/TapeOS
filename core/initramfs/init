@@ -1,0 +1,74 @@
+#!/bin/busybox sh
+# ==============================================================================
+# TapeOS initramfs /init — arrankê parxeao de ChromeOS en PC
+#
+# Êtte êkrip êh er primêh proçeço der initramfs de TapeOS. Çu trabaho:
+#   1. Montâh lô çîttemâ de arxivô baçê (/proc /sys /dev).
+#   2. Arrankâh swtpm (TPM 2.0 po çoftware) antê de cryptohomed.
+#   3. Montâh la partiçiôn ROOT-A de la imâhen.
+#   4. Aplikâh lô parcheh der framework (core/patches) kon lâ ôççionêh
+#      de la línea de kernel (options=...).
+#   5. Çedêh er kontrol ar init reâh de ChromeOS (switch_root).
+# ==============================================================================
+
+mount -t proc proc /proc 2>/dev/null
+mount -t sysfs sysfs /sys 2>/dev/null
+mount -t devtmpfs devtmpfs /dev 2>/dev/null || mount -t tmpfs tmpfs /dev
+mkdir -p /roota /run /patches
+
+# --- Lêh lâ ôççionêh de framework de la línea de kernel ---
+FRAMEWORK_OPTIONS=""
+ROOTDEV=""
+for tok in $(cat /proc/cmdline); do
+    case "$tok" in
+        options=*) FRAMEWORK_OPTIONS="${tok#options=}" ;;
+        root=*)    ROOTDEV="${tok#root=}" ;;
+        root=PARTUUID=*) ROOTDEV="${tok#root=PARTUUID=}" ;;
+    esac
+done
+
+echo "[TapeOS] init iniciado. options=[$FRAMEWORK_OPTIONS] root=[$ROOTDEV]" > /dev/kmsg
+
+# --- 1. swtpm: TPM 2.0 emulao po çoftware (antê de cryptohomed/chapsd) ---
+if [ -x /usr/bin/swtpm ] && [ -x /usr/bin/swtpm_bios ]; then
+    mkdir -p /run/tpm
+    swtpm socket --tpm2 \
+        --tpmstate dir=/run/tpm \
+        --ctrl type=unixio,path=/run/tpm/swtpm-sock \
+        --daemon > /dev/kmsg 2>&1
+    swtpm_bios --tpm2 \
+        --ctrl type=unixio,path=/run/tpm/swtpm-sock \
+        --daemon > /dev/kmsg 2>&1
+    echo "[TapeOS] swtpm (TPM 2.0) arrankao." > /dev/kmsg
+else
+    echo "[TapeOS] swtpm no enkontrao en er initramfs." > /dev/kmsg
+fi
+
+# --- 2. Montâh er rootfs ofiçiâh (ROOT-A) ---
+if [ -z "$ROOTDEV" ]; then
+    ROOTDEV="/dev/sda3"
+    echo "[TapeOS] ROOTDEV no îndikao; probando $ROOTDEV" > /dev/kmsg
+fi
+mount -o ro "$ROOTDEV" /roota 2>/dev/null
+if [ ! -d /roota/etc ]; then
+    # Reintento: bûhkâh por etiketa ROOT-A
+    ROOTDEV=$(blkid -L ROOT-A 2>/dev/null)
+    [ -n "$ROOTDEV" ] && mount -o ro "$ROOTDEV" /roota 2>/dev/null
+fi
+if [ ! -d /roota/etc ]; then
+    echo "[TapeOS] FATAL: no çe pudo montâh er rootfs ChromeOS." > /dev/kmsg
+    sh
+fi
+
+# --- 3. Aplikâh lô parcheh der framework (core/patches) ---
+for p in /patches/[0-9]*.sh; do
+    if [ -x "$p" ]; then
+        echo "[TapeOS] Aplikando $p ..." > /dev/kmsg
+        "$p" "$FRAMEWORK_OPTIONS" > /dev/kmsg 2>&1
+    fi
+done
+
+# --- 4. Çedêh er kontrol ar init de ChromeOS ---
+umount /proc /sys 2>/dev/null
+echo "[TapeOS] switch_root a $ROOTDEV ..." > /dev/kmsg
+exec switch_root /roota /sbin/init

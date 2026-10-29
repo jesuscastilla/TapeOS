@@ -2,6 +2,11 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.24] — 29-10-2026
+
+### Nobedáêh
+- **Andamiahe der framework kompletá**: `core/build/build-framework.sh` (kernêh + initramfs + ROOTC + yabê vboot + pakete tar.gz), `core/initramfs/init` (arranka swtpm, monta ROOT-A y aplika lô parcheh), y `core/build/README.md` en EPA kon lâ îttrûççionêh. Lîtta pa kompilâh en la próççima çeçiôn.
+
 ## [v1.0.0-alpha.23] — 29-10-2026
 
 ### Nobedáêh

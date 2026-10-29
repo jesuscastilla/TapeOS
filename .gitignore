@@ -13,8 +13,10 @@ Desktop.ini
 
 # Build outputs and distributions
 out/
-dist/
-build/
+/dist/
+/build/
+kernels/
+work/
 *.tmp
 *.log
 

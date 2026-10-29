@@ -7,6 +7,12 @@
 > en 1 çolo klik: Detêççiôn de hardware -> Konhûtta y dehkarga ofiçiâh dêhde Google CDN -> Parcheo retro -> Grabaçiôn dirêtta en pendraîh USB.
 > Fûera de `G:\GITHUB`: proyêtto independiente en `G:\TapeOS`.
 
+## [29-10-2026] — Andamiahe der framework de arrankê
+
+- **Tipo:** Arkîtêttûra
+- **Kambio:** `core/build/build-framework.sh` (konttruye kernêh, initramfs, ROOTC y yabê vboot; empaketa tar.gz), `core/initramfs/init` (swtpm + montahe de ROOT-A + parcheh) y `core/build/README.md` en EPA. Lîtta pa kompilâh.
+- **Impâtto:** `core/build/`, `core/initramfs/`, `.gitignore`.
+
 ---
 
 ## Glosario
