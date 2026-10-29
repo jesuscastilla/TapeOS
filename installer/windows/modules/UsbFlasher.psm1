@@ -11,28 +11,52 @@ function Get-TapeOSUsbDrives {
     param()
 
     $drives = @()
+    $usbNumbers = @()
 
     try {
-        # Obtener discos con BusType USB que NO sean de sistema ni de arranque
-        $usbDisks = Get-Disk | Where-Object { 
-            ($_.BusType -eq 'USB' -or $_.Location -match 'USB') -and 
-            -not $_.IsSystem -and 
-            -not $_.IsBoot 
+        # Fuente 1: BusType USB (Get-Disk)
+        $usbNumbers += @(Get-Disk | Where-Object { $_.BusType -eq 'USB' } | Select-Object -ExpandProperty Number)
+
+        # Fuente 2: MediaType "External" (adaptadores SSD/HDD-USB con UASP se
+        #           reportan como SCSI con medio externo, no como USB)
+        $usbNumbers += @(Get-CimInstance Win32_DiskDrive | Where-Object { $_.MediaType -match 'External' } | ForEach-Object { [int]$_.Index })
+
+        # Fuente 3: recorrer el arbol PnP hasta encontrar una raiz USB
+        #           (cubre puentes USB-SATA/NVMe reportados como SCSI o NVMe)
+        $pnpDisks = Get-PnpDevice -Class DiskDrive -PresentOnly -ErrorAction SilentlyContinue
+        foreach ($dev in $pnpDisks) {
+            $cur = $dev
+            for ($i = 0; $i -lt 8 -and $cur; $i++) {
+                if ($cur.InstanceId -match '^USB') {
+                    $d = Get-CimInstance Win32_DiskDrive -ErrorAction SilentlyContinue | Where-Object { $_.PNPDeviceID -eq $dev.InstanceId }
+                    if ($d) { $usbNumbers += [int]$d.Index }
+                    break
+                }
+                $parent = (Get-PnpDeviceProperty -InstanceId $cur.InstanceId -KeyName 'DEVPKEY_Device_Parent' -ErrorAction SilentlyContinue).Data
+                if (-not $parent) { break }
+                $cur = Get-PnpDevice -InstanceId $parent -ErrorAction SilentlyContinue
+            }
         }
 
-        foreach ($disk in $usbDisks) {
-            # Obtener particiones y letras asociadas
-            $partitions = Get-Partition -DiskNumber $disk.Number -ErrorAction SilentlyContinue
+        $usbNumbers = @($usbNumbers | Sort-Object -Unique)
+
+        foreach ($number in $usbNumbers) {
+            $disk = Get-Disk -Number $number -ErrorAction SilentlyContinue
+            if (-not $disk) { continue }
+            # Seguridad: nunca ofrecer discos de sistema o arranque
+            if ($disk.IsSystem -or $disk.IsBoot) { continue }
+
+            $partitions = Get-Partition -DiskNumber $number -ErrorAction SilentlyContinue
             $letters = ($partitions | Where-Object { $_.DriveLetter } | ForEach-Object { "$($_.DriveLetter):" }) -join ", "
             if (-not $letters) { $letters = "Sin partición asignada" }
 
             $drives += [PSCustomObject]@{
-                DiskNumber = $disk.Number
-                DeviceID = "\\.\PhysicalDrive$($disk.Number)"
+                DiskNumber   = $number
+                DeviceID     = "\\.\PhysicalDrive$number"
                 FriendlyName = $disk.FriendlyName
-                SizeGB = [math]::Round(($disk.Size / 1GB), 2)
+                SizeGB       = [math]::Round(($disk.Size / 1GB), 2)
                 DriveLetters = $letters
-                DisplayName = "Disco $($disk.Number): $($disk.FriendlyName) ($([math]::Round(($disk.Size / 1GB), 1)) GB) [$letters]"
+                DisplayName  = "Disco $number`: $($disk.FriendlyName) ($([math]::Round(($disk.Size / 1GB), 1)) GB) [$letters]"
             }
         }
     } catch {
@@ -65,6 +89,12 @@ function Start-TapeOSUsbFlash {
         if ($checkDisk.IsSystem -or $checkDisk.IsBoot) {
             throw "¡SEGURIDAD! El disco seleccionado ($PhysicalDriveId) es un disco del sistema operativo Windows. Operación abortada."
         }
+    }
+
+    # Seguridad adicional: el destino debe estar en la lista de dispositivos USB detectados
+    $allowedTargets = @(Get-TapeOSUsbDrives | Select-Object -ExpandProperty DeviceID)
+    if ($allowedTargets -notcontains $PhysicalDriveId) {
+        throw "¡SEGURIDAD! El destino $PhysicalDriveId no está en la lista de dispositivos USB detectados. Operación abortada."
     }
 
     Write-Host "[TapeOS UsbFlasher] Preparando escritura en $PhysicalDriveId..." -ForegroundColor Cyan
