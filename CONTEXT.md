@@ -34,7 +34,7 @@
      - `RecoveryDownloader.psm1`: Consulta la API de Google Chromium Dash y descarga directamente el archivo `.bin.zip` más reciente con barra de progreso.
      - `ImagePatcher.psm1`: Descomprime la imagen y aplica el esquema de cargadores TapeOS (`grub.cfg`, `bootx64.efi`, `bootia32.efi`), compatibilidad Freon/Mesa y ganchos de `swtpm`.
      - `UsbFlasher.psm1`: Graba de forma nativa sector a sector en pendrives USB físicos mediante Win32 FileStream, con protección contra escritura en discos de sistema o de arranque internos.
-     - `BootManager.psm1` / `DiskManager.psm1`: Gestión de imágenes de disco y configuración dual-boot en Windows BCD.
+     - `BootManager.psm1` / `DiskManager.psm1`: Generación de configuraciones de arranque GRUB (USB/instalador) y utilidades de descompresión y detección de USB.
 
 2. **Estrategia para Ejecutar ChromeOS Actualizado en Equipos EFI Antiguos**:
    - **TPM 2.0 por Software**: Modern ChromeOS exige TPM 2.0 para el login. TapeOS arranca `swtpm` en el initramfs antes de que `cryptohomed` comience, permitiendo vincular cuentas Google y cifrar perfiles en ordenadores de cualquier época.
@@ -138,3 +138,9 @@ TapeOS/
 - **Tipo:** Arquitectura
 - **Cambio:** `HardwareDetector.psm1` añade `VendorId` a cada GPU y detecta dGPU (NVIDIA `10DE` siempre; AMD `1002` en equipos Intel+AMD o multi-GPU) inyectando la opción `dgpu`. Nuevo parche `core/patches/45-dgpu.sh`: NVIDIA suspendida vía udev + blacklist `nouveau`; AMD con `amdgpu` forzado + blacklist `radeon`. GUI y CLI muestran el fabricante de cada GPU.
 - **Impacto:** `HardwareDetector.psm1`, `TapeOS-Installer.ps1`, `TapeOS-CLI.ps1`, `core/patches/`, README, guía de instalación.
+
+## [29-10-2026] — Solo modos Live-USB e Instalador (sin dual-boot)
+
+- **Tipo:** Arquitectura | Vista
+- **Cambio:** La aplicación ofrece únicamente dos modos: **Live-USB** (grabar en pendrive) e **Instalador** (crear el medio `.img` sin grabar). Eliminados `Register-TapeOSInWindowsBCD`, la entrada "Windows Boot Manager" y el arranque loopback de `New-TapeOSGrubConfig`, y `New-TapeOSDiskImage` de `DiskManager.psm1`. GUI y CLI renombradas en consecuencia.
+- **Impacto:** `BootManager.psm1`, `DiskManager.psm1`, `TapeOS-Installer.ps1`, `TapeOS-CLI.ps1`, README, guía de instalación.

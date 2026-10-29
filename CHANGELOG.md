@@ -2,6 +2,12 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.9] — 29-10-2026
+
+### Novedades
+- **Solo dos modos, sin dual-boot**: la aplicación ofrece únicamente **Live-USB** (grabar en pendrive) e **Instalador** (crear el medio de instalación `.img` sin grabar). Eliminada toda la funcionalidad dual-boot: `Register-TapeOSInWindowsBCD`, la entrada "Windows Boot Manager" y el arranque loopback `chromeos.img` de GRUB, y `New-TapeOSDiskImage` (discos sparse).
+- `New-TapeOSGrubConfig` genera ahora configuraciones estilo USB/instalador (búsqueda por etiqueta `ROOT-A`), coherentes con el `grub.cfg` que genera el patcher.
+
 ## [v1.0.0-alpha.8] — 29-10-2026
 
 ### Novedades
@@ -65,7 +71,7 @@ Todas las modificaciones notables de este proyecto se documentarán en este arch
 - **Instalador Interactivo para Windows**:
   - Interfaz gráfica (GUI en Windows Forms) con diagnóstico automático de CPU, firmware y BitLocker.
   - Asistente por consola (CLI/TUI) para instalaciones automatizadas.
-  - Creación de discos virtuales sparse y automatización del menú BCD de Windows.
+  - Creación del medio de instalación (.img) para grabar después en USB.
 - **Soporte Ampliado para Dispositivos Legacy**:
   - Matriz de soporte para procesadores Intel de 2ª a 7ª generación (Sandy Bridge, Haswell, Skylake) y AMD serie A (Stoney Ridge).
   - Soporte de arranque para sistemas con UEFI de 32 bits (`ia32`) en CPUs de 64 bits (Intel Atom Bay Trail/Cherry Trail).

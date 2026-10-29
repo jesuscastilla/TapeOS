@@ -52,8 +52,8 @@ Write-Host ""
 # 3. Destino de instalación
 Write-Host ""
 Write-Host "[3/4] Destino de instalación" -ForegroundColor Yellow
-Write-Host "  [1] Grabar directamente en un pendrive USB"
-Write-Host "  [2] Solo crear archivo de imagen (.img) — sin grabar en ningún pendrive"
+Write-Host "  [1] Live-USB: grabar en un pendrive USB y arrancar desde él"
+Write-Host "  [2] Instalador: crear el medio de instalación (.img) sin grabar"
 $destChoice = Read-Host "Elige destino (1/2)"
 if ($destChoice -ne '1' -and $destChoice -ne '2') { $destChoice = '1' }
 
@@ -86,10 +86,10 @@ if ($destChoice -eq '1') {
     }
 } else {
     Write-Host ""
-    Write-Host "[3/4] Modo solo imagen: no se grabará en ningún pendrive." -ForegroundColor Cyan
-    $imageDestDir = Read-Host "Carpeta donde guardar el archivo .img [C:\TapeOS\images]"
+    Write-Host "[3/4] Modo Instalador: se creará el .img sin grabar en ningún pendrive." -ForegroundColor Cyan
+    $imageDestDir = Read-Host "Carpeta donde guardar el medio de instalación (.img) [C:\TapeOS\images]"
     if (-not $imageDestDir.Trim()) { $imageDestDir = "C:\TapeOS\images" }
-    $confirm = Read-Host "¿Confirmas que deseas descargar y parchear la imagen? (s/N)"
+    $confirm = Read-Host "¿Confirmas que deseas descargar y parchear la imagen para crear el medio de instalación? (s/N)"
     if ($confirm -ne 's' -and $confirm -ne 'S' -and $confirm -ne 'si' -and $confirm -ne 'yes') {
         Write-Host "Operación cancelada." -ForegroundColor Gray
         exit
@@ -137,7 +137,7 @@ if ($destChoice -eq '1') {
     Write-Host "==================================================================" -ForegroundColor Green
 } else {
     Write-Host ""
-    Write-Host "[Paso C] Guardando imagen parcheada como archivo .img (sin grabar)..." -ForegroundColor Cyan
+    Write-Host "[Paso C] Creando medio de instalación (.img) sin grabar..." -ForegroundColor Cyan
     New-Item -ItemType Directory -Path $imageDestDir -Force | Out-Null
     $imgName = "TapeOS-$($recoveryInfo.Board)-M$($recoveryInfo.Milestone)-$(if ($enableGoogleApps) { 'googleapps' } else { 'lite' }).img"
     $imgPath = Join-Path $imageDestDir $imgName
@@ -145,9 +145,9 @@ if ($destChoice -eq '1') {
     if (Test-Path $patched.ConfigFile) { Copy-Item -Path $patched.ConfigFile -Destination (Join-Path $imageDestDir "grub.cfg") -Force }
     Write-Host ""
     Write-Host "==================================================================" -ForegroundColor Green
-    Write-Host "   ¡IMAGEN CREADA! Ruta: $imgPath" -ForegroundColor White
-    Write-Host "   Grábala cuando quieras con Rufus, Win32DiskImager o con TapeOS" -ForegroundColor Gray
-    Write-Host "   (modo USB). Incluye grub.cfg de arranque en la misma carpeta." -ForegroundColor Gray
+    Write-Host "   ¡MEDIO DE INSTALACIÓN CREADO! Ruta: $imgPath" -ForegroundColor White
+    Write-Host "   Grábalo cuando quieras con Rufus, Win32DiskImager o con TapeOS" -ForegroundColor Gray
+    Write-Host "   (modo Live-USB). Incluye grub.cfg de arranque en la misma carpeta." -ForegroundColor Gray
     Write-Host "==================================================================" -ForegroundColor Green
 }
 

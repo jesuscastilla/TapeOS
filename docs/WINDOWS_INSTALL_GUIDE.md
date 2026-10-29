@@ -38,15 +38,12 @@ El método recomendado para la mayoría de usuarios:
    - **WiFi, Bluetooth, códecs de audio y pantalla táctil**, y elegirá los parches de compatibilidad adecuados (`iwlwifi_backport`, `broadcom_wl`, `rtl*`, `rtbth`, `essx8336`, `ipts/goodix`, ...).
    - La imagen de recuperación de ChromeOS recomendada (ej. `voxel`, `jinlon`, `rammus`, `grunt`, etc.).
 4. Selecciona tus preferencias:
-   - **Dual-Boot**: Instala TapeOS en un disco virtual junto a Windows en `C:\TapeOS\chromeos.img`.
-   - **USB Booteable**: Para probar TapeOS en modo Live desde un pendrive antes de instalarlo internamente.
-   - **Tamaño**: Ajusta los GB deseados (32 GB recomendado).
+   - **Modo**: **Live-USB** (graba TapeOS en un pendrive para arrancar desde él) o **Instalador** (crea el medio de instalación `.img` sin grabar; elige la carpeta de destino).
+   - **Google Apps**: Elige entre **Con Google Apps** (Play Store + aplicaciones Android, recomendado) o **Sin Google Apps** (ChromeOS ligero, solo navegador y aplicaciones web).
    - **Opciones Legacy**: Activa las casillas de GPU antigua o UEFI de 32 bits si tienes un equipo antiguo.
-    - **Destino**: Elige entre **grabar en un pendrive USB** o **solo crear el archivo .img** (sin grabar); en este último caso indica la carpeta de destino.
-    - **Google Apps**: Elige entre **Con Google Apps** (Play Store + aplicaciones Android, recomendado) o **Sin Google Apps** (ChromeOS ligero, solo navegador y aplicaciones web).
 
-5. Pulsa **"Iniciar Instalación Interactiva"**.
-6. ¡Listo! Reinicia el PC y en el menú de arranque de Windows verás la opción **"TapeOS (ChromeOS)"**.
+5. Pulsa **"Descargar, Parchear y Crear (1-Clic)"**.
+6. ¡Listo! Con el modo **Live-USB**, reinicia el PC y arranca desde el pendrive (tecla F12/F11/Esc); con el modo **Instalador**, graba el `.img` cuando quieras.
 
 ---
 
@@ -59,7 +56,7 @@ Para entornos automatizados o administración remota:
    ```powershell
    .\TapeOS-CLI.ps1
    ```
-3. Sigue las instrucciones paso a paso en pantalla: diagnóstico, modo Google Apps (con Play Store o sin ellas), tamaño y confirmación.
+3. Sigue las instrucciones paso a paso en pantalla: diagnóstico, modo Live-USB o Instalador, Google Apps (con Play Store o sin ellas) y confirmación.
 
 ---
 

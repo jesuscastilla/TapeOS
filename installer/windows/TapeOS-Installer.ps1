@@ -200,14 +200,14 @@ $gaGroup.Controls.Add($radioNoGoogleApps)
 
 # 3. Grupo: Destino (Pendrive USB o archivo .img)
 $usbGroup = New-Object System.Windows.Forms.GroupBox
-$usbGroup.Text = " 3. Destino de Instalación (Pendrive USB o Archivo .img) "
+$usbGroup.Text = " 3. Modo: Live-USB o Instalador "
 $usbGroup.Location = New-Object System.Drawing.Point(20, 470)
 $usbGroup.Size = New-Object System.Drawing.Size(845, 165)
 $usbGroup.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
 $form.Controls.Add($usbGroup)
 
 $radioUsb = New-Object System.Windows.Forms.RadioButton
-$radioUsb.Text = "💾 Grabar directamente en un pendrive USB"
+$radioUsb.Text = "💾 Live-USB — Grabar en un pendrive USB y arrancar desde él"
 $radioUsb.Font = New-Object System.Drawing.Font("Segoe UI", 9)
 $radioUsb.Location = New-Object System.Drawing.Point(20, 28)
 $radioUsb.AutoSize = $true
@@ -229,7 +229,7 @@ $btnRefreshUsb.Size = New-Object System.Drawing.Size(150, 27)
 $usbGroup.Controls.Add($btnRefreshUsb)
 
 $radioImageOnly = New-Object System.Windows.Forms.RadioButton
-$radioImageOnly.Text = "📁 Solo crear archivo de imagen (.img) — sin grabar en ningún pendrive"
+$radioImageOnly.Text = "📀 Instalador — Crear el medio de instalación (.img) sin grabar"
 $radioImageOnly.Font = New-Object System.Drawing.Font("Segoe UI", 9)
 $radioImageOnly.Location = New-Object System.Drawing.Point(20, 58)
 $radioImageOnly.AutoSize = $true
@@ -260,7 +260,7 @@ $lblUsbWarning.Size = New-Object System.Drawing.Size(670, 30)
 $usbGroup.Controls.Add($lblUsbWarning)
 
 $lblImgHint = New-Object System.Windows.Forms.Label
-$lblImgHint.Text = "El archivo .img podrá grabarse más tarde con Rufus, Win32DiskImager o desde TapeOS (modo USB)."
+$lblImgHint.Text = "El .img es el medio de instalación: grábalo cuando quieras con Rufus, Win32DiskImager o TapeOS (modo Live-USB)."
 $lblImgHint.ForeColor = [System.Drawing.Color]::FromArgb(60, 64, 67)
 $lblImgHint.Font = New-Object System.Drawing.Font("Segoe UI", 8.5)
 $lblImgHint.Location = New-Object System.Drawing.Point(160, 126)
@@ -316,7 +316,7 @@ $logBox.ReadOnly = $true
 $logBox.BackColor = [System.Drawing.Color]::FromArgb(20, 24, 30)
 $logBox.ForeColor = [System.Drawing.Color]::FromArgb(0, 255, 128)
 $logBox.Font = New-Object System.Drawing.Font("Consolas", 8.5)
-$logBox.Text = "=== TapeOS Automated Installation Engine Ready ===`r`nElige el destino (pendrive USB o solo archivo .img) y pulsa 'Crear en 1 Clic' para ejecutar el proceso completo.`r`n"
+$logBox.Text = "=== TapeOS Automated Installation Engine Ready ===`r`nElige el modo (Live-USB o Instalador) y pulsa 'Crear en 1 Clic' para ejecutar el proceso completo.`r`n"
 $form.Controls.Add($logBox)
 
 # Botones de Acción Inferiores
@@ -374,8 +374,8 @@ $btnFullAuto.Add_Click({
         $targetUsb = $null
         $imgDest = $txtImageDir.Text.Trim()
         if (-not $imgDest) { $imgDest = "C:\TapeOS\images" }
-        $confirmText = "Se descargará y parcheará la imagen de ChromeOS y se guardará como archivo .img en:`r`n$imgDest`r`n`r`nNo se grabará en ningún pendrive."
-        $confirmTitle = "Confirmación — Crear archivo .img"
+        $confirmText = "Se descargará y parcheará la imagen de ChromeOS y se creará el medio de instalación (.img) en:`r`n$imgDest`r`n`r`nNo se grabará en ningún pendrive."
+        $confirmTitle = "Confirmación — Crear medio de instalación (.img)"
     }
     $confirm = [System.Windows.Forms.MessageBox]::Show(
         $confirmText,
@@ -446,7 +446,7 @@ $btnFullAuto.Add_Click({
             if ($imageOnlyMode) {
                 # 4. Guardar como archivo .img (sin grabar)
                 $form.Invoke([Action]{ 
-                    $logBox.AppendText("[Paso 4/4] Guardando imagen parcheada como archivo .img (sin grabar)...`r`n") 
+                    $logBox.AppendText("[Paso 4/4] Creando medio de instalación (.img) sin grabar...`r`n") 
                 })
                 $destDir = $imageDestDir.Trim()
                 if (-not $destDir) { $destDir = "C:\TapeOS\images" }
@@ -458,10 +458,10 @@ $btnFullAuto.Add_Click({
 
                 $form.Invoke([Action]{
                     $progressBar.Value = 100
-                    $logBox.AppendText("`r`n✅ ¡IMAGEN CREADA EXITOSAMENTE!`r`nArchivo: $imgPath`r`nPodrás grabarla más tarde con Rufus, Win32DiskImager o con TapeOS (modo USB).`r`n")
+                    $logBox.AppendText("`r`n✅ ¡MEDIO DE INSTALACIÓN CREADO!`r`nArchivo: $imgPath`r`nGrábalo cuando quieras con Rufus, Win32DiskImager o TapeOS (modo Live-USB).`r`n")
                     [System.Windows.Forms.MessageBox]::Show(
-                        "¡Imagen TapeOS creada sin grabar!`r`n`r`nRuta: $imgPath`r`n`r`nPara usarla, grábola en un pendrive con Rufus, Win32DiskImager o desde TapeOS (modo USB).",
-                        "Imagen .img creada",
+                        "¡Medio de instalación TapeOS creado!`r`n`r`nRuta: $imgPath`r`n`r`nPara usarlo, grábalo en un pendrive con Rufus, Win32DiskImager o desde TapeOS (modo Live-USB).",
+                        "Medio de instalación creado",
                         [System.Windows.Forms.MessageBoxButtons]::OK,
                         [System.Windows.Forms.MessageBoxIcon]::Information
                     )

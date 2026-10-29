@@ -2,39 +2,9 @@
 .SYNOPSIS
     Gestor de Discos e Imágenes para TapeOS Windows Installer
 .DESCRIPTION
-    Crea archivos de imagen de disco (chromeos.img / VHDX), gestiona particiones,
-    descomprime archivos de recuperación y prepara discos USB.
+    Proporciona utilidades de descompresion de imagenes de recuperacion y
+    deteccion de destinos USB para el instalador (modos Live-USB e Instalador).
 #>
-
-function New-TapeOSDiskImage {
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory=$true)]
-        [string]$Path,
-
-        [Parameter(Mandatory=$true)]
-        [int]$SizeGB
-    )
-
-    $parentDir = Split-Path -Path $Path -Parent
-    if (-not (Test-Path $parentDir)) {
-        New-Item -Path $parentDir -ItemType Directory -Force | Out-Null
-    }
-
-    Write-Host "[TapeOS DiskManager] Creando imagen de disco vacía de $SizeGB GB en '$Path'..." -ForegroundColor Cyan
-
-    # Crear archivo con tamaño preasignado de forma rápida usando FileStream
-    $totalBytes = [int64]$SizeGB * 1024L * 1024L * 1024L
-    $fs = [System.IO.File]::Create($Path)
-    try {
-        $fs.SetLength($totalBytes)
-    } finally {
-        $fs.Close()
-    }
-
-    Write-Host "[TapeOS DiskManager] Imagen creada satisfactoriamente ($SizeGB GB)." -ForegroundColor Green
-    return $Path
-}
 
 function Expand-TapeOSArchive {
     [CmdletBinding()]
@@ -80,4 +50,4 @@ function Get-TapeOSUSBTargets {
     return $usbDrives
 }
 
-Export-ModuleMember -Function New-TapeOSDiskImage, Expand-TapeOSArchive, Get-TapeOSUSBTargets
+Export-ModuleMember -Function Expand-TapeOSArchive, Get-TapeOSUSBTargets
