@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+TAPEOOS_ROOT=${TAPEOOS_ROOT:-/roota}
 # ==============================================================================
 # TapeOS Patch: 50-hardware_patches.sh
 # Dispatcher de parches de hardware detectados por el instalador Windows.
@@ -30,8 +31,8 @@ rtbth:btusb"
 # Opciones que no fuerzan modulo: las gestionan los parches especificos del framework
 NO_MODULE_OPTIONS="ipts_touchscreen ithc_touchscreen goodix essx8336 legacy_audio_ucm macbook_trackpad dgpu sysfs_tablet_mode"
 
-mkdir -p /roota/etc/modules-load.d
-load_file=/roota/etc/modules-load.d/tapeos-hardware.conf
+mkdir -p $TAPEOOS_ROOT/etc/modules-load.d
+load_file=$TAPEOOS_ROOT/etc/modules-load.d/tapeos-hardware.conf
 rm -f "$load_file"
 
 for opt in $(echo "$1" | sed 's#,# #g'); do

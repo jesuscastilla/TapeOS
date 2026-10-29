@@ -1,6 +1,19 @@
-# Îttoriâh de Kambiô (Xangelo) — TapeOS
+﻿# Îttoriâh de Kambiô (Xangelo) — TapeOS
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
+
+## [v1.0.0-alpha.35] — 29-10-2026
+
+### Nobedáêh
+- **Menú GRUB de TapeOS**: 7 entradas legibles (normal, diagnóstico verbose, modo seguro, Instalar en un disco duro, recovery original, consola GRUB y apagar) con timeout de 15 s y aviso en pantalla si falta el initramfs.
+- **Initramfs del framework**: build reproducible en WSL/Linux (`core/build/build-initramfs.sh`) con busybox estático, cgpt/sgdisk/resize2fs/e2fsck, swtpm y los parches de TapeOS.
+- **Instalador a disco duro**: `core/scripts/tapeos-install.sh` vuelca el USB completo, reubica la GPT de respaldo (`sgdisk -e`), expande ROOT-A al tamaño del disco, aplica los parches y reescribe el menú GRUB del destino con el nuevo PARTUUID.
+- **Arranque verbose**: `verbose` en la línea del kernel y `set -x` en el initramfs, con logs en consola y shell de rescate (fin de la pantalla en negro silenciosa).
+- **Inyección automática**: tras grabar el Live-USB, el instalador Windows escribe el menú y el initramfs en la ESP; `build-exe.ps1` empaqueta el initramfs dentro del EXE y el CI lo construye en `ubuntu-latest` para cada release.
+
+### Korreççionêh
+- Los parches del framework usan `TAPEOOS_ROOT` (aplicables desde el initramfs y desde el instalador).
+- `ImagePatcher` genera el menú a través de `BootManager` (una sola fuente de verdad para el GRUB).
 
 ## [v1.0.0-alpha.34] — 29-10-2026
 

@@ -1,4 +1,4 @@
-# Kontexto der Proyêtto — TapeOS (`G:\TapeOS`)
+﻿# Kontexto der Proyêtto — TapeOS (`G:\TapeOS`)
 
 > **Êttao âttuâh (29-10-2026).** Framework e îttaladôh propiô pa yebâh **ChromeOS** a PC.
 > Ôhhetibo fundamentâh: permettîh la
@@ -204,3 +204,8 @@ TapeOS/
 - **Tipo:** Bîtta
 - **Kambio:** La GUI pâhha a çêh redimençionable (`FormBorderStyle = Sizable`, `MaximizeBox = $true`, `MinimumSize = 920x600`). Se implementa `FlowLayoutPanel` bertikâh pa títulô y çûttitulo ebitando kuarkêh çolapamiento horiçontâh po eçkaláo DPI (125%-150%), anclahe dinámiko (`Anchor`, `Dock`) en tô lô panelêh, chip de paçô repponçibô (`Update-TapeOSStepChips`), franha tricolôh ahattá ar fondo de la kabêçera y botón «Crear» çentrao automátiko.
 - **Impâtto:** `installer/windows/TapeOS-Installer.ps1`, `dist/TapeOS-Installer-1.0.0-alpha.34.exe`, `tools/wizard-smoke-test.ps1`, `CHANGELOG.md`.
+## [29-10-2026] — Framework de arranque real: initramfs, GRUB legible e instalador a disco
+
+- **Tipo:** Arkîtêttûra
+- **Kambio:** Nuevo `core/build/build-initramfs.sh` (busybox estático + cgpt/sgdisk/resize2fs + swtpm + parches), `core/initramfs/init` con modos normal/verbose/install, `core/scripts/tapeos-install.sh` (vuelca el USB, arregla la GPT y expande ROOT-A al tamaño del disco). `BootManager.psm1` genera el menú GRUB de 7 entradas e inyecta menú + initramfs en la ESP del pendrive; el EXE empaqueta el initramfs y el CI lo construye en cada release.
+- **Impâtto:** `core/`, `installer/windows/modules/BootManager.psm1`, `ImagePatcher.psm1`, `TapeOS-Installer.ps1`, `tools/build-exe.ps1`, `.github/workflows/release.yml`.

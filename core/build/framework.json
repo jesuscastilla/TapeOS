@@ -1,0 +1,1 @@
+{`n  "framework": "tapeos",`n  "version": "0.1.0-alpha",`n  "kernel": "recovery-native",`n  "boot": "GRUB + initramfs TapeOS sobre la ESP del recovery de ChromeOS",`n  "install": "initramfs con instalador a disco (dd + sgdisk -e + resize2fs ROOT-A)"`n}`n

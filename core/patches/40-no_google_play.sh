@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
+TAPEOOS_ROOT=${TAPEOOS_ROOT:-/roota}
 # ==============================================================================
 # TapeOS Patch: 40-no_google_play.sh
 # Modo "Sin Google Play": conserva el contenedor Android (ARC) para poder
 # instalar aplicaciones APK, pero sin los servicios de Google:
 #  - Deshabilita la Play Store eliminando sus datos del contenedor Android.
 #  - Prepara la tienda alternativa (Aurora Store / F-Droid): las APK las
-#    incluye el framework en /roota/usr/local/share/tapeos/apps/ y un
+#    incluye el framework en $TAPEOOS_ROOT/usr/local/share/tapeos/apps/ y un
 #    asistente las copia a ~/Downloads tras el primer arranque.
 # Se activa con la opcion de framework "no_google_play" (options=no_google_play).
 # ==============================================================================
@@ -22,8 +23,8 @@ ret=0
 
 # 1) Deshabilitar la Play Store (com.android.vending) si el contenedor esta montado
 for vending in \
-    /roota/opt/google/containers/android/rootfs/root/data/data/com.android.vending \
-    /roota/opt/google/containers/android/rootfs/root/data/app/*com.android.vending* ; do
+    $TAPEOOS_ROOT/opt/google/containers/android/rootfs/root/data/data/com.android.vending \
+    $TAPEOOS_ROOT/opt/google/containers/android/rootfs/root/data/app/*com.android.vending* ; do
     if [ -e "$vending" ]; then
         rm -rf "$vending"
         echo "[TapeOS] Play Store deshabilitada: $vending" > /dev/kmsg
@@ -31,9 +32,9 @@ for vending in \
 done
 
 # 2) Preparar las APK de la tienda alternativa (Aurora Store / F-Droid)
-mkdir -p /roota/usr/local/share/tapeos/apps /roota/usr/local/bin
+mkdir -p $TAPEOOS_ROOT/usr/local/share/tapeos/apps $TAPEOOS_ROOT/usr/local/bin
 
-cat > /roota/usr/local/bin/tapeos-apks.sh <<'HELPER'
+cat > $TAPEOOS_ROOT/usr/local/bin/tapeos-apks.sh <<'HELPER'
 #!/bin/bash
 # Asistente TapeOS: copia las APK de la tienda alternativa a ~/Downloads
 src=/usr/local/share/tapeos/apps
@@ -49,10 +50,10 @@ else
     echo "No se encontraron APK en $src (las incluye el framework TapeOS)."
 fi
 HELPER
-chmod +x /roota/usr/local/bin/tapeos-apks.sh
+chmod +x $TAPEOOS_ROOT/usr/local/bin/tapeos-apks.sh
 
 # 3) Marca para el primer arranque
-touch /roota/var/lib/tapeos/no_google_play 2>/dev/null || true
+touch $TAPEOOS_ROOT/var/lib/tapeos/no_google_play 2>/dev/null || true
 
 echo "[TapeOS] Modo sin Google Play aplicado (ret=$ret)." > /dev/kmsg
 exit $ret

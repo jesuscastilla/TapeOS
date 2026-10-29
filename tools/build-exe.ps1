@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
     Genera el ejecutable autocontenido TapeOS-Installer-<version>.exe con ps2exe.
@@ -88,6 +88,20 @@ if (Test-Path $logoPng) {
     [void]$sb.AppendLine('$assetsDir = Join-Path $appDir ''assets''')
     [void]$sb.AppendLine('New-Item -ItemType Directory -Force -Path $assetsDir | Out-Null')
     [void]$sb.AppendLine("[System.IO.File]::WriteAllBytes((Join-Path `$assetsDir 'diplotech-logo-blanco.png'), [Convert]::FromBase64String('$logoB64'))")
+}
+
+# Initramfs del framework TapeOS (si existe en dist): permite al instalador
+# inyectarlo en la ESP del pendrive para el arranque de TapeOS.
+$initramfsFile = Join-Path (Split-Path -Parent $PSScriptRoot) "dist\tapeos-initramfs.cpio.gz"
+if (Test-Path $initramfsFile) {
+    $initramfsB64 = Get-Base64 -Path $initramfsFile
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('$assetsDir = Join-Path $appDir ''assets''')
+    [void]$sb.AppendLine('New-Item -ItemType Directory -Force -Path $assetsDir | Out-Null')
+    [void]$sb.AppendLine("[System.IO.File]::WriteAllBytes((Join-Path `$assetsDir 'tapeos-initramfs.cpio.gz'), [Convert]::FromBase64String('$initramfsB64'))")
+    Write-Host "[TapeOS] Initramfs del framework incluido en el bundle ($([math]::Round((Get-Item $initramfsFile).Length / 1MB, 1)) MB)."
+} else {
+    Write-Host "[TapeOS] AVISO: dist\tapeos-initramfs.cpio.gz no existe; el bundle se crea sin framework de arranque."
 }
 
 [void]$sb.AppendLine('& $mainPath')

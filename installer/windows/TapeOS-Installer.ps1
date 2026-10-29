@@ -909,6 +909,7 @@ function F-Eta {
 Import-Module (Join-Path $ModuleDir "RecoveryDownloader.psm1") -Force
 Import-Module (Join-Path $ModuleDir "ImagePatcher.psm1") -Force
 Import-Module (Join-Path $ModuleDir "UsbFlasher.psm1") -Force
+Import-Module (Join-Path $ModuleDir "BootManager.psm1") -Force
 
 try {
     Write-PipelineLog "Pipeline (runspace) iniciado"
@@ -975,6 +976,8 @@ try {
         $cpSw = [System.Diagnostics.Stopwatch]::StartNew()
         Copy-Item -Path $patched.PatchedImagePath -Destination $imgPath -Force
         if (Test-Path $patched.ConfigFile) { Copy-Item -Path $patched.ConfigFile -Destination (Join-Path $destDir "grub.cfg") -Force }
+        $fwAsset = @((Join-Path $ModuleDir "..\assets\tapeos-initramfs.cpio.gz"), "C:\TapeOS\tapeos-initramfs.cpio.gz", (Join-Path $env:TEMP "TapeOS-App\assets\tapeos-initramfs.cpio.gz")) | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+        if ($fwAsset) { Copy-Item -LiteralPath $fwAsset -Destination (Join-Path $destDir "tapeos-initramfs.cpio.gz") -Force }
         $elapsedStr = 'Kompletao en ' + (F-Eta $cpSw.Elapsed.TotalSeconds)
         $Form.Invoke([Action]{
             $ProgressBar.Value = 100
@@ -1001,10 +1004,23 @@ try {
                     Write-PipelineLog ("ERROR callback grabaçiôn: " + $_.Exception.ToString())
                 }
             } | Out-Null
+        $Form.Invoke([Action]{ $LblPhase.Text = '🩹 Inyettando er arrankâh TapeOS (GRUB + initramfs)'; $LblEta.Text = 'Êttimao: --' })
+        $initramfsPath = ""
+        foreach ($cand in @((Join-Path $ModuleDir "..\assets\tapeos-initramfs.cpio.gz"), "C:\TapeOS\tapeos-initramfs.cpio.gz", (Join-Path $env:TEMP "TapeOS-App\assets\tapeos-initramfs.cpio.gz"))) {
+            if (Test-Path -LiteralPath $cand) { $initramfsPath = (Resolve-Path -LiteralPath $cand).Path; break }
+        }
+        $espInfo = $null
+        try {
+            $espInfo = Write-TapeOSGrubToEsp -DiskNumber $TargetUsb.DiskNumber -Timeout 15 -InitramfsPath $initramfsPath
+            Write-PipelineLog ("ESP: menu GRUB inyectado. PARTUUID=" + $espInfo.RootPartuuid + ", initramfs=" + $espInfo.InitramfsInjected)
+        } catch {
+            Write-PipelineLog ("AVISO: no se pudo inyectar el menu GRUB en la ESP: " + $_.Exception.Message)
+        }
+        if ($espInfo -and $espInfo.InitramfsInjected) { $fwMsg = "`r`nFramework TapeOS inyettao: arrankêh normal/verbose/çeguro y êntrá de îttalaçiôn a dîkko dûhô dipponiblêh en er menú GRUB." } else { $fwMsg = "`r`n⚠️ AVISO: no çe enkontró er initramfs der framework (tapeos-initramfs.cpio.gz); er medio çolo arrankará er rekûperaçiôn ofiçiâh." }
         $Form.Invoke([Action]{
             $ProgressBar.Value = 100
             $LblEta.Text = 'Kompletao'
-            $LogBox.AppendText("`r`n✅ ¡PROÇEÇO KOMPLETAO KON ÉXITO!`r`nEr pendraîh êttá lîtta pa arrankâh en kualkiêh ekîpo kon EFI.`r`n")
+            $LogBox.AppendText("`r`n✅ ¡PROÇEÇO KOMPLETAO KON ÉXITO!`r`nEr pendraîh êttá lîtta pa arrankâh en kualkiêh ekîpo kon EFI.`r`n" + $fwMsg + "`r`n")
             [System.Windows.Forms.MessageBox]::Show(
                 "¡TapeOS çe á grabao kon éxito en tu pendraîh!`r`n`r`nYa pueêh reiníçiâh er ekîpo y arrankâh dêhde er pendraîh USB (têkla F12/F11/Eç en er logo).",
                 "Grabaçiôn Kompletá", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information

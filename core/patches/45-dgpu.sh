@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+TAPEOOS_ROOT=${TAPEOOS_ROOT:-/roota}
 # ==============================================================================
 # TapeOS Patch: 45-dgpu.sh
 # Compatibilidad con GPUs dedicadas (dGPU) en ChromeOS:
@@ -21,10 +22,10 @@ if [ "$dgpu" -eq 0 ]; then exit 0; fi
 echo "[TapeOS] Opcion dgpu activada: preparando compatibilidad con GPU dedicada..." > /dev/kmsg
 
 ret=0
-mkdir -p /roota/lib/udev/rules.d /roota/etc/modprobe.d /roota/etc/modules-load.d
+mkdir -p $TAPEOOS_ROOT/lib/udev/rules.d $TAPEOOS_ROOT/etc/modprobe.d $TAPEOOS_ROOT/etc/modules-load.d
 
 # --- NVIDIA: suspender la dGPU y renderizar con la iGPU ---
-cat > /roota/lib/udev/rules.d/99-tapeos-dgpu.rules <<'UDEV'
+cat > $TAPEOOS_ROOT/lib/udev/rules.d/99-tapeos-dgpu.rules <<'UDEV'
 # Mantener suspendida la dGPU NVIDIA y sus dispositivos auxiliares
 ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x0c0330", ATTR{power/control}="auto", ATTR{remove}="1"
 ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x0c8000", ATTR{power/control}="auto", ATTR{remove}="1"
@@ -33,21 +34,21 @@ ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x03[0-9]
 UDEV
 if [ ! "$?" -eq 0 ]; then ret=$((ret + (2 ** 0))); fi
 
-cat > /roota/etc/modprobe.d/blacklist-nouveau.conf <<'MODPROBE'
+cat > $TAPEOOS_ROOT/etc/modprobe.d/blacklist-nouveau.conf <<'MODPROBE'
 blacklist nouveau
 options nouveau modeset=0
 MODPROBE
 if [ ! "$?" -eq 0 ]; then ret=$((ret + (2 ** 1))); fi
 
 # --- AMD: forzar amdgpu y desactivar radeon (legacy) ---
-cat > /roota/etc/modprobe.d/tapeos-amdgpu.conf <<'MODPROBE'
+cat > $TAPEOOS_ROOT/etc/modprobe.d/tapeos-amdgpu.conf <<'MODPROBE'
 blacklist radeon
 options amdgpu modeset=1
 MODPROBE
 if [ ! "$?" -eq 0 ]; then ret=$((ret + (2 ** 2))); fi
 
-if ! grep -q '^amdgpu$' /roota/etc/modules-load.d/tapeos-dgpu.conf 2>/dev/null; then
-    echo "amdgpu" >> /roota/etc/modules-load.d/tapeos-dgpu.conf
+if ! grep -q '^amdgpu$' $TAPEOOS_ROOT/etc/modules-load.d/tapeos-dgpu.conf 2>/dev/null; then
+    echo "amdgpu" >> $TAPEOOS_ROOT/etc/modules-load.d/tapeos-dgpu.conf
 fi
 
 echo "[TapeOS] Compatibilidad dGPU preparada (ret=$ret)." > /dev/kmsg

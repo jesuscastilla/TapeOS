@@ -1,4 +1,4 @@
-name: TapeOS Release Build
+﻿name: TapeOS Release Build
 
 on:
   push:
@@ -31,12 +31,39 @@ jobs:
           prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
           generate_release_notes: true
 
+  build-initramfs:
+    name: Build TapeOS initramfs (framework)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build initramfs
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y busybox-static vboot-utils gdisk util-linux e2fsprogs parted dosfstools cpio gzip swtpm coreutils
+          sudo bash core/build/build-initramfs.sh dist/tapeos-initramfs.cpio.gz
+          ls -lh dist/tapeos-initramfs.cpio.gz
+
+      - name: Upload initramfs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tapeos-initramfs
+          path: dist/tapeos-initramfs.cpio.gz
+
   build-windows-exe:
     name: Build Windows Installer EXE (self-contained)
+    needs: build-initramfs
     runs-on: windows-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Download initramfs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tapeos-initramfs
+          path: dist
 
       - name: Build EXE with ps2exe
         shell: powershell
@@ -62,3 +89,4 @@ jobs:
           files: |
             dist/*.exe
             tools/assets/tapeos-signing.cer
+            dist/tapeos-initramfs.cpio.gz

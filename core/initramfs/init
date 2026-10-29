@@ -1,74 +1,158 @@
 #!/bin/busybox sh
 # ==============================================================================
-# TapeOS initramfs /init — arrankê parxeao de ChromeOS en PC
+# TapeOS initramfs /init
 #
-# Êtte êkrip êh er primêh proçeço der initramfs de TapeOS. Çu trabaho:
-#   1. Montâh lô çîttemâ de arxivô baçê (/proc /sys /dev).
-#   2. Arrankâh swtpm (TPM 2.0 po çoftware) antê de cryptohomed.
-#   3. Montâh la partiçiôn ROOT-A de la imâhen.
-#   4. Aplikâh lô parcheh der framework (core/patches) kon lâ ôççionêh
-#      de la línea de kernel (options=...).
-#   5. Çedêh er kontrol ar init reâh de ChromeOS (switch_root).
+#   1. Monta /proc /sys /dev.
+#   2. Modo install (install=1) -> lanza el instalador a disco duro.
+#   3. Modo normal             -> monta ROOT-A, aplica parches y switch_root.
+#   4. verbose                 -> logs tambien en /dev/console: nunca mas
+#                                 una pantalla en negro sin mensajes.
 # ==============================================================================
 
 mount -t proc proc /proc 2>/dev/null
 mount -t sysfs sysfs /sys 2>/dev/null
 mount -t devtmpfs devtmpfs /dev 2>/dev/null || mount -t tmpfs tmpfs /dev
-mkdir -p /roota /run /patches
+mkdir -p /roota /run /patches /boot /mnt
 
-# --- Lêh lâ ôççionêh de framework de la línea de kernel ---
+VERBOSE=0
+INSTALL=0
 FRAMEWORK_OPTIONS=""
-ROOTDEV=""
 for tok in $(cat /proc/cmdline); do
     case "$tok" in
-        options=*) FRAMEWORK_OPTIONS="${tok#options=}" ;;
-        root=*)    ROOTDEV="${tok#root=}" ;;
-        root=PARTUUID=*) ROOTDEV="${tok#root=PARTUUID=}" ;;
+        verbose)                   VERBOSE=1 ;;
+        install|install=1|install=yes) INSTALL=1 ;;
+        options=*)                 FRAMEWORK_OPTIONS="${tok#options=}" ;;
     esac
 done
 
-echo "[TapeOS] init iniciado. options=[$FRAMEWORK_OPTIONS] root=[$ROOTDEV]" > /dev/kmsg
+log() {
+    echo "[TapeOS] $*" > /dev/kmsg 2>/dev/null
+    if [ "$VERBOSE" = "1" ]; then
+        echo "[TapeOS] $*" > /dev/console 2>/dev/null
+    fi
+}
+if [ "$VERBOSE" = "1" ]; then
+    set -x
+    exec 2>&1
+fi
 
-# --- 1. swtpm: TPM 2.0 emulao po çoftware (antê de cryptohomed/chapsd) ---
-if [ -x /usr/bin/swtpm ] && [ -x /usr/bin/swtpm_bios ]; then
+log "init iniciado (verbose=$VERBOSE install=$INSTALL)"
+log "cmdline: $(cat /proc/cmdline)"
+
+# --- Localizar la ESP del medio de arranque (contiene syslinux/vmlinuz.A) ----
+find_esp() {
+    local d base p dev
+    for d in /sys/class/block/*; do
+        base="${d##*/}"
+        case "$base" in loop*|ram*|dm-*|sr*) continue ;; esac
+        for p in "$d"/"$base"*; do
+            [ -e "$p/partition" ] || continue
+            dev="/dev/${p##*/}"
+            mkdir -p /mnt/esp
+            if mount -t vfat -o ro "$dev" /mnt/esp 2>/dev/null; then
+                if [ -f /mnt/esp/syslinux/vmlinuz.A ] || [ -f /mnt/esp/tapeos/initramfs.img ] || [ -f /mnt/esp/efi/boot/grub.cfg ]; then
+                    echo "$dev"
+                    umount /mnt/esp 2>/dev/null
+                    return 0
+                fi
+                umount /mnt/esp 2>/dev/null
+            fi
+        done
+    done
+    return 1
+}
+
+# --- Localizar ROOT-A (particion ext4 con /etc/lsb-release de ChromeOS) ------
+find_root_a() {
+    local d base p dev
+    for d in /sys/class/block/*; do
+        base="${d##*/}"
+        case "$base" in loop*|ram*|dm-*|sr*) continue ;; esac
+        for p in "$d"/"$base"*; do
+            [ -e "$p/partition" ] || continue
+            dev="/dev/${p##*/}"
+            mkdir -p /mnt/test
+            if mount -o ro "$dev" /mnt/test 2>/dev/null; then
+                if [ -f /mnt/test/etc/lsb-release ] && grep -qi chrome /mnt/test/etc/lsb-release 2>/dev/null; then
+                    echo "$dev"
+                    umount /mnt/test 2>/dev/null
+                    return 0
+                fi
+                umount /mnt/test 2>/dev/null
+            fi
+        done
+    done
+    return 1
+}
+
+# --- swtpm: TPM 2.0 por software (antes de cryptohomed/chapsd) ---------------
+if [ -x /usr/bin/swtpm ]; then
     mkdir -p /run/tpm
-    swtpm socket --tpm2 \
+    /usr/bin/swtpm socket --tpm2 \
         --tpmstate dir=/run/tpm \
         --ctrl type=unixio,path=/run/tpm/swtpm-sock \
-        --daemon > /dev/kmsg 2>&1
-    swtpm_bios --tpm2 \
-        --ctrl type=unixio,path=/run/tpm/swtpm-sock \
-        --daemon > /dev/kmsg 2>&1
-    echo "[TapeOS] swtpm (TPM 2.0) arrankao." > /dev/kmsg
+        --daemon >/dev/null 2>&1
+    log "swtpm (TPM 2.0) iniciado en /run/tpm"
 else
-    echo "[TapeOS] swtpm no enkontrao en er initramfs." > /dev/kmsg
+    log "swtpm no disponible en el initramfs (no incluido en el build)"
 fi
 
-# --- 2. Montâh er rootfs ofiçiâh (ROOT-A) ---
-if [ -z "$ROOTDEV" ]; then
-    ROOTDEV="/dev/sda3"
-    echo "[TapeOS] ROOTDEV no îndikao; probando $ROOTDEV" > /dev/kmsg
-fi
-mount -o ro "$ROOTDEV" /roota 2>/dev/null
-if [ ! -d /roota/etc ]; then
-    # Reintento: bûhkâh por etiketa ROOT-A
-    ROOTDEV=$(blkid -L ROOT-A 2>/dev/null)
-    [ -n "$ROOTDEV" ] && mount -o ro "$ROOTDEV" /roota 2>/dev/null
-fi
-if [ ! -d /roota/etc ]; then
-    echo "[TapeOS] FATAL: no çe pudo montâh er rootfs ChromeOS." > /dev/kmsg
-    sh
+# --- MODO INSTALACION ---------------------------------------------------------
+if [ "$INSTALL" = "1" ]; then
+    log "Modo instalacion: localizando el medio de arranque..."
+    ESP=$(find_esp)
+    if [ -z "$ESP" ]; then
+        log "FATAL: no se pudo localizar la ESP del medio de arranque."
+        exec sh
+    fi
+    # Disco completo a partir de la particion (sda1->sda, nvme0n1p12->nvme0n1)
+    SRC_DISK="$ESP"
+    case "$SRC_DISK" in
+        *nvme*)   SRC_DISK="${SRC_DISK%p[0-9]*}" ;;
+        *mmcblk*) SRC_DISK="${SRC_DISK%p[0-9]*}" ;;
+        *)        SRC_DISK="${SRC_DISK%[0-9]*}" ;;
+    esac
+    log "Medio de arranque: $SRC_DISK (ESP: $ESP)"
+    echo "$FRAMEWORK_OPTIONS" > /run/tapeos-options
+    mount -t vfat "$ESP" /boot 2>/dev/null || true
+    /lib/tapeos-install.sh "$SRC_DISK" "$ESP"
+    log "Instalador finalizado. Reinicia y arranca del disco destino."
+    exec sh
 fi
 
-# --- 3. Aplikâh lô parcheh der framework (core/patches) ---
+# --- MODO NORMAL --------------------------------------------------------------
+ROOTA=$(find_root_a)
+if [ -z "$ROOTA" ]; then
+    log "FATAL: no se encontro la particion ROOT-A de ChromeOS."
+    log "Sugerencia: arranca con 'Diagnostico verbose' para ver los mensajes."
+    exec sh
+fi
+log "ROOT-A encontrada en $ROOTA"
+
+mount -o ro "$ROOTA" /roota 2>/dev/null || mount -o rw "$ROOTA" /roota 2>/dev/null
+if [ ! -d /roota/etc ]; then
+    log "FATAL: no se pudo montar $ROOTA en /roota."
+    exec sh
+fi
+
+# Parches del framework sobre el rootfs montado
+if [ -n "$TAPEOOS_ROOT" ]; then
+    export TAPEOOS_ROOT
+else
+    export TAPEOOS_ROOT=/roota
+fi
 for p in /patches/[0-9]*.sh; do
     if [ -x "$p" ]; then
-        echo "[TapeOS] Aplikando $p ..." > /dev/kmsg
+        log "Aplicando parche: ${p##*/}"
         "$p" "$FRAMEWORK_OPTIONS" > /dev/kmsg 2>&1
+        log "  parche ${p##*/} terminado (ret=$?)"
     fi
 done
 
-# --- 4. Çedêh er kontrol ar init de ChromeOS ---
-umount /proc /sys 2>/dev/null
-echo "[TapeOS] switch_root a $ROOTDEV ..." > /dev/kmsg
+# Preparar el nuevo root y ceder el control a ChromeOS
+mkdir -p /roota/proc /roota/sys /roota/dev /roota/run
+mount -t proc proc /roota/proc 2>/dev/null || true
+mount -t sysfs sysfs /roota/sys 2>/dev/null || true
+mount -o bind /dev /roota/dev 2>/dev/null || true
+log "switch_root a $ROOTA (init=/sbin/init)"
 exec switch_root /roota /sbin/init

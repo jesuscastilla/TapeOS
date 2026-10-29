@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Módulo de Parcheo de Imágenes de ChromeOS para TapeOS
 .DESCRIPTION
@@ -102,37 +102,19 @@ function Invoke-TapeOSImagePatch {
     foreach ($opt in $AdditionalFrameworkOptions) {
         if ($opt) { $kernelOptions += $opt }
     }
-    if ($EnableLegacyGPU) { $kernelOptions += "i915.enable_guc=0 i915.enable_psr=0" }
+    if ($EnableLegacyGPU) { $kernelOptions += "i915.enable_guc=0"; $kernelOptions += "i915.enable_psr=0" }
     if ($EnableIA32) { $kernelOptions += "efi=noruntime" }
     $optionsString = $kernelOptions -join " "
     $normalMenuTitle = if ($EnableGoogleApps) { "TapeOS (ChromeOS Actualizado - Modo Normal)" } else { "TapeOS (ChromeOS - Sin Google Play / APK + Aurora)" }
 
-    $grubContent = @"
-# ===================================================================
-# TapeOS Patched Bootloader Configuration
-# Permite iniciar ChromeOS actualizado en PCs EFI antiguos
-# ===================================================================
-set default=0
-set timeout=5
-
-insmod part_gpt
-insmod part_msdos
-insmod ext2
-insmod all_video
-
-menuentry "$normalMenuTitle" --class chromeos {
-    search --no-floppy --set=root -l ROOT-A
-    linux /boot/vmlinuz init=/init boot=local root=/dev/ram0 cros_debug options=$optionsString
-    initrd /boot/initramfs.img
-}
-
-menuentry "TapeOS (ChromeOS - Menú de Configuración y Diagnóstico)" --class settings {
-    search --no-floppy --set=root -l ROOT-A
-    linux /boot/vmlinuz init=/init boot=local root=/dev/ram0 cros_debug options=setup
-    initrd /boot/initramfs.img
-}
-"@
-    Set-Content -Path $grubFile -Value $grubContent -Encoding UTF8
+        # Menu GRUB de TapeOS (normal/verbose/seguro/instalacion) generado por BootManager
+    Import-Module (Join-Path $PSScriptRoot "BootManager.psm1") -Force
+    New-TapeOSGrubConfig -OutputPath $grubFile `
+        -KernelPath "/syslinux/vmlinuz.A" `
+        -InitrdPath "/tapeos/initramfs.img" `
+        -EnableGoogleApps $EnableGoogleApps `
+        -FrameworkOptions $kernelOptions `
+        -Timeout 15 | Out-Null
 
     if ($ProgressCallback) { & $ProgressCallback 100 "Imâhen lîtta y parcheá." }
     Write-Host "[TapeOS Patcher] ¡Imâhen parcheá y prepará kon éxito! (Googlêh Play: $googleAppsStatus)" -ForegroundColor Green

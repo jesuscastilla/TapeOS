@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+TAPEOOS_ROOT=${TAPEOOS_ROOT:-/roota}
 # ==============================================================================
 # TapeOS Patch: 10-legacy_gpu_freon.sh
 # Habilita aceleración gráfica fluida en ChromeOS moderno para GPUs Intel y AMD antiguas
@@ -18,8 +19,8 @@ if echo "$GPU_PCI" | grep -qi "8086"; then
         echo "[TapeOS] Aplicando perfil de compatibilidad Legacy Intel GPU (Gen 2 - Gen 7)..."
         
         # Inyectar configuración para Mesa y Chrome
-        mkdir -p /etc/chrome_dev.conf.d/
-        cat << 'EOF' > /etc/chrome_dev.conf.d/10-tapeos-legacy-gpu.conf
+        mkdir -p $TAPEOOS_ROOT/etc/chrome_dev.conf.d/
+        cat << 'EOF' > $TAPEOOS_ROOT/etc/chrome_dev.conf.d/10-tapeos-legacy-gpu.conf
 --ignore-gpu-blocklist
 --enable-gpu-rasterization
 --enable-zero-copy
@@ -28,7 +29,7 @@ if echo "$GPU_PCI" | grep -qi "8086"; then
 EOF
 
         # Variables de entorno para Mesa (desactivar compresión no soportada)
-        cat << 'EOF' > /etc/env.d/99tapeos-mesa
+        cat << 'EOF' > $TAPEOOS_ROOT/etc/env.d/99tapeos-mesa
 INTEL_DEBUG=noccs,norbc
 MESA_LOADER_DRIVER_OVERRIDE=crocus
 LIBGL_ALWAYS_SOFTWARE=0
@@ -37,8 +38,8 @@ EOF
 elif echo "$GPU_PCI" | grep -qi "1002"; then
     # AMD Graphics (Radeon TeraScale / GCN 1.0)
     echo "[TapeOS] GPU AMD Legacy detectada: $GPU_PCI"
-    mkdir -p /etc/chrome_dev.conf.d/
-    cat << 'EOF' > /etc/chrome_dev.conf.d/10-tapeos-legacy-gpu.conf
+    mkdir -p $TAPEOOS_ROOT/etc/chrome_dev.conf.d/
+    cat << 'EOF' > $TAPEOOS_ROOT/etc/chrome_dev.conf.d/10-tapeos-legacy-gpu.conf
 --ignore-gpu-blocklist
 --enable-gpu-rasterization
 --disable-features=Vulkan,VulkanFromANGLE

@@ -152,7 +152,8 @@ TapeOS nace del proyecto **[Brunch](https://github.com/sebanc/brunch)** de **Sé
 - [ ] **Más identidad andaluza en el sistema**: bandera, pistas y herramientas de bienvenida; sonidos, fondo de pantalla y tema andaluz en ChromeOS; celebraciones (Día de Andalucía, Ferias) y guiños a la cultura (tapas, flamenco, cai).
 - [ ] **Documentación de actualizaciones**: añadir un documento (`docs/UPDATES.md`) con todas las posibilidades de actualización (canal stable/beta/dev, AUE, kernel legacy vs moderno, parches).
 - [ ] **Eliminar referencias a Google dentro del sistema**: especialmente en la versión sin Google Play (servicios, cuentas, sincronización, pantallas y menús), manteniendo solo lo necesario para el funcionamiento de ChromeOS.
-- [ ] **Intentar instalar en equipos no EFI con BIOS lecagy** creando una versión "vintage" que también permita acceder a últimas versiones del sistema y a aplicaciones de Android. 
+- [ ] **Intentar instalar en equipos no EFI con BIOS lecagy** creando una versión "vintage" que también permita acceder a últimas versiones del sistema y a aplicaciones de Android.
+- [ ] **Añadir modo "Legacy BIOS"** aunque se tenga que usar una versión reducida y una versión de Android antigua.
 
 ---
 

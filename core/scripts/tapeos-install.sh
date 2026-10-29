@@ -1,122 +1,147 @@
-#!/usr/bin/env bash
+#!/bin/busybox sh
 # ==============================================================================
-# TapeOS Installer Script
-# TapeOS Installer — Soporte Universal para ChromeOS en PC (Moderno & Legacy)
+# TapeOS - Instalador a disco duro (se ejecuta dentro del initramfs)
+#
+#   1. Vuelca el USB completo (dd) al disco destino elegido.
+#   2. Reubica la GPT de respaldo al final del disco (sgdisk -e).
+#   3. Expande ROOT-A (particion 3) hasta el final del disco.
+#   4. Aplica los parches de TapeOS sobre la instalacion.
+#   5. Reescribe el menu GRUB del destino con el nuevo PARTUUID.
+#
+# Uso: tapeos-install.sh <disco_origen> [particion_esp_origen]
 # ==============================================================================
 
-if [ -z "$BASH_VERSION" ]; then echo "Error: Este script debe ejecutarse con 'bash'"; exit 1; fi
-if [ "$(id -u)" != "0" ]; then echo "Error: Ejecuta este script con permisos de root (sudo)"; exit 1; fi
+SRC="$1"
+ESP_SRC="${2:-}"
+OPTIONS="$(cat /run/tapeos-options 2>/dev/null || true)"
 
-for tool in cgpt pv tar parted mkfs.ext4; do
-    if ! command -v "$tool" >/dev/null 2>&1; then
-        echo "Error: Falta la herramienta requerida: $tool. Instálala antes de continuar."
-        exit 1
-    fi
-done
-
-show_usage() {
-    cat << EOF
-
-TapeOS Installer — Instalador Universal de ChromeOS para PCs
-Uso: sudo bash tapeos-install.sh -src <imagen_recovery.bin> -dst <destino> [opciones]
-
-Argumentos obligatorios:
-  -src, --source <ruta>       Ruta de la imagen de recuperación oficial de ChromeOS (.bin)
-  -dst, --destination <ruta>  Dispositivo destino (/dev/sdX, /dev/nvme0n1) o archivo de imagen (.img)
-
-Opciones adicionales:
-  -s,   --size <GB>           Tamaño final de la imagen en GB (por defecto: 16)
-  -k,   --kernel <tipo>       Versión del kernel:
-                                modern (6.6/6.1 LTS)
-                                legacy-5.10 (4ª-9ª Gen Intel)
-                                legacy-5.4 (Sandy/Ivy Bridge, AMD Stoney)
-                                legacy-4.19 (Bay Trail / Cherry Trail)
-  -l,   --legacy-efi          Usar partición EFI sin Secure Boot para compatibilidad amplia
-  -ia32                       Incluir cargador de arranque UEFI de 32 bits (bootia32.efi)
-  -mbr                        Instalar cargador MBR para equipos con BIOS Legacy (sin UEFI)
-  -h,   --help                Mostrar esta ayuda
-
-EOF
+log() {
+    echo "[TapeOS install] $*" > /dev/kmsg 2>/dev/null
+    echo "[TapeOS install] $*"
 }
 
-SOURCE_IMG=""
-DESTINATION=""
-IMG_SIZE=16
-KERNEL_TYPE="modern"
-LEGACY_EFI=0
-ENABLE_IA32=0
-ENABLE_MBR=0
+[ -n "$SRC" ] || { echo "Uso: tapeos-install.sh <disco_origen>"; exit 1; }
 
-while [ "$#" -gt 0 ]; do
+# --- utilidades ---------------------------------------------------------------
+disk_size_gb() {
+    local sz
+    sz=$(cat "/sys/class/block/$(basename "$1")/size" 2>/dev/null || echo 0)
+    echo $(( sz * 512 / 1000000000 ))
+}
+
+part_dev() {  # <disco> <num> -> /dev/sda3 o /dev/nvme0n1p3
     case "$1" in
-        -src|--source)
-            SOURCE_IMG="$2"
-            shift 2
-            ;;
-        -dst|--destination)
-            DESTINATION="$2"
-            shift 2
-            ;;
-        -s|--size)
-            IMG_SIZE="$2"
-            shift 2
-            ;;
-        -k|--kernel)
-            KERNEL_TYPE="$2"
-            shift 2
-            ;;
-        -l|--legacy-efi)
-            LEGACY_EFI=1
-            shift
-            ;;
-        -ia32)
-            ENABLE_IA32=1
-            shift
-            ;;
-        -mbr)
-            ENABLE_MBR=1
-            shift
-            ;;
-        -h|--help)
-            show_usage
-            exit 0
-            ;;
-        *)
-            echo "Opción desconocida: $1"
-            show_usage
-            exit 1
-            ;;
+        *nvme*|*mmcblk*) echo "$1p$2" ;;
+        *) echo "$1$2" ;;
     esac
+}
+
+echo ""
+echo "=================================================================="
+echo "        TapeOS - INSTALACION EN DISCO DURO"
+echo "=================================================================="
+echo ""
+echo "ADVERTENCIA: SE BORRARAN TODOS LOS DATOS DEL DISCO DESTINO."
+echo ""
+echo "Discos detectados (se excluye el medio de arranque $SRC):"
+echo ""
+CANDIDATES=""
+i=0
+for d in /sys/class/block/*; do
+    base="${d##*/}"
+    case "$base" in loop*|ram*|dm-*|sr*) continue ;; esac
+    [ -e "$d/partition" ] && continue
+    [ "$base" = "$(basename "$SRC")" ] && continue
+    i=$((i+1))
+    CANDIDATES="$CANDIDATES /dev/$base"
+    model="$(cat "$d/device/model" 2>/dev/null || echo desconocido)"
+    gb=$(disk_size_gb "/dev/$base")
+    echo "  [$i] /dev/$base  ${gb} GB  ($model)"
 done
+[ -n "$CANDIDATES" ] || { echo "No hay discos destino disponibles."; exit 1; }
 
-if [ -z "$SOURCE_IMG" ] || [ -z "$DESTINATION" ]; then
-    echo "Error: Debes especificar tanto -src como -dst."
-    show_usage
-    exit 1
+printf "Elige el numero del disco destino: "
+read choice
+case "$choice" in ''|*[!0-9]*) echo "Opcion invalida."; exit 1 ;; esac
+DST=""
+j=0
+for c in $CANDIDATES; do
+    j=$((j+1))
+    [ "$j" = "$choice" ] && DST="$c"
+done
+[ -n "$DST" ] || { echo "Opcion invalida."; exit 1; }
+
+echo ""
+echo "Destino elegido: $DST ($(disk_size_gb "$DST") GB)"
+printf "Escribe BORRAR para confirmar: "
+read confirm
+[ "$confirm" = "BORRAR" ] || { echo "Cancelado."; exit 1; }
+
+echo ""
+echo "[1/6] Volcando $SRC -> $DST (tarda varios minutos)..."
+dd if="$SRC" of="$DST" bs=4M conv=fsync 2>/dev/null
+sync
+echo "      Volcado completado."
+
+echo "[2/6] Reubicando la GPT de respaldo al final del disco..."
+sgdisk -e "$DST" || { echo "sgdisk -e fallo"; exit 1; }
+
+echo "[3/6] Expandiendo ROOT-A (particion 3) al 100% del disco..."
+START=$(sgdisk -i 3 "$DST" | awk -F: '/First sector/ {print $2}' | tr -d ' ' | sed 's/(.*//')
+case "$START" in ''|*[!0-9]*) echo "No se pudo leer el inicio de ROOT-A."; exit 1 ;; esac
+sgdisk -d 3 -n 3:"$START":0 -t 3:3CB8E202-3B7E-47DD-8A3C-7FF2A13CFCEB -c 3:ROOT-A "$DST" || { echo "sgdisk -n fallo"; exit 1; }
+partprobe "$DST" 2>/dev/null || true
+sleep 2
+
+echo "[4/6] Redimensionando el sistema de ficheros..."
+ROOTDEV=$(part_dev "$DST" 3)
+e2fsck -f -y "$ROOTDEV" >/dev/null 2>&1 || true
+resize2fs "$ROOTDEV" || { echo "resize2fs fallo"; exit 1; }
+sync
+
+echo "[5/6] Aplicando parches de TapeOS a la instalacion..."
+NEWUUID=$(sgdisk -i 3 "$DST" | awk -F: '/Partition unique GUID/ {print $2}' | tr -d ' ')
+mkdir -p /mnt/newroot
+mount -o rw "$ROOTDEV" /mnt/newroot || { echo "No se pudo montar ROOT-A destino."; exit 1; }
+export TAPEOOS_ROOT=/mnt/newroot
+for p in /patches/[0-9]*.sh; do
+    [ -x "$p" ] || continue
+    echo "   + ${p##*/}"
+    "$p" "$OPTIONS" > /dev/kmsg 2>&1
+done
+umount /mnt/newroot 2>/dev/null || true
+
+echo "[6/6] Actualizando el menu GRUB del disco destino..."
+ESP_DST=""
+for p in /sys/class/block/$(basename "$DST")*; do
+    [ -e "$p/partition" ] || continue
+    dev="/dev/${p##*/}"
+    mkdir -p /mnt/esp
+    if mount -t vfat "$dev" /mnt/esp 2>/dev/null; then
+        if [ -f /mnt/esp/efi/boot/grub.cfg ] || [ -f /mnt/esp/syslinux/vmlinuz.A ]; then
+            ESP_DST="$dev"
+            break
+        fi
+        umount /mnt/esp 2>/dev/null
+    fi
+done
+if [ -n "$ESP_DST" ] && [ -n "$NEWUUID" ]; then
+    mount -t vfat "$ESP_DST" /mnt/esp 2>/dev/null || true
+    OLD_UUID=$(grep -o 'PARTUUID=[0-9A-F-]*' /mnt/esp/efi/boot/grub.cfg 2>/dev/null | head -1 | cut -d= -f2)
+    if [ -n "$OLD_UUID" ]; then
+        sed -i "s/$OLD_UUID/$NEWUUID/g" /mnt/esp/efi/boot/grub.cfg
+        echo "   PARTUUID actualizado: $OLD_UUID -> $NEWUUID"
+    else
+        echo "   (AVISO: no se encontro PARTUUID en el grub.cfg del destino)"
+    fi
+    umount /mnt/esp 2>/dev/null || true
+else
+    echo "   (AVISO: no se encontro la ESP destino; revisa el grub.cfg a mano)"
 fi
 
-if [ ! -f "$SOURCE_IMG" ]; then
-    echo "Error: La imagen origen '$SOURCE_IMG' no existe."
-    exit 1
-fi
-
-echo "=========================================================="
-echo "               TapeOS Installation Pipeline              "
-echo "=========================================================="
-echo "• Origen:          $SOURCE_IMG"
-echo "• Destino:         $DESTINATION"
-echo "• Tamaño (GB):     $IMG_SIZE"
-echo "• Kernel Perfil:   $KERNEL_TYPE"
-echo "• Modo UEFI 32b:   $([ "$ENABLE_IA32" -eq 1 ] && echo 'Sí' || echo 'No')"
-echo "• Modo BIOS MBR:   $([ "$ENABLE_MBR" -eq 1 ] && echo 'Sí' || echo 'No')"
-echo "=========================================================="
-
-read -p "¿Deseas continuar? (escribe 'yes' o 'si'): " confirm
-if [ "$confirm" != "yes" ] && [ "$confirm" != "si" ]; then
-    echo "Operación cancelada."
-    exit 0
-fi
-
-echo "Iniciando despliegue de particiones y framework TapeOS..."
-# (Lógica de particionado con cgpt y volcado de ROOTC y EFI)
-echo "TapeOS instalado correctamente en $DESTINATION."
+echo ""
+echo "=================================================================="
+echo " INSTALACION COMPLETADA en $DST"
+echo " Reinicia, entra en la BIOS (F12/F11/Esc) y arranca desde el disco."
+echo "=================================================================="
+exit 0
