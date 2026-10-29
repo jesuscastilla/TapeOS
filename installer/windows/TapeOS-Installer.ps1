@@ -61,27 +61,27 @@ try {
 # =============================================================================
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "TapeOS Installer — Açîtente por Paçô"
-$form.Size = New-Object System.Drawing.Size(920, 780)
+$form.ClientSize = New-Object System.Drawing.Size(900, 660)
 $form.StartPosition = "CenterScreen"
 $form.FormBorderStyle = "FixedDialog"
 $form.MaximizeBox = $false
 
-# Fondo: bandera de Andalucía dibujada a la resolucion exacta del formulario
-$tapeosFlag = New-Object System.Drawing.Bitmap(920, 780)
+# Fondo: bandera de Andalucía dibujada al tamaño exacto del área cliente
+$tapeosFlag = New-Object System.Drawing.Bitmap(900, 660)
 $flagG = [System.Drawing.Graphics]::FromImage($tapeosFlag)
 $greenBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(0, 132, 61))
 $whiteBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::White)
-$flagG.FillRectangle($greenBrush, 0, 0, 920, 260)
-$flagG.FillRectangle($whiteBrush, 0, 260, 920, 260)
-$flagG.FillRectangle($greenBrush, 0, 520, 920, 260)
+$flagG.FillRectangle($greenBrush, 0, 0, 900, 220)
+$flagG.FillRectangle($whiteBrush, 0, 220, 900, 220)
+$flagG.FillRectangle($greenBrush, 0, 440, 900, 220)
 $flagG.Dispose()
 $form.BackgroundImage = $tapeosFlag
-$form.BackgroundImageLayout = [System.Windows.Forms.ImageLayout]::Tile
+$form.BackgroundImageLayout = [System.Windows.Forms.ImageLayout]::None
 
 # Cabecera
 $headerPanel = New-Object System.Windows.Forms.Panel
 $headerPanel.Location = New-Object System.Drawing.Point(0, 0)
-$headerPanel.Size = New-Object System.Drawing.Size(920, 76)
+$headerPanel.Size = New-Object System.Drawing.Size(900, 66)
 $headerPanel.BackColor = [System.Drawing.Color]::FromArgb(0, 132, 61)
 $form.Controls.Add($headerPanel)
 
@@ -105,7 +105,7 @@ if ($logoPath) {
     $logoBox = New-Object System.Windows.Forms.PictureBox
     $logoBox.Image = $logoBitmap
     $logoBox.SizeMode = [System.Windows.Forms.PictureBoxSizeMode]::CenterImage
-    $logoBox.Location = New-Object System.Drawing.Point(12, 8)
+    $logoBox.Location = New-Object System.Drawing.Point(12, 5)
     $logoBox.Size = New-Object System.Drawing.Size(56, 56)
     $headerPanel.Controls.Add($logoBox)
 }
@@ -114,7 +114,7 @@ $titleLabel = New-Object System.Windows.Forms.Label
 $titleLabel.Text = "TapeOS Îttaladôh Uniberçâh"
 $titleLabel.Font = New-Object System.Drawing.Font("Segoe UI", 16, [System.Drawing.FontStyle]::Bold)
 $titleLabel.ForeColor = [System.Drawing.Color]::White
-$titleLabel.Location = New-Object System.Drawing.Point(78, 8)
+$titleLabel.Location = New-Object System.Drawing.Point(78, 2)
 $titleLabel.AutoSize = $true
 $headerPanel.Controls.Add($titleLabel)
 
@@ -122,13 +122,13 @@ $subtitleLabel = New-Object System.Windows.Forms.Label
 $subtitleLabel.Text = "Açîtente por paçô: Detêççiôn -> Rekûperaçiôn -> Aplikâçionêh -> Medio -> Reçûmen -> Ehekuçiôn"
 $subtitleLabel.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
 $subtitleLabel.ForeColor = [System.Drawing.Color]::FromArgb(232, 240, 254)
-$subtitleLabel.Location = New-Object System.Drawing.Point(79, 42)
+$subtitleLabel.Location = New-Object System.Drawing.Point(79, 32)
 $subtitleLabel.AutoSize = $true
 $headerPanel.Controls.Add($subtitleLabel)
 
 $cbLang = New-Object System.Windows.Forms.ComboBox
 $cbLang.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
-$cbLang.Location = New-Object System.Drawing.Point(750, 12)
+$cbLang.Location = New-Object System.Drawing.Point(740, 10)
 $cbLang.Size = New-Object System.Drawing.Size(140, 25)
 $cbLang.Font = New-Object System.Drawing.Font("Segoe UI", 9)
 [void]$cbLang.Items.Add("Andaluz")
@@ -137,11 +137,11 @@ $cbLang.SelectedIndex = 0
 $headerPanel.Controls.Add($cbLang)
 
 # =============================================================================
-# Indicador de paçô (5 etapâ)
+# Indicador de paçô (6 etapâ)
 # =============================================================================
 $stepIndicator = New-Object System.Windows.Forms.Panel
-$stepIndicator.Location = New-Object System.Drawing.Point(20, 84)
-$stepIndicator.Size = New-Object System.Drawing.Size(860, 40)
+$stepIndicator.Location = New-Object System.Drawing.Point(20, 72)
+$stepIndicator.Size = New-Object System.Drawing.Size(860, 34)
 $stepIndicator.BackColor = [System.Drawing.Color]::White
 $form.Controls.Add($stepIndicator)
 
@@ -154,7 +154,7 @@ for ($i = 0; $i -lt 6; $i++) {
     $sl.Font = New-Object System.Drawing.Font("Segoe UI", 9)
     $sl.ForeColor = [System.Drawing.Color]::FromArgb(120, 120, 120)
     $stepX = 15 + ($i * 140)
-    $sl.Location = New-Object System.Drawing.Point($stepX, 12)
+    $sl.Location = New-Object System.Drawing.Point($stepX, 8)
     $sl.Size = New-Object System.Drawing.Size(135, 20)
     $stepIndicator.Controls.Add($sl)
     $stepLabels += $sl
@@ -162,8 +162,8 @@ for ($i = 0; $i -lt 6; $i++) {
 
 # Panel de contenido (una bîtta po paço)
 $contentPanel = New-Object System.Windows.Forms.Panel
-$contentPanel.Location = New-Object System.Drawing.Point(20, 134)
-$contentPanel.Size = New-Object System.Drawing.Size(860, 420)
+$contentPanel.Location = New-Object System.Drawing.Point(20, 112)
+$contentPanel.Size = New-Object System.Drawing.Size(860, 340)
 $contentPanel.BackColor = [System.Drawing.Color]::White
 $form.Controls.Add($contentPanel)
 
@@ -183,27 +183,27 @@ $gpuSummary = (($hwReport.GPU | ForEach-Object { "$($_.Name) $(if ($_.VendorId -
 $lblHwTitle = New-Object System.Windows.Forms.Label
 $lblHwTitle.Text = "Detêççiôn de hardware"
 $lblHwTitle.Font = New-Object System.Drawing.Font("Segoe UI", 14, [System.Drawing.FontStyle]::Bold)
-$lblHwTitle.Location = New-Object System.Drawing.Point(20, 12)
+$lblHwTitle.Location = New-Object System.Drawing.Point(20, 10)
 $lblHwTitle.AutoSize = $true
 $pnl1.Controls.Add($lblHwTitle)
 
 $lblHwInfo = New-Object System.Windows.Forms.Label
 $lblHwInfo.Text = "..."
-$lblHwInfo.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
-$lblHwInfo.Location = New-Object System.Drawing.Point(20, 45)
-$lblHwInfo.Size = New-Object System.Drawing.Size(820, 165)
+$lblHwInfo.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$lblHwInfo.Location = New-Object System.Drawing.Point(20, 42)
+$lblHwInfo.Size = New-Object System.Drawing.Size(820, 190)
 $pnl1.Controls.Add($lblHwInfo)
 
 $pbStep1 = New-Object System.Windows.Forms.ProgressBar
-$pbStep1.Location = New-Object System.Drawing.Point(20, 220)
-$pbStep1.Size = New-Object System.Drawing.Size(820, 20)
+$pbStep1.Location = New-Object System.Drawing.Point(20, 240)
+$pbStep1.Size = New-Object System.Drawing.Size(820, 18)
 $pbStep1.Value = 100
 $pnl1.Controls.Add($pbStep1)
 
 $lblEta1 = New-Object System.Windows.Forms.Label
 $lblEta1.Text = "Êttimao: 0 ç (kompletao)"
 $lblEta1.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Italic)
-$lblEta1.Location = New-Object System.Drawing.Point(20, 245)
+$lblEta1.Location = New-Object System.Drawing.Point(20, 264)
 $lblEta1.AutoSize = $true
 $pnl1.Controls.Add($lblEta1)
 
@@ -218,20 +218,20 @@ $pnl2.BackColor = [System.Drawing.Color]::White
 $lblRecTitle = New-Object System.Windows.Forms.Label
 $lblRecTitle.Text = "Rekomendaçiôn de rekûperaçiôn"
 $lblRecTitle.Font = New-Object System.Drawing.Font("Segoe UI", 14, [System.Drawing.FontStyle]::Bold)
-$lblRecTitle.Location = New-Object System.Drawing.Point(20, 12)
+$lblRecTitle.Location = New-Object System.Drawing.Point(20, 10)
 $lblRecTitle.AutoSize = $true
 $pnl2.Controls.Add($lblRecTitle)
 
 $lblRecInfo = New-Object System.Windows.Forms.Label
 $lblRecInfo.Text = "..."
 $lblRecInfo.Font = New-Object System.Drawing.Font("Segoe UI", 10)
-$lblRecInfo.Location = New-Object System.Drawing.Point(20, 42)
-$lblRecInfo.Size = New-Object System.Drawing.Size(820, 36)
+$lblRecInfo.Location = New-Object System.Drawing.Point(20, 38)
+$lblRecInfo.Size = New-Object System.Drawing.Size(820, 34)
 $pnl2.Controls.Add($lblRecInfo)
 
 $cbRecovery = New-Object System.Windows.Forms.ComboBox
-$cbRecovery.Location = New-Object System.Drawing.Point(20, 88)
-$cbRecovery.Size = New-Object System.Drawing.Size(540, 25)
+$cbRecovery.Location = New-Object System.Drawing.Point(20, 80)
+$cbRecovery.Size = New-Object System.Drawing.Size(520, 25)
 $cbRecovery.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
 foreach ($item in $catalog) { [void]$cbRecovery.Items.Add("$($item.Codename) — $($item.DisplayName)") }
 $cbRecovery.SelectedIndex = 0
@@ -242,20 +242,20 @@ $pnl2.Controls.Add($cbRecovery)
 
 $btnCheckOnline = New-Object System.Windows.Forms.Button
 $btnCheckOnline.Text = "🌐 Bûhkâh la Ûrtima Berçiôn"
-$btnCheckOnline.Location = New-Object System.Drawing.Point(580, 86)
-$btnCheckOnline.Size = New-Object System.Drawing.Size(260, 27)
+$btnCheckOnline.Location = New-Object System.Drawing.Point(560, 78)
+$btnCheckOnline.Size = New-Object System.Drawing.Size(265, 27)
 $pnl2.Controls.Add($btnCheckOnline)
 
 $lblStatusUrl = New-Object System.Windows.Forms.Label
 $lblStatusUrl.Text = "Berçiôn ofiçiâh mâh reçiente: pulça 'Bûhkâh' pa konhûttâh er CDN de Google."
 $lblStatusUrl.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Italic)
-$lblStatusUrl.Location = New-Object System.Drawing.Point(20, 125)
-$lblStatusUrl.Size = New-Object System.Drawing.Size(820, 40)
+$lblStatusUrl.Location = New-Object System.Drawing.Point(20, 114)
+$lblStatusUrl.Size = New-Object System.Drawing.Size(820, 36)
 $pnl2.Controls.Add($lblStatusUrl)
 
 $pbStep2 = New-Object System.Windows.Forms.ProgressBar
-$pbStep2.Location = New-Object System.Drawing.Point(20, 172)
-$pbStep2.Size = New-Object System.Drawing.Size(820, 18)
+$pbStep2.Location = New-Object System.Drawing.Point(20, 160)
+$pbStep2.Size = New-Object System.Drawing.Size(820, 16)
 $pbStep2.Style = [System.Windows.Forms.ProgressBarStyle]::Marquee
 $pbStep2.Visible = $false
 $pnl2.Controls.Add($pbStep2)
@@ -263,7 +263,7 @@ $pnl2.Controls.Add($pbStep2)
 $lblEta2 = New-Object System.Windows.Forms.Label
 $lblEta2.Text = ""
 $lblEta2.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Italic)
-$lblEta2.Location = New-Object System.Drawing.Point(20, 195)
+$lblEta2.Location = New-Object System.Drawing.Point(20, 182)
 $lblEta2.AutoSize = $true
 $pnl2.Controls.Add($lblEta2)
 
@@ -278,14 +278,14 @@ $pnl3.BackColor = [System.Drawing.Color]::White
 $lblAppsTitle = New-Object System.Windows.Forms.Label
 $lblAppsTitle.Text = "Aplikâçionêh y çoftware"
 $lblAppsTitle.Font = New-Object System.Drawing.Font("Segoe UI", 14, [System.Drawing.FontStyle]::Bold)
-$lblAppsTitle.Location = New-Object System.Drawing.Point(20, 12)
+$lblAppsTitle.Location = New-Object System.Drawing.Point(20, 10)
 $lblAppsTitle.AutoSize = $true
 $pnl3.Controls.Add($lblAppsTitle)
 
 $radioLibre = New-Object System.Windows.Forms.RadioButton
 $radioLibre.Text = "🔓 Çoftware Libre — çîn Googlêh Play (rekomendao)"
 $radioLibre.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
-$radioLibre.Location = New-Object System.Drawing.Point(20, 50)
+$radioLibre.Location = New-Object System.Drawing.Point(20, 45)
 $radioLibre.AutoSize = $true
 $radioLibre.Checked = $true
 $pnl3.Controls.Add($radioLibre)
@@ -293,7 +293,7 @@ $pnl3.Controls.Add($radioLibre)
 $radioGoogleApps = New-Object System.Windows.Forms.RadioButton
 $radioGoogleApps.Text = "🛍️ Kon Googlêh Play — Android kompleto"
 $radioGoogleApps.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
-$radioGoogleApps.Location = New-Object System.Drawing.Point(20, 82)
+$radioGoogleApps.Location = New-Object System.Drawing.Point(20, 75)
 $radioGoogleApps.AutoSize = $true
 $radioGoogleApps.Checked = $false
 $pnl3.Controls.Add($radioGoogleApps)
@@ -301,8 +301,8 @@ $pnl3.Controls.Add($radioGoogleApps)
 $lblAppsExplain = New-Object System.Windows.Forms.Label
 $lblAppsExplain.Text = "..."
 $lblAppsExplain.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
-$lblAppsExplain.Location = New-Object System.Drawing.Point(20, 130)
-$lblAppsExplain.Size = New-Object System.Drawing.Size(820, 110)
+$lblAppsExplain.Location = New-Object System.Drawing.Point(20, 112)
+$lblAppsExplain.Size = New-Object System.Drawing.Size(820, 150)
 $pnl3.Controls.Add($lblAppsExplain)
 
 $contentPanel.Controls.Add($pnl3)
@@ -316,56 +316,56 @@ $pnl4.BackColor = [System.Drawing.Color]::White
 $lblMediaTitle = New-Object System.Windows.Forms.Label
 $lblMediaTitle.Text = "Medio de îttalaçiôn"
 $lblMediaTitle.Font = New-Object System.Drawing.Font("Segoe UI", 14, [System.Drawing.FontStyle]::Bold)
-$lblMediaTitle.Location = New-Object System.Drawing.Point(20, 12)
+$lblMediaTitle.Location = New-Object System.Drawing.Point(20, 10)
 $lblMediaTitle.AutoSize = $true
 $pnl4.Controls.Add($lblMediaTitle)
 
 $radioImageOnly = New-Object System.Windows.Forms.RadioButton
 $radioImageOnly.Text = "📀 Kreâh er medio de îttalaçiôn (.img) — guâddâlo en er dîkko"
 $radioImageOnly.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
-$radioImageOnly.Location = New-Object System.Drawing.Point(20, 50)
+$radioImageOnly.Location = New-Object System.Drawing.Point(20, 45)
 $radioImageOnly.AutoSize = $true
 $radioImageOnly.Checked = $true
 $pnl4.Controls.Add($radioImageOnly)
 
 $txtImageDir = New-Object System.Windows.Forms.TextBox
 $txtImageDir.Text = "C:\TapeOS\images"
-$txtImageDir.Location = New-Object System.Drawing.Point(60, 88)
-$txtImageDir.Size = New-Object System.Drawing.Size(560, 25)
+$txtImageDir.Location = New-Object System.Drawing.Point(55, 80)
+$txtImageDir.Size = New-Object System.Drawing.Size(540, 25)
 $pnl4.Controls.Add($txtImageDir)
 
 $btnBrowseDir = New-Object System.Windows.Forms.Button
 $btnBrowseDir.Text = "📂 Ehkaminâh..."
-$btnBrowseDir.Location = New-Object System.Drawing.Point(635, 86)
-$btnBrowseDir.Size = New-Object System.Drawing.Size(130, 27)
+$btnBrowseDir.Location = New-Object System.Drawing.Point(605, 78)
+$btnBrowseDir.Size = New-Object System.Drawing.Size(200, 27)
 $pnl4.Controls.Add($btnBrowseDir)
 
 $radioUsb = New-Object System.Windows.Forms.RadioButton
 $radioUsb.Text = "💾 Live-USB — Grabâh en un pendraîh USB y arrankâh dêhde él"
 $radioUsb.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
-$radioUsb.Location = New-Object System.Drawing.Point(20, 150)
+$radioUsb.Location = New-Object System.Drawing.Point(20, 135)
 $radioUsb.AutoSize = $true
 $radioUsb.Checked = $false
 $pnl4.Controls.Add($radioUsb)
 
 $cbUsbDrives = New-Object System.Windows.Forms.ComboBox
-$cbUsbDrives.Location = New-Object System.Drawing.Point(60, 188)
-$cbUsbDrives.Size = New-Object System.Drawing.Size(560, 25)
+$cbUsbDrives.Location = New-Object System.Drawing.Point(55, 170)
+$cbUsbDrives.Size = New-Object System.Drawing.Size(540, 25)
 $cbUsbDrives.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
 $cbUsbDrives.Enabled = $false
 $pnl4.Controls.Add($cbUsbDrives)
 
 $btnRefreshUsb = New-Object System.Windows.Forms.Button
 $btnRefreshUsb.Text = "🔄 Refrehkâh"
-$btnRefreshUsb.Location = New-Object System.Drawing.Point(635, 186)
-$btnRefreshUsb.Size = New-Object System.Drawing.Size(130, 27)
+$btnRefreshUsb.Location = New-Object System.Drawing.Point(605, 168)
+$btnRefreshUsb.Size = New-Object System.Drawing.Size(200, 27)
 $btnRefreshUsb.Enabled = $false
 $pnl4.Controls.Add($btnRefreshUsb)
 
 $lblUsbWarning = New-Object System.Windows.Forms.Label
 $lblUsbWarning.Text = "⚠️ OHO: Er pendraîh çelehçionao çe formateará po kompleto pa îttalâh TapeOS."
 $lblUsbWarning.ForeColor = [System.Drawing.Color]::FromArgb(180, 40, 40)
-$lblUsbWarning.Location = New-Object System.Drawing.Point(20, 228)
+$lblUsbWarning.Location = New-Object System.Drawing.Point(20, 208)
 $lblUsbWarning.Size = New-Object System.Drawing.Size(820, 25)
 $pnl4.Controls.Add($lblUsbWarning)
 
@@ -380,15 +380,15 @@ $pnl5.BackColor = [System.Drawing.Color]::White
 $lblSumTitle = New-Object System.Windows.Forms.Label
 $lblSumTitle.Text = "Reçûmen de la îttalaçiôn"
 $lblSumTitle.Font = New-Object System.Drawing.Font("Segoe UI", 14, [System.Drawing.FontStyle]::Bold)
-$lblSumTitle.Location = New-Object System.Drawing.Point(20, 12)
+$lblSumTitle.Location = New-Object System.Drawing.Point(20, 10)
 $lblSumTitle.AutoSize = $true
 $pnl5.Controls.Add($lblSumTitle)
 
 $lblSummary = New-Object System.Windows.Forms.Label
 $lblSummary.Text = "..."
 $lblSummary.Font = New-Object System.Drawing.Font("Segoe UI", 10)
-$lblSummary.Location = New-Object System.Drawing.Point(20, 48)
-$lblSummary.Size = New-Object System.Drawing.Size(820, 150)
+$lblSummary.Location = New-Object System.Drawing.Point(20, 42)
+$lblSummary.Size = New-Object System.Drawing.Size(820, 135)
 $pnl5.Controls.Add($lblSummary)
 
 $btnCreate = New-Object System.Windows.Forms.Button
@@ -397,7 +397,7 @@ $btnCreate.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing
 $btnCreate.BackColor = [System.Drawing.Color]::FromArgb(0, 132, 61)
 $btnCreate.ForeColor = [System.Drawing.Color]::White
 $btnCreate.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-$btnCreate.Location = New-Object System.Drawing.Point(255, 220)
+$btnCreate.Location = New-Object System.Drawing.Point(255, 195)
 $btnCreate.Size = New-Object System.Drawing.Size(350, 45)
 $pnl5.Controls.Add($btnCreate)
 
@@ -412,19 +412,19 @@ $pnl6.BackColor = [System.Drawing.Color]::White
 $lblPhase = New-Object System.Windows.Forms.Label
 $lblPhase.Text = "Êpperando..."
 $lblPhase.Font = New-Object System.Drawing.Font("Segoe UI", 12, [System.Drawing.FontStyle]::Bold)
-$lblPhase.Location = New-Object System.Drawing.Point(20, 15)
+$lblPhase.Location = New-Object System.Drawing.Point(20, 10)
 $lblPhase.Size = New-Object System.Drawing.Size(820, 25)
 $pnl6.Controls.Add($lblPhase)
 
 $pbStep5 = New-Object System.Windows.Forms.ProgressBar
-$pbStep5.Location = New-Object System.Drawing.Point(20, 55)
-$pbStep5.Size = New-Object System.Drawing.Size(820, 30)
+$pbStep5.Location = New-Object System.Drawing.Point(20, 45)
+$pbStep5.Size = New-Object System.Drawing.Size(820, 28)
 $pnl6.Controls.Add($pbStep5)
 
 $lblEta5 = New-Object System.Windows.Forms.Label
 $lblEta5.Text = "Êttimao: --"
 $lblEta5.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Italic)
-$lblEta5.Location = New-Object System.Drawing.Point(20, 95)
+$lblEta5.Location = New-Object System.Drawing.Point(20, 82)
 $lblEta5.Size = New-Object System.Drawing.Size(820, 25)
 $pnl6.Controls.Add($lblEta5)
 
@@ -434,8 +434,8 @@ $contentPanel.Controls.Add($pnl6)
 # Log, botonêh de nabegaçiôn y funçionêh der wîçâh
 # =============================================================================
 $logBox = New-Object System.Windows.Forms.TextBox
-$logBox.Location = New-Object System.Drawing.Point(20, 566)
-$logBox.Size = New-Object System.Drawing.Size(860, 85)
+$logBox.Location = New-Object System.Drawing.Point(20, 464)
+$logBox.Size = New-Object System.Drawing.Size(860, 88)
 $logBox.Multiline = $true
 $logBox.ScrollBars = "Vertical"
 $logBox.ReadOnly = $true
@@ -447,15 +447,15 @@ $form.Controls.Add($logBox)
 
 $btnBack = New-Object System.Windows.Forms.Button
 $btnBack.Text = "‹ Anteriôh"
-$btnBack.Location = New-Object System.Drawing.Point(20, 664)
-$btnBack.Size = New-Object System.Drawing.Size(150, 42)
+$btnBack.Location = New-Object System.Drawing.Point(20, 564)
+$btnBack.Size = New-Object System.Drawing.Size(150, 40)
 $btnBack.Enabled = $false
 $form.Controls.Add($btnBack)
 
 $btnNext = New-Object System.Windows.Forms.Button
 $btnNext.Text = "Çiguiente ›"
-$btnNext.Location = New-Object System.Drawing.Point(730, 664)
-$btnNext.Size = New-Object System.Drawing.Size(150, 42)
+$btnNext.Location = New-Object System.Drawing.Point(730, 564)
+$btnNext.Size = New-Object System.Drawing.Size(150, 40)
 $btnNext.BackColor = [System.Drawing.Color]::FromArgb(0, 132, 61)
 $btnNext.ForeColor = [System.Drawing.Color]::White
 $btnNext.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat

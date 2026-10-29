@@ -180,3 +180,9 @@ TapeOS/
 - **Tipo:** Vista | Arquitectura
 - **Cambio:** Fondo de la GUI con la bandera de Andalucía (verde #00843D / blanco), esquema verde/blanco y selector de idioma **Español/Andaluz** (andalûh). El modo "Sin Google Play" conserva Android para APK con Aurora Store: opción `no_google_play` + parche `core/patches/40-no_google_play.sh` (deshabilita vending, prepara APK) + metadatos `AppStore`/`ApkSideload`. Detección USB con fuentes independientes y logging granular del botón "Crear".
 - **Impacto:** `TapeOS-Installer.ps1`, `TapeOS-CLI.ps1`, `ImagePatcher.psm1`, `BootManager.psm1`, `UsbFlasher.psm1`, `core/patches/40-no_google_play.sh`.
+
+## [29-10-2026] — Wîçâh kompakto 900x660 y balidáçiôn de dîppóçiçiôn
+
+- **Tipo:** Bîtta
+- **Kambio:** La GUI pâhha a `ClientSize` 900x660 (en lûgâh de `Size` 900x700): lîtta de lôh y botonêh de nabegaçiôn dentro der área de kliênte, bandera dibuhá ar tamaño êhâtto y çin `AutoScroll`/`Stretch`. Er arnêh `tools/wizard-smoke-test.ps1` komprueba lô lîmitê de tô lô kontrolê (`wizard-layout-check.log`) y guarda una kaptûra (`dist/gui-snapshot.png`).
+- **Impâtto:** `installer/windows/TapeOS-Installer.ps1`, `tools/wizard-smoke-test.ps1`, `CHANGELOG.md`.

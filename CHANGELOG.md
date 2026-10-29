@@ -2,6 +2,13 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.31] — 29-10-2026
+
+### Korreççionêh
+- **Wîçâh kompakto 900x660**: lô botonêh de nabegaçiôn y er lîtta de lôh yá no quedan kortáô en pantayâ de portátih; tô lô kontrolê kaben dentro der área de kliênte (`ClientSize`) çin çolapâh ni barra de depplaçamiento.
+- **Fondo çin dehformaçionêh**: la bandera de Andalûçia çe dibuha ar tamaño êhâtto der área de kliênte en lûgâh de êttirâhla kon `Stretch`, y çe elimina er `AutoScroll` der formulario.
+- **Balidáçiôn de dîppóçiçiôn**: `tools/wizard-smoke-test.ps1` komprueba ke nîn pun kontrol çe çalga der área de kliênte (`%ProgramData%\TapeOS\wizard-layout-check.log`) y guarda una kaptûra (`dist/gui-snapshot.png`).
+
 ## [v1.0.0-alpha.30] — 29-10-2026
 
 ### Nuevo
