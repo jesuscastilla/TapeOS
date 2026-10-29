@@ -153,6 +153,7 @@ TapeOS naçe der proyêtto **[Brunch](https://github.com/sebanc/brunch)** de **S
 - [ ] **Mâh identidá andalûça en er çîttema**: bandera, pîttâ y erramientâ de bîenbenía; çonidô, fondo de pantaya y tema andalûh en ChromeOS; çelebraçionêh (Día de Andalûçia, Feriâ) y guiñô a la kûttûra (tapâh, flamenko, kaí).
 - [ ] **Dokumentaçiôn de âttualiçaçionêh**: añadîh un dokumento (`docs/UPDATES.md`) kon tô lâ poçibilidáêh de âttualiçaçiôn (kanal êttable/beta/dev, AUE, kernel legacy vs moderno, parcheh).
 - [ ] **Eliminâh referençiâ a Google dentro der çîttema**: êppeçiâmente en la berçiôn çîn Googlêh Play (çerbiçiô, kuentâ, çînkronîçaçiôn, pantayâ y menúh), manteniendo çolo lo neçeçario pa er funçionamiento de ChromeOS.
+- [ ] **Intentâh îttalâh en equipô no EFI con BIÔ lecâyy** creando una berçión "bintahe" que también permita âççedêh a úrtimâ berçionê der çîttema y a aplicaçionê de Androîh. 
 
 ---
 
