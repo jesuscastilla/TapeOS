@@ -38,14 +38,14 @@ for opt in $(echo "$1" | sed 's#,# #g'); do
     mod=$(echo "$MODULE_MAP" | awk -F: -v o="$opt" '$1 == o { print $2 }')
     if [ -n "$mod" ]; then
         echo "$mod" >> "$load_file"
-        echo "brunch: hardware patch '$opt' -> forzando modulo $mod" > /dev/kmsg
+        echo "tapeos: hardware patch '$opt' -> forzando modulo $mod" > /dev/kmsg
     elif echo "$NO_MODULE_OPTIONS" | grep -qw "$opt"; then
-        echo "brunch: hardware patch '$opt' activado (lo gestiona el framework TapeOS)" > /dev/kmsg
+        echo "tapeos: hardware patch '$opt' activado (lo gestiona el framework TapeOS)" > /dev/kmsg
     fi
 done
 
 if [ -s "$load_file" ]; then
-    echo "brunch: modulos de hardware forzados: $(tr '\n' ' ' < "$load_file")" > /dev/kmsg
+    echo "tapeos: modulos de hardware forzados: $(tr '\n' ' ' < "$load_file")" > /dev/kmsg
 fi
 
 exit 0

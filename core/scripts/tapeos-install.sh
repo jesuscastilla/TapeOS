@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # TapeOS Installer Script
-# Evolución de Brunch: Soporte Universal para ChromeOS en PC (Moderno & Legacy)
+# TapeOS Installer — Soporte Universal para ChromeOS en PC (Moderno & Legacy)
 # ==============================================================================
 
 if [ -z "$BASH_VERSION" ]; then echo "Error: Este script debe ejecutarse con 'bash'"; exit 1; fi

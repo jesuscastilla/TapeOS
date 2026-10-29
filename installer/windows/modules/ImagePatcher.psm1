@@ -90,7 +90,7 @@ function Invoke-TapeOSImagePatch {
     # Generar GRUB de arranque para el pendrive / instalación
     $grubFile = Join-Path $OutputDir "grub.cfg"
 
-    # Opciones de framework en la línea de kernel (formato Brunch: options=<lista>)
+    # Opciones de framework en la línea de kernel (options=<lista>)
     $kernelOptions = @("enable_updates")
     if (-not $EnableGoogleApps) { $kernelOptions += "no_google_apps" }
     foreach ($opt in $AdditionalFrameworkOptions) {

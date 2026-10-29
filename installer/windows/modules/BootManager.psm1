@@ -26,7 +26,7 @@ function New-TapeOSGrubConfig {
     $parent = Split-Path -Path $OutputPath -Parent
     if (-not (Test-Path $parent)) { New-Item -Path $parent -ItemType Directory -Force | Out-Null }
 
-    # Parámetros por defecto de TapeOS (opciones de framework, formato Brunch)
+    # Parámetros por defecto de TapeOS (opciones de framework)
     $kernelFrameworkOptions = @("enable_updates")
     if (-not $EnableGoogleApps) { $kernelFrameworkOptions += "no_google_apps" }
     foreach ($opt in $FrameworkOptions) {
@@ -58,7 +58,7 @@ function New-TapeOSGrubConfig {
 
     $grubTemplate = @"
 # ===================================================================
-# Archivo de Configuración de Arranque de TapeOS (Brunch Evolution)
+# Archivo de Configuración de Arranque de TapeOS
 # Generado automáticamente por TapeOS Windows Installer
 # ===================================================================
 

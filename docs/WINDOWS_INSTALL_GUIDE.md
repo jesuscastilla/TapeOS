@@ -70,7 +70,7 @@ Si tu equipo tiene **Secure Boot activado**, en el primer arranque podría apare
 Para autorizar la clave de TapeOS:
 1. Pulsa **OK**.
 2. Selecciona **Enroll key from disk**.
-3. Navega a la partición **EFI-SYSTEM** o busca el archivo **`brunch.der`** / **`tapeos.der`**.
+3. Navega a la partición **EFI-SYSTEM** o busca el archivo **`tapeos.der`**.
 4. Pulsa **Continue** y reinicia el equipo.
 
 ---

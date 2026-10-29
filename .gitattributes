@@ -5,8 +5,6 @@
 *.sh text eol=lf
 *.bash text eol=lf
 init text eol=lf
-brunch-init text eol=lf
-brunch-setup text eol=lf
 tapeos-init text eol=lf
 tapeos-setup text eol=lf
 *.cfg text eol=lf

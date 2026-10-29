@@ -1,8 +1,10 @@
 <div align="center">
 
+<img src="tools/assets/diplotech-logo.png" alt="DiploTech" width="180" />
+
 # 📼 TapeOS
 ### Suite Automatizada de ChromeOS para PC (Edición Moderna & Legacy EFI)
-**Evolución interactiva de Brunch: Detecta tu hardware, descarga la última versión oficial de ChromeOS, aplica parches retro y la graba directamente en tu pendrive en 1 solo clic.**
+**Detecta tu hardware, descarga la última versión oficial de ChromeOS, aplica parches retro y la graba directamente en tu pendrive en 1 solo clic.**
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-blue.svg)](LICENSE)
 [![Platform: Windows / Linux](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-brightgreen.svg)]()
@@ -23,12 +25,12 @@
 
 ## 📖 Visión General
 
-**TapeOS** es una versión evolucionada y rediseñada del marco de trabajo [Brunch](https://github.com/sebanc/brunch) concebida para superar las limitaciones históricas de instalación y compatibilidad.
+**TapeOS** es un framework propio de arranque concebido para superar las limitaciones históricas de instalación y compatibilidad de ChromeOS en PCs.
 
 Permite instalar una **versión oficial y completamente actualizada de ChromeOS** (v120–v149+, con **Google Play Store**, navegación web moderna y soporte de contenedores) en **ordenadores antiguos que cuenten con EFI**, así como en PCs y portátiles de última generación.
 
-### ¿Qué hace único a TapeOS frente al Brunch original?
-En el Brunch tradicional, el usuario debía instalar WSL2, manejar manualmente comandos de consola Linux (`pv`, `cgpt`, `tar`, `unzip`), buscar y descargar a mano imágenes binarias gigantescas de sitios web externos, configurar cargadores de terceros y sufrir cuelgues o pantallas en negro en PCs anteriores a 2018.
+### ¿Qué hace único a TapeOS?
+En las herramientas tradicionales, el usuario debía instalar WSL2, manejar manualmente comandos de consola Linux (`pv`, `cgpt`, `tar`, `unzip`), buscar y descargar a mano imágenes binarias gigantescas de sitios web externos, configurar cargadores de terceros y sufrir cuelgues o pantallas en negro en PCs anteriores a 2018.
 
 **TapeOS automatiza el 100% de este proceso de principio a fin desde Windows:**
 1. 🔍 **Escanea tu hardware**: CPU, GPU, modo de firmware (UEFI x64 o UEFI 32-bit `ia32`) y BitLocker.
@@ -115,10 +117,10 @@ Si vas a trabajar en este proyecto con **VS Code** o cualquier IDE:
 - **Tareas preconfiguradas** en `.vscode/tasks.json`:
   - `Ctrl + Shift + P` -> **Tasks: Run Task** -> `TapeOS: Launch Windows Installer (GUI)` para probar la interfaz.
   - `TapeOS: Run Hardware Detection` para verificar el diagnóstico de tu máquina.
-- **Fuentes upstream**: La carpeta `brunch_sources/` se encuentra descargada en el repositorio local para referencia técnica e inspección de scripts históricos.
+- **Fuentes upstream**: La carpeta de referencia técnica local (material descargado de terceros) está excluida del repositorio y no se publica.
 
 ---
 
 ## 📄 Licencia
 
-TapeOS se distribuye bajo la licencia **GNU GPLv3**, la misma del proyecto [Brunch](https://github.com/sebanc/brunch) del que evoluciona. Componentes derivados de ChromiumOS o del kernel de Linux mantienen sus licencias originales respectivas (BSD / GPLv2).
+TapeOS se distribuye bajo la licencia **GNU GPLv3**. Componentes derivados de ChromiumOS o del kernel de Linux mantienen sus licencias originales respectivas (BSD / GPLv2).

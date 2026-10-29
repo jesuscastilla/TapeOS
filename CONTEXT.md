@@ -1,7 +1,7 @@
 # Contexto del Proyecto — TapeOS (`G:\TapeOS`)
 
-> **Estado actual (29-10-2026).** Proyecto nuevo: versión y evolución independiente del marco de trabajo
-> **Brunch** ([`sebanc/brunch`](https://github.com/sebanc/brunch)). Objetivo fundamental: permitir la
+> **Estado actual (29-10-2026).** Framework e instalador propios para llevar **ChromeOS** a PCs.
+> Objetivo fundamental: permitir la
 > instalación de **versiones modernas y actualizadas de ChromeOS** (v120–v149+) en **ordenadores antiguos con EFI**,
 > complementado por una **suite de instalación interactiva nativa para Windows** que cubre el ciclo completo
 > en 1 solo clic: Detección de hardware -> Consulta y descarga oficial desde Google CDN -> Parcheo retro -> Grabación directa en pendrive USB.
@@ -14,14 +14,14 @@
 | Término | Significado |
 |---|---|
 | **TapeOS** | Framework de arranque y suite de instalación para convertir PCs x86_64 en equipos ChromeOS con Play Store. |
-| **Brunch Framework** | Proyecto original creado por Sébastien Ancora (`sebanc`) en el que se basa la infraestructura de TapeOS. |
+| **DiploTech** | Marca personal de Jesús Castilla (desarrollo de software), autora del proyecto TapeOS. |
 | **Chromium Dash API** | API oficial de Google (`chromiumdash.appspot.com`) empleada para consultar en tiempo real las últimas imágenes de recuperación estables. |
 | **ROOTC** | Partición de 1 GB donde reside el kernel parcheado de TapeOS, el initramfs y los binarios de emulación (swtpm). |
 | **swtpm** | Emulador de módulo TPM 2.0 en espacio de usuario que permite inicio de sesión seguro y cifrado en PCs que carecen de TPM físico. |
 | **ia32 / UEFI 32-bit** | Firmware UEFI de 32 bits en procesadores de 64 bits (típico en convertibles y netbooks Intel Atom Bay Trail / Cherry Trail). |
 | **Freon / minigbm** | Subsistema gráfico y gestor de buffers de pantalla de ChromeOS nativo (sin servidor X11 ni Wayland externo). |
 | **ARC++ vs ARCVM** | Android Container (`ARC++`, más ligero para hardware retro) vs Android Virtual Machine (`ARCVM`, para hardware moderno). |
-| **no_google_apps** | Opción de framework de TapeOS (formato `options=` de Brunch) que elimina la sección ARC del config unibuild: ChromeOS sin Play Store ni contenedor Android (modo ligero). |
+| **no_google_apps** | Opción de framework de TapeOS (formato `options=`) que elimina la sección ARC del config unibuild: ChromeOS sin Play Store ni contenedor Android (modo ligero). |
 
 ---
 
@@ -43,7 +43,7 @@
    - **Control de Memoria**: Ajuste de `zram` al 150% de la capacidad de RAM para garantizar estabilidad en equipos con 2 GB o 4 GB.
 
 3. **Estructura del Repositorio y Entorno**:
-   - Fuentes upstream descargadas en `brunch_sources/` e ignoradas en `.gitignore` para no contaminar el árbol de Git oficial.
+   - Fuentes upstream descargadas en `upstream_sources/` e ignoradas en `.gitignore` para no contaminar el árbol de Git oficial.
    - Configuración lista para desarrollo en VS Code (`.vscode/settings.json`, `.vscode/tasks.json`).
    - Plantillas de incidencias y workflows de CI/CD en `.github/`.
 
@@ -79,7 +79,7 @@ TapeOS/
 │   ├── LEGACY_HARDWARE_MATRIX.md
 │   ├── PATCHING_MODERN_CROS_FOR_LEGACY_EFI.md
 │   └── ARCHITECTURE.md
-├── brunch_sources/          # Repositorio Brunch descargado de referencia (upstream)
+├── upstream_sources/         # Referencia upstream descargada para consulta técnica (ignorada)
 ├── CHANGELOG.md
 ├── CONTEXT.md
 ├── CONTRIBUTING.md
@@ -94,19 +94,19 @@ TapeOS/
 ## [28-10-2026] — Creación inicial del repositorio TapeOS y suite Windows interactiva
 
 - **Tipo:** Arquitectura | Vista | API | Dependencia
-- **Cambio:** Creación oficial de TapeOS, fork evolucionado de Brunch. Se implementó la suite completa de instalación en Windows (`installer/windows/`), con detección de hardware, consulta de la API Chromium Dash de Google para recoveries actualizados, motor de descarga con barra de progreso, parcheo retro (Legacy EFI, `swtpm`, GPUs Intel/AMD clásicas) y flasher directo a USB.
+- **Cambio:** Creación oficial de TapeOS, framework propio de arranque para ChromeOS en PCs. Se implementó la suite completa de instalación en Windows (`installer/windows/`), con detección de hardware, consulta de la API Chromium Dash de Google para recoveries actualizados, motor de descarga con barra de progreso, parcheo retro (Legacy EFI, `swtpm`, GPUs Intel/AMD clásicas) y flasher directo a USB.
 - **Impacto:** Proyecto nuevo e independiente en `G:\TapeOS`, sin dependencias obligatorias de WSL2 para el usuario final de Windows.
 
 ## [29-10-2026] — Publicación en GitHub y cambio de licencia a GPLv3
 
 - **Tipo:** Configuración
-- **Cambio:** Repositorio publicado en `https://github.com/jesuscastilla/TapeOS` (público, remoto `origin`). Licencia cambiada de Apache 2.0 a **GPLv3** (coherente con Brunch upstream, `LICENSE` con texto íntegro). Badge de issues corregido; workflow de release sin glob `dist/*.tar.gz`; `TapeOS.code-workspace` añadido a Git.
-- **Impacto:** CI de GitHub Actions operativo sobre `main`; los ficheros de `brunch_sources/` siguen ignorados y no se publican.
+- **Cambio:** Repositorio publicado en `https://github.com/jesuscastilla/TapeOS` (público, remoto `origin`). Licencia cambiada de Apache 2.0 a **GPLv3** (`LICENSE` con texto íntegro). Badge de issues corregido; workflow de release sin glob `dist/*.tar.gz`; `TapeOS.code-workspace` añadido a Git.
+- **Impacto:** CI de GitHub Actions operativo sobre `main`; los ficheros de `upstream_sources/` siguen ignorados y no se publican.
 
 ## [29-10-2026] — Opción de instalación con o sin Google Apps (Play Store)
 
 - **Tipo:** Vista | Arquitectura
-- **Cambio:** El instalador Windows (GUI y CLI) permite elegir instalar ChromeOS **con Google Apps** (Play Store + Android) o **sin ellas** (modo ligero). Nueva opción de framework `no_google_apps` en `options=` del kernel (patrón Brunch) y nuevo parche `core/patches/40-no_google_apps.sh` que elimina la sección ARC del config unibuild (JSON o configfs.img).
+- **Cambio:** El instalador Windows (GUI y CLI) permite elegir instalar ChromeOS **con Google Apps** (Play Store + Android) o **sin ellas** (modo ligero). Nueva opción de framework `no_google_apps` en `options=` del kernel y nuevo parche `core/patches/40-no_google_apps.sh` que elimina la sección ARC del config unibuild (JSON o configfs.img).
 - **Impacto:** `ImagePatcher.psm1`, `BootManager.psm1`, `TapeOS-Installer.ps1`, `TapeOS-CLI.ps1`, `docs/WINDOWS_INSTALL_GUIDE.md`, `README.md`.
 
 ## [29-10-2026] — Ejecutable Windows autocontenido (EXE)
@@ -124,5 +124,11 @@ TapeOS/
 ## [29-10-2026] — Detección ampliada de hardware (WiFi/Bluetooth/audio/táctil)
 
 - **Tipo:** Arquitectura | Vista
-- **Cambio:** `HardwareDetector.psm1` detecta WiFi (VID→opción de framework Brunch: `iwlwifi_backport`, `broadcom_wl`, `brcmfmac`, `rtl*`), Bluetooth (`rtbth`), audio (`essx8336`, `legacy_audio_ucm`), táctil (`ipts/ithc/goodix`), dGPU (`dgpu`) y MacBook (`macbook_trackpad`). Las opciones fluyen a `options=` del kernel vía `-AdditionalFrameworkOptions`/`-FrameworkOptions` y quedan en `tapeos_patches.json`. Nuevo `core/patches/50-hardware_patches.sh` (force-load de módulos vía `modules-load.d`).
+- **Cambio:** `HardwareDetector.psm1` detecta WiFi (VID→opción de framework de TapeOS: `iwlwifi_backport`, `broadcom_wl`, `brcmfmac`, `rtl*`), Bluetooth (`rtbth`), audio (`essx8336`, `legacy_audio_ucm`), táctil (`ipts/ithc/goodix`), dGPU (`dgpu`) y MacBook (`macbook_trackpad`). Las opciones fluyen a `options=` del kernel vía `-AdditionalFrameworkOptions`/`-FrameworkOptions` y quedan en `tapeos_patches.json`. Nuevo `core/patches/50-hardware_patches.sh` (force-load de módulos vía `modules-load.d`).
 - **Impacto:** `HardwareDetector.psm1`, `ImagePatcher.psm1`, `BootManager.psm1`, GUI, CLI, `core/patches/`.
+
+## [29-10-2026] — Rebranding: identidad DiploTech, sin referencias a terceros
+
+- **Tipo:** Vista
+- **Cambio:** Eliminadas todas las referencias a proyectos de terceros de README, CONTEXT, CHANGELOG, docs y comentarios de código. Logo de **DiploTech** en la cabecera de la GUI y en el README; nuevo icono del EXE multi-tamaño generado desde el logo (`tools/make-icon.ps1`); carpeta local de referencia ignorada con patrón genérico.
+- **Impacto:** `TapeOS-Installer.ps1`, `tools/build-exe.ps1`, `tools/make-icon.ps1`, `tools/assets/`, `release.yml`, documentación.

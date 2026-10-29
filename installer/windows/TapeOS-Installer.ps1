@@ -63,6 +63,26 @@ $subtitleLabel.Location = New-Object System.Drawing.Point(26, 44)
 $subtitleLabel.AutoSize = $true
 $headerPanel.Controls.Add($subtitleLabel)
 
+# Logo de la marca (DiploTech) si está disponible junto al instalador
+$logoPath = $null
+$logoCandidates = @(
+    (Join-Path $PSScriptRoot "assets\diplotech-logo-blanco.png"),
+    (Join-Path $PSScriptRoot "..\..\tools\assets\diplotech-logo-blanco.png")
+)
+foreach ($c in $logoCandidates) {
+    if (Test-Path -LiteralPath $c) { $logoPath = (Resolve-Path -LiteralPath $c).Path; break }
+}
+if ($logoPath) {
+    $logoBox = New-Object System.Windows.Forms.PictureBox
+    $logoBox.Image = [System.Drawing.Image]::FromFile($logoPath)
+    $logoBox.SizeMode = [System.Windows.Forms.PictureBoxSizeMode]::Zoom
+    $logoBox.Location = New-Object System.Drawing.Point(14, 8)
+    $logoBox.Size = New-Object System.Drawing.Size(64, 64)
+    $headerPanel.Controls.Add($logoBox)
+    $titleLabel.Location = New-Object System.Drawing.Point(92, 12)
+    $subtitleLabel.Location = New-Object System.Drawing.Point(93, 44)
+}
+
 # 1. Grupo: Diagnóstico de Hardware
 $hwGroup = New-Object System.Windows.Forms.GroupBox
 $hwGroup.Text = " 1. Diagnóstico Automático del Equipo "

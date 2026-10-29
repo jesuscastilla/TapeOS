@@ -79,6 +79,17 @@ $mainB64 = Get-Base64 -Path $mainPath
 [void]$sb.AppendLine('')
 [void]$sb.AppendLine('$mainPath = Join-Path $appDir ''TapeOS-Installer.ps1''')
 [void]$sb.AppendLine("[System.IO.File]::WriteAllBytes(`$mainPath, [Convert]::FromBase64String('$mainB64'))")
+
+# Logo de la marca para la cabecera de la GUI
+$logoPng = Join-Path $assetDir "diplotech-logo-blanco.png"
+if (Test-Path $logoPng) {
+    $logoB64 = Get-Base64 -Path $logoPng
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('$assetsDir = Join-Path $appDir ''assets''')
+    [void]$sb.AppendLine('New-Item -ItemType Directory -Force -Path $assetsDir | Out-Null')
+    [void]$sb.AppendLine("[System.IO.File]::WriteAllBytes((Join-Path `$assetsDir 'diplotech-logo-blanco.png'), [Convert]::FromBase64String('$logoB64'))")
+}
+
 [void]$sb.AppendLine('& $mainPath')
 [void]$sb.AppendLine('exit $LASTEXITCODE')
 

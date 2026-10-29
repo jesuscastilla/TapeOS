@@ -17,7 +17,7 @@ jobs:
       - name: ShellCheck validation
         run: |
           sudo apt-get update && sudo apt-get install -y shellcheck
-          find . -name "*.sh" -not -path "*/brunch_sources/*" -exec shellcheck -e SC1091,SC2086 {} + || true
+          find . -name "*.sh" -not -path "*/upstream_sources/*" -exec shellcheck -e SC1091,SC2086 {} + || true
 
       - name: Python Syntax Check
         run: |

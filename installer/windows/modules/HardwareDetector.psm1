@@ -10,7 +10,7 @@ function Get-TapeOSWifiOption {
     <#
     .SYNOPSIS
         Mapea un adaptador WiFi (nombre + vendor ID) a la opción de framework
-        de TapeOS/Brunch que lo parchea (iwlwifi_backport, broadcom_wl, rtl*, ...).
+        de TapeOS que lo parchea (iwlwifi_backport, broadcom_wl, rtl*, ...).
     #>
     [CmdletBinding()]
     param(

@@ -5,7 +5,7 @@
 # del config unibuild de ChromeOS para que el contenedor Android no arranque.
 #
 # Se activa con la opción de framework "no_google_apps" en la línea del kernel
-# (options=no_google_apps), siguiendo el patrón de 80-unibuild.sh de Brunch:
+# (options=no_google_apps), siguiendo el patrón del config unibuild de ChromeOS:
 # los parches reciben la lista de opciones como $1 separada por comas.
 # ==============================================================================
 

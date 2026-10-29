@@ -4,7 +4,7 @@ Este documento detalla la ingeniería y los mecanismos de parcheo que utiliza **
 
 ---
 
-## 🎯 El Problema con Brunch y ChromeOS Oficial en Hardware Antiguo
+## 🎯 El Problema con ChromeOS Oficial en Hardware Antiguo
 
 A medida que Google actualiza ChromeOS:
 1. **Fin de soporte (AUE)**: Google retira de soporte los Chromebooks antiguos basados en Intel Core de 2ª a 8ª generación (Sandy Bridge, Ivy Bridge, Haswell, Broadwell, Skylake, Apollo Lake).

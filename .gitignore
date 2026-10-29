@@ -1,7 +1,7 @@
 # TapeOS Git Ignore
 
-# Upstream reference directory (downloaded brunch repo)
-brunch_sources/
+# Reference sources (downloaded upstream material, never published)
+*_sources/
 
 # OS and IDE files
 .DS_Store

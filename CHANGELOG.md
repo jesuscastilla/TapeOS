@@ -2,6 +2,12 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.7] — 29-10-2026
+
+### Novedades
+- **Rebranding completo**: eliminadas todas las referencias a proyectos de terceros de la documentación, código y comentarios. Identidad propia con el **logo de DiploTech** en la GUI, el icono del EXE y el README.
+- Nuevo icono multi-tamaño generado desde el logo (`tools/make-icon.ps1`) y logo blanco en la cabecera de la interfaz gráfica.
+
 ## [v1.0.0-alpha.6] — 29-10-2026
 
 ### Novedades
@@ -34,14 +40,14 @@ Todas las modificaciones notables de este proyecto se documentarán en este arch
 ### Novedades
 - **Opción de Google Apps en el instalador**: elección entre instalar ChromeOS **con Google Apps (Play Store + Android)** o **sin ellas (modo ligero)**:
   - Selector en la GUI (radio buttons) y pregunta en el CLI.
-  - Nueva opción de framework `no_google_apps` en la línea del kernel (`options=`), coherente con el patrón de Brunch.
+  - Nueva opción de framework `no_google_apps` en la línea del kernel (`options=`).
   - Nuevo parche `core/patches/40-no_google_apps.sh` que elimina la sección ARC del config unibuild (JSON o configfs.img) para que ChromeOS no arranque el contenedor Android.
   - El modo elegido queda registrado en `tapeos_patches.json` y reflejado en el menú de GRUB generado.
 
 ## [v1.0.0-alpha.1] — 29-10-2026
 
 ### Correcciones de publicación
-- Licencia del proyecto cambiada a **GPLv3** (coherente con Brunch upstream).
+- Licencia del proyecto cambiada a **GPLv3**.
 - Badge de issues apuntando al repositorio correcto (`jesuscastilla/TapeOS`).
 - Workflow de release corregido (eliminado glob `dist/*.tar.gz` inexistente).
 - Añadido `TapeOS.code-workspace` al control de versiones.
