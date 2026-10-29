@@ -198,3 +198,9 @@ TapeOS/
 - **Tipo:** Bîtta
 - **Kambio:** La GUI pâhha a `ClientSize` 1000x730 kon layout rekalkulao (kabêçera 86 px, chip 150x36, tarheta 952x384, lîtta 952x92, nabegaçiôn 160x46). Çûttitulo korto, franha tricolôh dêntro de la kabêçera, çelettôh de idioma çîn foko iniçiâh y tipografía mâh grande (títulô 15pt, kuerpô 10pt).
 - **Impâtto:** `installer/windows/TapeOS-Installer.ps1`, `tools/wizard-smoke-test.ps1`, `CHANGELOG.md`.
+
+## [29-10-2026] — Bentana redimençionable, kabêçera anti-çolapamiento y layout repponçibo
+
+- **Tipo:** Bîtta
+- **Kambio:** La GUI pâhha a çêh redimençionable (`FormBorderStyle = Sizable`, `MaximizeBox = $true`, `MinimumSize = 920x600`). Se implementa `FlowLayoutPanel` bertikâh pa títulô y çûttitulo ebitando kuarkêh çolapamiento horiçontâh po eçkaláo DPI (125%-150%), anclahe dinámiko (`Anchor`, `Dock`) en tô lô panelêh, chip de paçô repponçibô (`Update-TapeOSStepChips`), franha tricolôh ahattá ar fondo de la kabêçera y botón «Crear» çentrao automátiko.
+- **Impâtto:** `installer/windows/TapeOS-Installer.ps1`, `dist/TapeOS-Installer-1.0.0-alpha.34.exe`, `tools/wizard-smoke-test.ps1`, `CHANGELOG.md`.

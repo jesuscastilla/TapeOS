@@ -42,6 +42,7 @@ try {
 function Set-TapeOSRounded {
     param($Control, [int]$Radius = 8)
     try {
+        if ($Control.Width -le ($Radius * 2) -or $Control.Height -le ($Radius * 2)) { return }
         $gp = New-Object System.Drawing.Drawing2D.GraphicsPath
         $d = $Radius * 2
         $gp.AddArc(0, 0, $d, $d, 180, 90)
@@ -49,7 +50,9 @@ function Set-TapeOSRounded {
         $gp.AddArc($Control.Width - $d, $Control.Height - $d, $d, $d, 0, 90)
         $gp.AddArc(0, $Control.Height - $d, $d, $d, 90, 90)
         $gp.CloseFigure()
+        $oldReg = $Control.Region
         $Control.Region = New-Object System.Drawing.Region($gp)
+        if ($oldReg) { $oldReg.Dispose() }
         $gp.Dispose()
     } catch { }
 }
@@ -104,20 +107,24 @@ try {
 } catch { }
 
 # =============================================================================
-# Formulario principal
+# Formulario principal (redimençionable y repponçibo)
 # =============================================================================
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "TapeOS Installer — Açîtente por Paçô"
-$form.ClientSize = New-Object System.Drawing.Size(1000, 730)
+$form.ClientSize = New-Object System.Drawing.Size(1000, 715)
+$form.MinimumSize = New-Object System.Drawing.Size(920, 600)
 $form.StartPosition = "CenterScreen"
-$form.FormBorderStyle = "FixedDialog"
-$form.MaximizeBox = $false
+$form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::Sizable
+$form.MaximizeBox = $true
+$form.MinimizeBox = $true
 $form.BackColor = [System.Drawing.Color]::FromArgb(243, 246, 244)
+$form.AutoScaleMode = [System.Windows.Forms.AutoScaleMode]::None
 
 # Cabecera
 $headerPanel = New-Object System.Windows.Forms.Panel
 $headerPanel.Location = New-Object System.Drawing.Point(0, 0)
-$headerPanel.Size = New-Object System.Drawing.Size(1000, 86)
+$headerPanel.Size = New-Object System.Drawing.Size(1000, 100)
+$headerPanel.Dock = [System.Windows.Forms.DockStyle]::Top
 $headerPanel.BackColor = [System.Drawing.Color]::FromArgb(0, 132, 61)
 $form.Controls.Add($headerPanel)
 
@@ -141,30 +148,42 @@ if ($logoPath) {
     $logoBox = New-Object System.Windows.Forms.PictureBox
     $logoBox.Image = $logoBitmap
     $logoBox.SizeMode = [System.Windows.Forms.PictureBoxSizeMode]::CenterImage
-    $logoBox.Location = New-Object System.Drawing.Point(16, 13)
+    $logoBox.Location = New-Object System.Drawing.Point(16, 17)
     $logoBox.Size = New-Object System.Drawing.Size(60, 60)
     $headerPanel.Controls.Add($logoBox)
 }
 
+$titleFlow = New-Object System.Windows.Forms.FlowLayoutPanel
+$titleFlow.FlowDirection = [System.Windows.Forms.FlowDirection]::TopDown
+$titleFlow.WrapContents = $false
+$titleFlow.AutoSize = $true
+$titleFlow.AutoSizeMode = [System.Windows.Forms.AutoSizeMode]::GrowAndShrink
+$titleFlow.BackColor = [System.Drawing.Color]::FromArgb(0, 132, 61)
+$titleFlow.Location = New-Object System.Drawing.Point(88, 14)
+$titleFlow.Margin = New-Object System.Windows.Forms.Padding(0)
+$titleFlow.Padding = New-Object System.Windows.Forms.Padding(0)
+$headerPanel.Controls.Add($titleFlow)
+
 $titleLabel = New-Object System.Windows.Forms.Label
 $titleLabel.Text = "TapeOS Îttaladôh Uniberçâh"
-$titleLabel.Font = New-Object System.Drawing.Font("Segoe UI", 17, [System.Drawing.FontStyle]::Bold)
+$titleLabel.Font = New-Object System.Drawing.Font("Segoe UI", 16, [System.Drawing.FontStyle]::Bold)
 $titleLabel.ForeColor = [System.Drawing.Color]::White
-$titleLabel.Location = New-Object System.Drawing.Point(88, 8)
 $titleLabel.AutoSize = $true
-$headerPanel.Controls.Add($titleLabel)
+$titleLabel.Margin = New-Object System.Windows.Forms.Padding(0, 0, 0, 2)
+$titleFlow.Controls.Add($titleLabel)
 
 $subtitleLabel = New-Object System.Windows.Forms.Label
 $subtitleLabel.Text = "Açîtente de îttalaçiôn · Andalûh"
-$subtitleLabel.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$subtitleLabel.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
 $subtitleLabel.ForeColor = [System.Drawing.Color]::FromArgb(216, 239, 225)
-$subtitleLabel.Location = New-Object System.Drawing.Point(90, 44)
 $subtitleLabel.AutoSize = $true
-$headerPanel.Controls.Add($subtitleLabel)
+$subtitleLabel.Margin = New-Object System.Windows.Forms.Padding(0)
+$titleFlow.Controls.Add($subtitleLabel)
 
 $cbLang = New-Object System.Windows.Forms.ComboBox
 $cbLang.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
-$cbLang.Location = New-Object System.Drawing.Point(812, 32)
+$cbLang.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Right
+$cbLang.Location = New-Object System.Drawing.Point(812, 33)
 $cbLang.Size = New-Object System.Drawing.Size(164, 28)
 $cbLang.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
 $cbLang.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
@@ -176,29 +195,43 @@ $headerPanel.Controls.Add($cbLang)
 
 # Franja tricolor de la bandera de Andalucía (acento en la base de la cabecera)
 $flagStripeG1 = New-Object System.Windows.Forms.Panel
-$flagStripeG1.Location = New-Object System.Drawing.Point(0, 80)
+$flagStripeG1.Location = New-Object System.Drawing.Point(0, 94)
 $flagStripeG1.Size = New-Object System.Drawing.Size(333, 6)
 $flagStripeG1.BackColor = [System.Drawing.Color]::FromArgb(0, 112, 52)
 $headerPanel.Controls.Add($flagStripeG1)
 
 $flagStripeW = New-Object System.Windows.Forms.Panel
-$flagStripeW.Location = New-Object System.Drawing.Point(333, 80)
+$flagStripeW.Location = New-Object System.Drawing.Point(333, 94)
 $flagStripeW.Size = New-Object System.Drawing.Size(334, 6)
 $flagStripeW.BackColor = [System.Drawing.Color]::White
 $headerPanel.Controls.Add($flagStripeW)
 
 $flagStripeG2 = New-Object System.Windows.Forms.Panel
-$flagStripeG2.Location = New-Object System.Drawing.Point(667, 80)
+$flagStripeG2.Location = New-Object System.Drawing.Point(667, 94)
 $flagStripeG2.Size = New-Object System.Drawing.Size(333, 6)
 $flagStripeG2.BackColor = [System.Drawing.Color]::FromArgb(0, 112, 52)
 $headerPanel.Controls.Add($flagStripeG2)
+
+$headerPanel.Add_Resize({
+    $w = $headerPanel.Width
+    $h = $headerPanel.Height
+    $y = [math]::Max(0, ($h - 6))
+    $third = [int]($w / 3)
+    $flagStripeG1.Location = New-Object System.Drawing.Point(0, $y)
+    $flagStripeG1.Width = $third
+    $flagStripeW.Location = New-Object System.Drawing.Point($third, $y)
+    $flagStripeW.Width = $third
+    $flagStripeG2.Location = New-Object System.Drawing.Point(($third * 2), $y)
+    $flagStripeG2.Width = [math]::Max(0, ($w - ($third * 2)))
+})
 
 # =============================================================================
 # Indicador de paçô (6 etapâ)
 # =============================================================================
 $stepIndicator = New-Object System.Windows.Forms.Panel
-$stepIndicator.Location = New-Object System.Drawing.Point(24, 92)
+$stepIndicator.Location = New-Object System.Drawing.Point(24, 106)
 $stepIndicator.Size = New-Object System.Drawing.Size(952, 36)
+$stepIndicator.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $stepIndicator.BackColor = [System.Drawing.Color]::FromArgb(243, 246, 244)
 $form.Controls.Add($stepIndicator)
 
@@ -220,25 +253,53 @@ for ($i = 0; $i -lt 6; $i++) {
     $stepLabels += $sl
 }
 
+function Update-TapeOSStepChips {
+    $totalW = $stepIndicator.Width
+    $count = $stepLabels.Count
+    if ($count -eq 0) { return }
+    $gap = 8
+    $chipW = [math]::Min(180, [math]::Max(100, [int](($totalW - ($gap * ($count - 1))) / $count)))
+    $usedW = ($chipW * $count) + ($gap * ($count - 1))
+    $startX = [math]::Max(0, [int](($totalW - $usedW) / 2))
+    for ($i = 0; $i -lt $count; $i++) {
+        $stepLabels[$i].Location = New-Object System.Drawing.Point(($startX + ($i * ($chipW + $gap))), 0)
+        $stepLabels[$i].Size = New-Object System.Drawing.Size($chipW, 36)
+        Set-TapeOSRounded -Control $stepLabels[$i] -Radius 18
+    }
+}
+$stepIndicator.Add_Resize({ Update-TapeOSStepChips })
+Update-TapeOSStepChips
+
 # Tarjeta de contenido (una bîtta po paço): borde suabe y êkkinâ redondeâ
 $cardShell = New-Object System.Windows.Forms.Panel
-$cardShell.Location = New-Object System.Drawing.Point(24, 138)
-$cardShell.Size = New-Object System.Drawing.Size(952, 384)
+$cardShell.Location = New-Object System.Drawing.Point(24, 148)
+$cardShell.Size = New-Object System.Drawing.Size(952, 372)
+$cardShell.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $cardShell.BackColor = [System.Drawing.Color]::FromArgb(214, 222, 217)
 Set-TapeOSRounded -Control $cardShell -Radius 10
 $form.Controls.Add($cardShell)
 
 $contentPanel = New-Object System.Windows.Forms.Panel
 $contentPanel.Location = New-Object System.Drawing.Point(1, 1)
-$contentPanel.Size = New-Object System.Drawing.Size(950, 382)
+$contentPanel.Size = New-Object System.Drawing.Size(950, 370)
+$contentPanel.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $contentPanel.BackColor = [System.Drawing.Color]::White
 Set-TapeOSRounded -Control $contentPanel -Radius 9
 $cardShell.Controls.Add($contentPanel)
+
+$cardShell.Add_Resize({
+    if ($cardShell.Width -gt 10 -and $cardShell.Height -gt 10) {
+        $contentPanel.Size = New-Object System.Drawing.Size(($cardShell.Width - 2), ($cardShell.Height - 2))
+        Set-TapeOSRounded -Control $cardShell -Radius 10
+        Set-TapeOSRounded -Control $contentPanel -Radius 9
+    }
+})
 
 # --- PAÇO 1: Detêççiôn de hardware ---
 $pnl1 = New-Object System.Windows.Forms.Panel
 $pnl1.Location = New-Object System.Drawing.Point(0, 0)
 $pnl1.Size = $contentPanel.Size
+$pnl1.Dock = [System.Windows.Forms.DockStyle]::Fill
 $pnl1.BackColor = [System.Drawing.Color]::White
 
 $lblHwTitle = New-Object System.Windows.Forms.Label
@@ -255,11 +316,13 @@ $lblHwInfo.Font = New-Object System.Drawing.Font("Segoe UI", 10)
 $lblHwInfo.ForeColor = [System.Drawing.Color]::FromArgb(51, 65, 58)
 $lblHwInfo.Location = New-Object System.Drawing.Point(24, 54)
 $lblHwInfo.Size = New-Object System.Drawing.Size(902, 220)
+$lblHwInfo.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl1.Controls.Add($lblHwInfo)
 
 $pbStep1 = New-Object System.Windows.Forms.ProgressBar
 $pbStep1.Location = New-Object System.Drawing.Point(24, 286)
 $pbStep1.Size = New-Object System.Drawing.Size(902, 22)
+$pbStep1.Anchor = [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pbStep1.Value = 100
 $pnl1.Controls.Add($pbStep1)
 
@@ -269,6 +332,7 @@ $lblEta1.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.Fo
 $lblEta1.ForeColor = [System.Drawing.Color]::FromArgb(107, 122, 114)
 $lblEta1.Location = New-Object System.Drawing.Point(24, 318)
 $lblEta1.AutoSize = $true
+$lblEta1.Anchor = [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left
 $pnl1.Controls.Add($lblEta1)
 
 $contentPanel.Controls.Add($pnl1)
@@ -277,6 +341,7 @@ $contentPanel.Controls.Add($pnl1)
 $pnl2 = New-Object System.Windows.Forms.Panel
 $pnl2.Location = New-Object System.Drawing.Point(0, 0)
 $pnl2.Size = $contentPanel.Size
+$pnl2.Dock = [System.Windows.Forms.DockStyle]::Fill
 $pnl2.BackColor = [System.Drawing.Color]::White
 
 $lblRecTitle = New-Object System.Windows.Forms.Label
@@ -293,6 +358,7 @@ $lblRecInfo.Font = New-Object System.Drawing.Font("Segoe UI", 10)
 $lblRecInfo.ForeColor = [System.Drawing.Color]::FromArgb(51, 65, 58)
 $lblRecInfo.Location = New-Object System.Drawing.Point(24, 46)
 $lblRecInfo.Size = New-Object System.Drawing.Size(902, 40)
+$lblRecInfo.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl2.Controls.Add($lblRecInfo)
 
 $cbRecovery = New-Object System.Windows.Forms.ComboBox
@@ -301,12 +367,14 @@ $cbRecovery.Size = New-Object System.Drawing.Size(600, 28)
 $cbRecovery.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
 $cbRecovery.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
 $cbRecovery.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+$cbRecovery.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl2.Controls.Add($cbRecovery)
 
 $btnCheckOnline = New-Object System.Windows.Forms.Button
 $btnCheckOnline.Text = "🌐 Bûhkâh la Ûrtima Berçiôn"
 $btnCheckOnline.Location = New-Object System.Drawing.Point(644, 94)
 $btnCheckOnline.Size = New-Object System.Drawing.Size(282, 32)
+$btnCheckOnline.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl2.Controls.Add($btnCheckOnline)
 Set-TapeOSButtonStyle -Btn $btnCheckOnline -Kind 'secondary'
 
@@ -316,6 +384,7 @@ $lblStatusUrl.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawi
 $lblStatusUrl.ForeColor = [System.Drawing.Color]::FromArgb(107, 122, 114)
 $lblStatusUrl.Location = New-Object System.Drawing.Point(24, 138)
 $lblStatusUrl.Size = New-Object System.Drawing.Size(902, 46)
+$lblStatusUrl.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl2.Controls.Add($lblStatusUrl)
 
 $pbStep2 = New-Object System.Windows.Forms.ProgressBar
@@ -323,6 +392,7 @@ $pbStep2.Location = New-Object System.Drawing.Point(24, 196)
 $pbStep2.Size = New-Object System.Drawing.Size(902, 18)
 $pbStep2.Style = [System.Windows.Forms.ProgressBarStyle]::Marquee
 $pbStep2.Visible = $false
+$pbStep2.Anchor = [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl2.Controls.Add($pbStep2)
 
 $lblEta2 = New-Object System.Windows.Forms.Label
@@ -331,6 +401,7 @@ $lblEta2.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.Fo
 $lblEta2.ForeColor = [System.Drawing.Color]::FromArgb(107, 122, 114)
 $lblEta2.Location = New-Object System.Drawing.Point(24, 222)
 $lblEta2.AutoSize = $true
+$lblEta2.Anchor = [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left
 $pnl2.Controls.Add($lblEta2)
 
 $contentPanel.Controls.Add($pnl2)
@@ -339,6 +410,7 @@ $contentPanel.Controls.Add($pnl2)
 $pnl3 = New-Object System.Windows.Forms.Panel
 $pnl3.Location = New-Object System.Drawing.Point(0, 0)
 $pnl3.Size = $contentPanel.Size
+$pnl3.Dock = [System.Windows.Forms.DockStyle]::Fill
 $pnl3.BackColor = [System.Drawing.Color]::White
 
 $lblAppsTitle = New-Object System.Windows.Forms.Label
@@ -373,6 +445,7 @@ $lblAppsExplain.Font = New-Object System.Drawing.Font("Segoe UI", 10)
 $lblAppsExplain.ForeColor = [System.Drawing.Color]::FromArgb(51, 65, 58)
 $lblAppsExplain.Location = New-Object System.Drawing.Point(24, 144)
 $lblAppsExplain.Size = New-Object System.Drawing.Size(902, 210)
+$lblAppsExplain.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl3.Controls.Add($lblAppsExplain)
 
 $contentPanel.Controls.Add($pnl3)
@@ -381,6 +454,7 @@ $contentPanel.Controls.Add($pnl3)
 $pnl4 = New-Object System.Windows.Forms.Panel
 $pnl4.Location = New-Object System.Drawing.Point(0, 0)
 $pnl4.Size = $contentPanel.Size
+$pnl4.Dock = [System.Windows.Forms.DockStyle]::Fill
 $pnl4.BackColor = [System.Drawing.Color]::White
 
 $lblMediaTitle = New-Object System.Windows.Forms.Label
@@ -405,12 +479,14 @@ $txtImageDir.Text = "C:\TapeOS\images"
 $txtImageDir.Location = New-Object System.Drawing.Point(58, 100)
 $txtImageDir.Size = New-Object System.Drawing.Size(600, 28)
 $txtImageDir.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
+$txtImageDir.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl4.Controls.Add($txtImageDir)
 
 $btnBrowseDir = New-Object System.Windows.Forms.Button
 $btnBrowseDir.Text = "📂 Ehkaminâh..."
 $btnBrowseDir.Location = New-Object System.Drawing.Point(674, 98)
 $btnBrowseDir.Size = New-Object System.Drawing.Size(252, 32)
+$btnBrowseDir.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl4.Controls.Add($btnBrowseDir)
 Set-TapeOSButtonStyle -Btn $btnBrowseDir -Kind 'secondary'
 
@@ -430,6 +506,7 @@ $cbUsbDrives.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
 $cbUsbDrives.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
 $cbUsbDrives.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $cbUsbDrives.Enabled = $false
+$cbUsbDrives.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl4.Controls.Add($cbUsbDrives)
 
 $btnRefreshUsb = New-Object System.Windows.Forms.Button
@@ -437,6 +514,7 @@ $btnRefreshUsb.Text = "🔄 Refrehkâh"
 $btnRefreshUsb.Location = New-Object System.Drawing.Point(674, 198)
 $btnRefreshUsb.Size = New-Object System.Drawing.Size(252, 32)
 $btnRefreshUsb.Enabled = $false
+$btnRefreshUsb.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl4.Controls.Add($btnRefreshUsb)
 Set-TapeOSButtonStyle -Btn $btnRefreshUsb -Kind 'secondary'
 
@@ -446,6 +524,7 @@ $lblUsbWarning.ForeColor = [System.Drawing.Color]::FromArgb(178, 59, 59)
 $lblUsbWarning.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
 $lblUsbWarning.Location = New-Object System.Drawing.Point(24, 248)
 $lblUsbWarning.Size = New-Object System.Drawing.Size(902, 24)
+$lblUsbWarning.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl4.Controls.Add($lblUsbWarning)
 
 $contentPanel.Controls.Add($pnl4)
@@ -454,6 +533,7 @@ $contentPanel.Controls.Add($pnl4)
 $pnl5 = New-Object System.Windows.Forms.Panel
 $pnl5.Location = New-Object System.Drawing.Point(0, 0)
 $pnl5.Size = $contentPanel.Size
+$pnl5.Dock = [System.Windows.Forms.DockStyle]::Fill
 $pnl5.BackColor = [System.Drawing.Color]::White
 
 $lblSumTitle = New-Object System.Windows.Forms.Label
@@ -469,7 +549,8 @@ $lblSummary.Text = "..."
 $lblSummary.Font = New-Object System.Drawing.Font("Segoe UI", 10.5)
 $lblSummary.ForeColor = [System.Drawing.Color]::FromArgb(35, 48, 40)
 $lblSummary.Location = New-Object System.Drawing.Point(24, 54)
-$lblSummary.Size = New-Object System.Drawing.Size(902, 220)
+$lblSummary.Size = New-Object System.Drawing.Size(902, 230)
+$lblSummary.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl5.Controls.Add($lblSummary)
 
 $btnCreate = New-Object System.Windows.Forms.Button
@@ -478,7 +559,12 @@ $btnCreate.Location = New-Object System.Drawing.Point(275, 300)
 $btnCreate.Size = New-Object System.Drawing.Size(400, 52)
 Set-TapeOSButtonStyle -Btn $btnCreate -Kind 'primary'
 $btnCreate.Font = New-Object System.Drawing.Font("Segoe UI", 12, [System.Drawing.FontStyle]::Bold)
+$btnCreate.Anchor = [System.Windows.Forms.AnchorStyles]::Bottom
 $pnl5.Controls.Add($btnCreate)
+
+$pnl5.Add_Resize({
+    $btnCreate.Left = [int](($pnl5.Width - $btnCreate.Width) / 2)
+})
 
 $contentPanel.Controls.Add($pnl5)
 
@@ -486,6 +572,7 @@ $contentPanel.Controls.Add($pnl5)
 $pnl6 = New-Object System.Windows.Forms.Panel
 $pnl6.Location = New-Object System.Drawing.Point(0, 0)
 $pnl6.Size = $contentPanel.Size
+$pnl6.Dock = [System.Windows.Forms.DockStyle]::Fill
 $pnl6.BackColor = [System.Drawing.Color]::White
 
 $lblPhase = New-Object System.Windows.Forms.Label
@@ -494,11 +581,13 @@ $lblPhase.Font = New-Object System.Drawing.Font("Segoe UI", 15, [System.Drawing.
 $lblPhase.ForeColor = [System.Drawing.Color]::FromArgb(23, 53, 43)
 $lblPhase.Location = New-Object System.Drawing.Point(24, 16)
 $lblPhase.Size = New-Object System.Drawing.Size(902, 28)
+$lblPhase.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl6.Controls.Add($lblPhase)
 
 $pbStep5 = New-Object System.Windows.Forms.ProgressBar
 $pbStep5.Location = New-Object System.Drawing.Point(24, 60)
 $pbStep5.Size = New-Object System.Drawing.Size(902, 32)
+$pbStep5.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl6.Controls.Add($pbStep5)
 
 $lblEta5 = New-Object System.Windows.Forms.Label
@@ -507,6 +596,7 @@ $lblEta5.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.Fo
 $lblEta5.ForeColor = [System.Drawing.Color]::FromArgb(107, 122, 114)
 $lblEta5.Location = New-Object System.Drawing.Point(24, 108)
 $lblEta5.Size = New-Object System.Drawing.Size(902, 24)
+$lblEta5.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl6.Controls.Add($lblEta5)
 
 $contentPanel.Controls.Add($pnl6)
@@ -515,7 +605,7 @@ $contentPanel.Controls.Add($pnl6)
 # Log, botonêh de nabegaçiôn y funçionêh der wîçâh
 # =============================================================================
 $logBox = New-Object System.Windows.Forms.TextBox
-$logBox.Location = New-Object System.Drawing.Point(24, 534)
+$logBox.Location = New-Object System.Drawing.Point(24, 532)
 $logBox.Size = New-Object System.Drawing.Size(952, 92)
 $logBox.Multiline = $true
 $logBox.ScrollBars = "Vertical"
@@ -525,6 +615,7 @@ $logBox.ForeColor = [System.Drawing.Color]::FromArgb(140, 231, 165)
 $logBox.Font = New-Object System.Drawing.Font("Consolas", 9.5)
 $logBox.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
 $logBox.Text = "=== TapeOS Lîtta ===`r`n"
+$logBox.Anchor = [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $form.Controls.Add($logBox)
 
 $btnBack = New-Object System.Windows.Forms.Button
@@ -532,6 +623,7 @@ $btnBack.Text = "‹ Anteriôh"
 $btnBack.Location = New-Object System.Drawing.Point(24, 638)
 $btnBack.Size = New-Object System.Drawing.Size(160, 46)
 $btnBack.Enabled = $false
+$btnBack.Anchor = [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left
 Set-TapeOSButtonStyle -Btn $btnBack -Kind 'secondary'
 $form.Controls.Add($btnBack)
 
@@ -539,6 +631,7 @@ $btnNext = New-Object System.Windows.Forms.Button
 $btnNext.Text = "Çiguiente ›"
 $btnNext.Location = New-Object System.Drawing.Point(816, 638)
 $btnNext.Size = New-Object System.Drawing.Size(160, 46)
+$btnNext.Anchor = [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Right
 Set-TapeOSButtonStyle -Btn $btnNext -Kind 'primary'
 $form.Controls.Add($btnNext)
 
@@ -665,7 +758,7 @@ function Set-TapeOSLanguage {
     $isEPA = ($Lang -eq "Andaluz")
     $script:langEPA = $isEPA
     $titleLabel.Text = if ($isEPA) { "TapeOS Îttaladôh Uniberçâh" } else { "TapeOS Universal Installer" }
-    $subtitleLabel.Text = if ($isEPA) { "Açîtente de îttalaçiôn · Andalûh" } else { "Asistente de instalación · Andaluz" }
+    $subtitleLabel.Text = if ($isEPA) { "Açîtente de îttalaçiôn · Andalûh" } else { "Asistente de instalación · Español" }
     for ($i = 0; $i -lt 6; $i++) { $stepLabels[$i].Text = if ($isEPA) { $stepNamesEPA[$i] } else { $stepNamesES[$i] } }
     $lblHwTitle.Text = if ($isEPA) { "Detêççiôn de hardware" } else { "Detección de hardware" }
     $lblHwInfo.Text = Get-HwSummaryText $isEPA

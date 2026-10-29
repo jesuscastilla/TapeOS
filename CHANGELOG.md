@@ -2,6 +2,18 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.34] — 29-10-2026
+
+### Nobedáêh
+- **Bentana redimençionable y maximisable**: `FormBorderStyle = Sizable`, `MaximizeBox = $true`, `MinimizeBox = $true` y `MinimumSize = 920x600`. Permite adâttâh er tamaño der wîçâh a kuarkêh pantaya o eçkalao DPI sin recortâh kontenío.
+- **Dîppóçiçiôn repponçiba kon Anchors y Dock**: tô lô panelêh (`Dock = Fill`), tarheta de kontenío, chips de paçô (`Update-TapeOSStepChips`), franhâ tricolôh de la bandera andalûça, kaxa de lîtta y botonêh de nabegaçiôn çe redimençionan y adaptan proporçionâhmente.
+- **Botón 1-Klik çentrao**: `$btnCreate` mantienê çentrao automátiko horiçontâh y anclao al fondo de la tarheta en kuarkêh tamaño de bentana.
+
+### Korreççionêh
+- **Kabêçera kon FlowLayoutPanel antikoordiná**: er títulô y çûttitulo çe apilan en un contenedor de flûho bertikâh, ebitando al 100% kuarkêh çolapamiento o rebanamiento horiçontâh de tipografía baho eçkaláô DPI (125%-150%).
+- **AutoScaleMode = None**: ebitá dehfaçê de eçkalao automátiko de fuêntê çobre koordinâ fijâ.
+- **Franha tricolôh dinámika**: kalkulá dinámikamente ar fondo de la kabêçera kon 3 tramos identikô.
+- **Korreççiôn en tradûççiôn**: er çelettôh en modo «Español» yá indiqa «Asistente de instalación · Español» en lûgâh de duplicâh «Andaluz».
 ## [v1.0.0-alpha.33] — 29-10-2026
 
 ### Korreççionêh
