@@ -1,28 +1,28 @@
-# Guía de Contribución a TapeOS
+# Guía de Kontribuçiôn a TapeOS
 
-¡Agradecemos tu interés en colaborar con **TapeOS**! El objetivo es crear la plataforma más universal, accesible y fácil de usar para ejecutar ChromeOS en cualquier equipo x86_64, desde dispositivos modernos de última generación hasta ordenadores antiguos rescatados del desuso.
-
----
-
-## 🛠️ ¿Cómo contribuir?
-
-1. **Reportar errores o solicitar hardware**:
-   - Usa los formularios de [Issues en GitHub](../../issues).
-   - Especifica tu procesador, modelo de gráfica, tarjeta de red y modo de arranque (UEFI / Legacy).
-2. **Mejorar el Instalador de Windows**:
-   - Los módulos se encuentran en `installer/windows/modules/`.
-   - El código está estructurado para ser fácilmente extensible: puedes añadir soporte para nuevas comprobaciones de disco, particionado o interfaces en WPF/WinUI.
-3. **Parches de Kernel y Drivers**:
-   - Añade configuraciones y parches para soporte de hardware legacy en `core/patches/`.
-4. **Documentación**:
-   - Puedes aportar guías de prueba en modelos de portátiles específicos o traducir documentación.
+¡Agradeçemô tu intêh en kolaborâh kon **TapeOS**! Er ôhhetibo êh kreâh la plataforma mâh uniberçâh, aççeçible y fâçîh de uçâh pa ehekutâh ChromeOS en kualkiêh ekîpo x86_64, dêhde dippoçitivô modernô de ûrtima heneraçiôn âtta ordenadorêh antiguô rehkâtáô der dehûço.
 
 ---
 
-## 📜 Flujo de Trabajo Git
+## 🛠️ ¿Kómo kontribuîh?
 
-1. Haz un Fork del repositorio.
-2. Crea una rama descriptiva (`git checkout -b feature/soporte-wifi-rtl8821ce`).
-3. Realiza tus cambios y haz commits claros.
-4. Asegúrate de verificar la sintaxis de los scripts (`shellcheck` en Linux / parseo de PowerShell en Windows).
-5. Abre un Pull Request describiendo el impacto y los equipos probados.
+1. **Reportâh errôh u çoliçitâh hardware**:
+   - Uça lô formulariô de [Issues en GitHub](../../issues).
+   - Êppeçifika tu proçeçadôh, modelo de gráfika, tarheta de rê y modo de arrankê (UEFI / Legacy).
+2. **Mehorâh er Îttaladôh de Windows**:
+   - Lô módulô çe enkuentran en `installer/windows/modules/`.
+   - Er kódiho êttá êttrûtturao pa çêh fâçîlmente êttençible: pueêh anyadîh çoporte pa nuebâ komprobaçionêh de dîkko, partiçionao u interfaçêh en WPF/WinUI.
+3. **Parcheh de Kernel y Drîber**:
+   - Anyade konfiguraçionêh y parcheh pa çoporte de hardware legacy en `core/patches/`.
+4. **Dokumentaçiôn**:
+   - Pueêh aportâh guíâ de pruebâ en modelô de portátilêh êppeçífikô u traduçîh dokumentaçiôn.
+
+---
+
+## 📜 Fluho de Trabaho Git
+
+1. Âtte un Fork der repoçitorio.
+2. Krea una rama dêkriptiba (`git checkout -b feature/çoporte-wifi-rtl8821ce`).
+3. Realîça tû kambiô y âtte commit klârô.
+4. Açegúrate de berifikâh la çîttâççî de lô êkrip (`shellcheck` en Linux / parçeo de PowerShell en Windows).
+5. Abre un Pull Request dêkribiendo er impâtto y lô ekîpô probáô.

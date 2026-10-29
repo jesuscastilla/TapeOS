@@ -31,7 +31,7 @@ function Get-TapeOSUsbDrives {
     try {
         $usbNumbers += @(Get-Disk | Where-Object { $_.BusType -eq 'USB' } | Select-Object -ExpandProperty Number)
     } catch {
-        Write-Warning "Fuente 1 (BusType USB) no disponible: $_"
+        Write-Warning "Fûente 1 (BusType USB) no dipponible: $_"
     }
 
     # Fuente 2: MediaType "External" (adaptadores SSD/HDD-USB con UASP se
@@ -39,7 +39,7 @@ function Get-TapeOSUsbDrives {
     try {
         $usbNumbers += @(Get-CimInstance Win32_DiskDrive | Where-Object { $_.MediaType -match 'External' } | ForEach-Object { [int]$_.Index })
     } catch {
-        Write-Warning "Fuente 2 (MediaType External) no disponible: $_"
+        Write-Warning "Fûente 2 (MediaType External) no dipponible: $_"
     }
 
     # Fuente 3: recorrer el arbol PnP hasta encontrar una raiz USB
@@ -60,7 +60,7 @@ function Get-TapeOSUsbDrives {
             }
         }
     } catch {
-        Write-Warning "Fuente 3 (arbol PnP) no disponible: $_"
+        Write-Warning "Fûente 3 (arbol PnP) no dipponible: $_"
     }
 
     $usbNumbers = @($usbNumbers | Sort-Object -Unique)
@@ -85,7 +85,7 @@ function Get-TapeOSUsbDrives {
                 DisplayName  = "Disco $number`: $($disk.FriendlyName) ($([math]::Round(($disk.Size / 1GB), 1)) GB) [$letters]"
             }
         } catch {
-            Write-Warning "No se pudo leer el disco $number`: $_"
+            Write-Warning "No çe pudo lêh er dîkko $number`: $_"
         }
     }
 
@@ -113,14 +113,14 @@ function Start-TapeOSUsbFlash {
     if ($targetNumber) {
         $checkDisk = Get-Disk -Number $targetNumber -ErrorAction SilentlyContinue
         if ($checkDisk.IsSystem -or $checkDisk.IsBoot) {
-            throw "¡SEGURIDAD! El disco seleccionado ($PhysicalDriveId) es un disco del sistema operativo Windows. Operación abortada."
+            throw "¡ÇEGURIDÁ! Er dîkko çelehçionao ($PhysicalDriveId) êh un dîkko der çîttema operatibo Windows. Operaçiôn abortá."
         }
     }
 
     # Seguridad adicional: el destino debe estar en la lista de dispositivos USB detectados
     $allowedTargets = @(Get-TapeOSUsbDrives | Select-Object -ExpandProperty DeviceID)
     if ($allowedTargets -notcontains $PhysicalDriveId) {
-        throw "¡SEGURIDAD! El destino $PhysicalDriveId no está en la lista de dispositivos USB detectados. Operación abortada."
+        throw "¡ÇEGURIDÁ! Er dêttino $PhysicalDriveId no êttá en la lîtta de dippoçitivô USB detêttáô. Operaçiôn abortá."
     }
 
     Write-Host "[TapeOS UsbFlasher] Preparando escritura en $PhysicalDriveId..." -ForegroundColor Cyan
@@ -136,13 +136,13 @@ function Start-TapeOSUsbFlash {
             foreach ($p in $parts) {
                 foreach ($ap in @($p.AccessPaths)) {
                     if ($ap -like '\\?\Volume{*}\') {
-                        Write-Host "[TapeOS UsbFlasher] Desmontando el volumen $ap..." -ForegroundColor Gray
+                        Write-Host "[TapeOS UsbFlasher] Dehmmontando er bolûmen $ap..." -ForegroundColor Gray
                         $null = & mountvol.exe "$ap" /p 2>&1
                     }
                 }
             }
         } catch {
-            Write-Warning "No se pudieron desmontar los volumenes: $_"
+            Write-Warning "No çe pudieron dehmmontâh lô bolûmenêh: $_"
         }
         Start-Sleep -Milliseconds 500
 
@@ -153,7 +153,7 @@ function Start-TapeOSUsbFlash {
             $dpSummary = ($dpOut.Trim() -replace "`r`n", '; ')
             Write-Host "[TapeOS UsbFlasher] diskpart clean: $dpSummary" -ForegroundColor Gray
         } catch {
-            Write-Warning "diskpart no disponible: $_"
+            Write-Warning "diskpart no dipponible: $_"
         } finally {
             Remove-Item -LiteralPath $dpScript -Force -ErrorAction SilentlyContinue
         }
@@ -183,7 +183,7 @@ function Start-TapeOSUsbFlash {
             $hFile = [TapeOSWin32.NativeMethods]::CreateFile($PhysicalDriveId, [uint32]3221225472, [uint32]3, [IntPtr]::Zero, [uint32]3, [uint32]0, [IntPtr]::Zero)
             if ($hFile -eq [IntPtr]::Zero -or $hFile -eq [IntPtr]::MinusOne) {
                 $errCode = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
-                throw "No se pudo abrir el dispositivo fisico $PhysicalDriveId (error Win32: $errCode)."
+                throw "No çe pudo abrîh er dippoçitibo fíçiko $PhysicalDriveId (errôh Win32: $errCode)."
             }
 
             $sourceStream = [System.IO.File]::OpenRead($ImageFilePath)
@@ -196,7 +196,7 @@ function Start-TapeOSUsbFlash {
                 $ok = [TapeOSWin32.NativeMethods]::WriteFile($hFile, $buffer, [uint32]$read, [ref]$written, [IntPtr]::Zero)
                 if (-not $ok -or $written -ne $read) {
                     $err = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
-                    throw "WriteFile fallo (error Win32 $err): se escribieron $written de $read bytes."
+                    throw "WriteFile fallo (errôh Win32 $err): çe ehkribieron $written de $read byteh."
                 }
                 $bytesWritten += $read
 
@@ -215,16 +215,16 @@ function Start-TapeOSUsbFlash {
             $null = [TapeOSWin32.NativeMethods]::FlushFileBuffers($hFile)
             $stopwatch.Stop()
             $done = $true
-            Write-Host "[TapeOS UsbFlasher] Grabación finalizada con éxito en $([math]::Round($stopwatch.Elapsed.TotalSeconds, 1)) segundos." -ForegroundColor Green
+            Write-Host "[TapeOS UsbFlasher] Grabaçiôn finaliçá kon éxito en $([math]::Round($stopwatch.Elapsed.TotalSeconds, 1)) çegundô." -ForegroundColor Green
             return $true
         } catch {
             $errMsg = $_.Exception.Message
             if ($attempt -lt $maxAttempts) {
-                Write-Host "[TapeOS UsbFlasher] Intento $attempt fallido ($errMsg). Limpiando el disco y reintentando..." -ForegroundColor Yellow
+                Write-Host "[TapeOS UsbFlasher] Intento $attempt fallío ($errMsg). Limpiando er dîkko y reintentando..." -ForegroundColor Yellow
                 Invoke-TapeOSDismountAndClean -DiskNum $targetNumber
                 continue
             }
-            throw "Error al escribir en el disco físico: $errMsg"
+            throw "Errôh al ehkribîh en er dîkko fíçiko: $errMsg"
         } finally {
             if ($sourceStream) { $sourceStream.Close() }
             if ($hFile -ne [IntPtr]::Zero -and $hFile -ne [IntPtr]::MinusOne) {

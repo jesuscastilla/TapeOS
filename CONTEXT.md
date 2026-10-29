@@ -1,11 +1,11 @@
-# Contexto del Proyecto — TapeOS (`G:\TapeOS`)
+# Kontexto der Proyêtto — TapeOS (`G:\TapeOS`)
 
-> **Estado actual (29-10-2026).** Framework e instalador propios para llevar **ChromeOS** a PCs.
-> Objetivo fundamental: permitir la
-> instalación de **versiones modernas y actualizadas de ChromeOS** (v120–v149+) en **ordenadores antiguos con EFI**,
-> complementado por una **suite de instalación interactiva nativa para Windows** que cubre el ciclo completo
-> en 1 solo clic: Detección de hardware -> Consulta y descarga oficial desde Google CDN -> Parcheo retro -> Grabación directa en pendrive USB.
-> Fuera de `G:\GITHUB`: proyecto independiente en `G:\TapeOS`.
+> **Êttao âttuâh (29-10-2026).** Framework e îttaladôh propiô pa yebâh **ChromeOS** a PC.
+> Ôhhetibo fundamentâh: permettîh la
+> îttalaçiôn de **berçionêh modernâ y âttualiçâh de ChromeOS** (v120–v149+) en **ordenadorêh antiguô kon EFI**,
+> komplementao po una **çûite de îttalaçiôn întêratiba natiba pa Windows** ke kûbre er çîklo kompleto
+> en 1 çolo klik: Detêççiôn de hardware -> Konhûtta y dehkarga ofiçiâh dêhde Google CDN -> Parcheo retro -> Grabaçiôn dirêtta en pendraîh USB.
+> Fûera de `G:\GITHUB`: proyêtto independiente en `G:\TapeOS`.
 
 ---
 

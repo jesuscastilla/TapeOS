@@ -3,8 +3,8 @@
 <img src="tools/assets/diplotech-logo.png" alt="DiploTech" width="180" />
 
 # 📼 TapeOS
-### Suite Automatizada de ChromeOS para PC (Edición Moderna & Legacy EFI)
-**Detecta tu hardware, descarga la última versión oficial de ChromeOS, aplica parches retro y la graba directamente en tu pendrive en 1 solo clic.**
+### Çûite Âttomatiçá de ChromeOS pa PC (Ediçiôn Moderna & Legacy EFI)
+**Detêtta tu hardware, dehkarga la ûrtima berçiôn ofiçiâh de ChromeOS, aplika parcheh retro y la graba dirêttamente en tu pendraîh en 1 çolo klik.**
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-blue.svg)](LICENSE)
 [![Platform: Windows / Linux](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-brightgreen.svg)]()
@@ -12,32 +12,32 @@
 [![Google CDN: Realtime API](https://img.shields.io/badge/ChromeOS-Chromium%20Dash%20API-informational.svg)]()
 [![GitHub Issues](https://img.shields.io/github/issues/jesuscastilla/TapeOS?color=red)](../../issues)
 
-[Visión General](#-visión-general) •
-[Pipeline Automatizado](#-pipeline-automatizado-en-1-clic) •
-[Soporte para Hardware Legacy](#-chromeos-actualizado-en-equipos-antiguos) •
-[Instalador Windows](#-instalador-interactivo-para-windows) •
-[Arquitectura de Parches](#-arquitectura-de-parches) •
-[Estructura](#-estructura-del-proyecto)
+[Biçiôn Henerâh](#-biçiôn-henerâh) •
+[Piplîne Âttomatiçao](#-piplîne-âttomatiçao-en-1-klik) •
+[Çoporte pa Hardware Legacy](#-chromeos-âttualiçao-en-ekîpô-antiguô) •
+[Îttaladôh Windows](#-îttaladôh-întêratibo-pa-windows) •
+[Arkîtêttûra de Parcheh](#-arkîtêttûra-de-parcheh) •
+[Êttrûttûra](#-êttrûttûra-der-proyêtto)
 
 ---
 
 </div>
 
-## 📖 Visión General
+## 📖 Biçiôn Henerâh
 
-**TapeOS** es un framework propio de arranque concebido para superar las limitaciones históricas de instalación y compatibilidad de ChromeOS en PCs.
+**TapeOS** êh un framework propio de arrankê konçebío pa çûperâh lâ limitaçionêh îttórikâ de îttalaçiôn y kompatibilidá de ChromeOS en PC.
 
-Permite instalar una **versión oficial y completamente actualizada de ChromeOS** (v120–v149+, con **Google Play Store**, navegación web moderna y soporte de contenedores) en **ordenadores antiguos que cuenten con EFI**, así como en PCs y portátiles de última generación.
+Permite îttalâh una **berçiôn ofiçiâh y kompletamente âttualiçá de ChromeOS** (v120–v149+, kon **Google Play Çtore**, nabegaçiôn wê moderna y çoporte de kontenedorêh) en **ordenadorêh antiguô ke kuenten kon EFI**, açí komo en PC y portátilêh de ûrtima heneraçiôn.
 
-### ¿Qué hace único a TapeOS?
-En las herramientas tradicionales, el usuario debía instalar WSL2, manejar manualmente comandos de consola Linux (`pv`, `cgpt`, `tar`, `unzip`), buscar y descargar a mano imágenes binarias gigantescas de sitios web externos, configurar cargadores de terceros y sufrir cuelgues o pantallas en negro en PCs anteriores a 2018.
+### ¿Ké âçe úniko a TapeOS?
+En lâ erramientâ tradiçionalêh, er uçuario debía îttalâh WSL2, manehâh manûmente komandô de konçola Linux (`pv`, `cgpt`, `tar`, `unzip`), bûhkâh y dehkargâh a mano imâhenêh binariâ hîgantêh de çitiô wê êtternô, konfigurâh kargadorêh de terçerô y çufrîh kuelgêh u pantayâ en negro en PC anteriôh a 2018.
 
-**TapeOS automatiza el 100% de este proceso de principio a fin desde Windows:**
-1. 🔍 **Escanea tu hardware**: CPU, GPU, modo de firmware (UEFI x64 o UEFI 32-bit `ia32`) y BitLocker.
-2. 🌐 **Elige la imagen ideal**: Consulta la API oficial de Google (Chromium Dash) y selecciona la versión más moderna y estable para tu arquitectura.
-3. ⬇️ **Descarga automática**: Descarga la imagen oficial de Google directamente con barra de progreso.
-4. 🩹 **Aplica los parches de compatibilidad**: Inyecta cargadores EFI retro, emulación TPM 2.0 por software (`swtpm`), parches de GPU para Freon/Mesa y audio ALSA UCM.
-5. 💾 **Graba directo en tu Pendrive USB**: Flashea el pendrive sector a sector con detección de seguridad (protegiendo discos internos y unidades del sistema).
+**TapeOS âttomatiça er 100% de êtte proçeço de prinçipio a fîn dêhde Windows:**
+1. 🔍 **Ehkanea tu hardware**: CPU, GPU, modo de firmware (UEFI x64 u UEFI 32-bit `ia32`) y BitLocker.
+2. 🌐 **Elihe la imâhen ideâh**: Konhûtta la API ofiçiâh de Google (Chromium Dash) y çelehçiona la berçiôn mâh moderna y êttable pa tu arkîtêttûra.
+3. ⬇️ **Dehkarga automátika**: Dehkarga la imâhen ofiçiâh de Google dirêttamente kon barra de progreço.
+4. 🩹 **Aplika lô parcheh de kompatibilidá**: Îyêtta kargadorêh EFI retro, emulaçiôn TPM 2.0 po çoftware (`swtpm`), parcheh de GPU pa Freon/Mesa y audio ALSA UCM.
+5. 💾 **Graba dirêtto en tu Pendraîh USB**: Flâhea er pendraîh çêttôh a çêttôh kon detêççiôn de çeguridá (protehiendo dîkkô îttênô y unidáêh der çîttema).
 
 ---
 
@@ -51,77 +51,77 @@ En las herramientas tradicionales, el usuario debía instalar WSL2, manejar manu
 
 ---
 
-## 🏛️ ChromeOS Actualizado en Equipos Antiguos
+## 🏛️ ChromeOS Âttualiçao en Ekîpô Antiguô
 
 Muchos ordenadores fabricados entre 2011 y 2018 cuentan con firmware **EFI** pero quedan fuera de soporte por los siguientes motivos que **TapeOS resuelve**:
 
 | Reto en Hardware Antiguo | Causa en ChromeOS Moderno | Solución TapeOS |
 |---|---|---|
-| **Pantalla en negro al iniciar** | Drivers de Mesa modernos (`iris`) incompatibles con Intel HD 2000–4400. | Inyección de flags `INTEL_DEBUG=noccs`, forzado de driver `crocus` y OpenGL fallback. |
-| **PC con GPU dedicada (NVIDIA/AMD)** | El stack gráfico de ChromeOS no usa el driver propietario de NVIDIA y puede colgarse con dGPUs. | Opción `dgpu` automática: NVIDIA se suspende y renderiza la iGPU; AMD renderiza con el driver abierto `amdgpu`. |
-| **Error en inicio de sesión / Cuentas** | ChromeOS exige hardware TPM 2.0 inexistente en placas antiguas. | Emulación en segundo plano con `swtpm` (TPM 2.0 virtual) en el initramfs. |
-| **Tablets Atom no arrancan (Bay/Cherry Trail)** | Firmware UEFI de 32 bits (`ia32`) en CPUs de 64 bits (ej. Z3735F). | Inclusión del bootloader dual `bootia32.efi` y `bootx64.efi`. |
-| **Lentitud o congelamiento (2-4 GB RAM)** | El subsistema ARCVM (Android en VM) devora la memoria RAM. | Asignación preferente de recovery ARC++ (`rammus`) y compresión `zram` al 150%. |
-| **Sin audio en netbooks económicos** | Dispositivos con códecs Intel SST o Realtek ES8316 / RT5640 sin configurar. | Mapas de sonido ALSA UCM inyectados en el arranque. |
+| **Pantaya en negro al iniçiâh** | Drîber de Mesa modernô (`iris`) îmkompatiblêh kon Intel HD 2000–4400. | Îyeççiôn de flag `INTEL_DEBUG=noccs`, forçao de drîber `crocus` y OpenGL fallback. |
+| **PC kon GPU dediká (NVIDIA/AMD)** | Er êttâk gráfiko de ChromeOS no uça er drîber propietario de NVIDIA y puee kolgâhçe kon dGPU. | Ôççiôn `dgpu` automátika: NVIDIA çe çûppende y renderiça la iGPU; AMD renderiça kon er drîber abierto `amdgpu`. |
+| **Errôh en iniçio de çeçiôn / Kuentâ** | ChromeOS êçîhe hardware TPM 2.0 îneççîtente en plakâ antiguâ. | Emulaçiôn en çegundo plano kon `swtpm` (TPM 2.0 bîttuâh) en er initramfs. |
+| **Tableth Atom no arrankan (Bay/Cherry Trail)** | Firmware UEFI de 32 bit (`ia32`) en CPU de 64 bit (êh. Z3735F). | Inkluçiôn der bootloader duâh `bootia32.efi` y `bootx64.efi`. |
+| **Lentitû u konhelamiento (2-4 GB RAM)** | Er çûçîttema ARCVM (Android en VM) debora la memoria RAM. | Açînaçiôn preferente de rekûperaçiôn ARC++ (`rammus`) y kompreçiôn `zram` ar 150%. |
+| **Çîn audio en netbook êkonómikô** | Dippoçitivô kon kódek Intel SST u Realtek ES8316 / RT5640 çîn konfigurâh. | Mapâ de çonío ALSA UCM îyêttáô en er arrankê. |
 
 ---
 
-## 🪟 Instalador Interactivo para Windows
+## 🪟 Îttaladôh Întêratibo pa Windows
 
-El instalador se encuentra en `installer/windows/` y puede ejecutarse mediante interfaz gráfica o consola:
+Er îttaladôh çe enkuentra en `installer/windows/` y puee ehekutâhçe mediante interfaç gráfika u konçola:
 
 ```text
 installer/windows/
-├── Run-Installer.cmd            # Lanzador rápido con elevación automática de permisos
-├── TapeOS-Installer.ps1         # Interfaz Gráfica interactiva completa (GUI Windows Forms)
-├── TapeOS-CLI.ps1               # Asistente interactivo por consola (TUI)
+├── Run-Installer.cmd            # Lançadôh rápido kon elebaçiôn automátika de permiçô
+├── TapeOS-Installer.ps1         # Interfaç Gráfika întêratiba kompleta (GUI Windows Forms)
+├── TapeOS-CLI.ps1               # Açîtente întêratibo po konçola (TUI)
 └── modules/
-    ├── HardwareDetector.psm1    # Detección de CPU, GPU, UEFI x64 / ia32 y BitLocker
-    ├── RecoveryDownloader.psm1  # Cliente Chromium Dash API y descargador oficial de Google
-    ├── ImagePatcher.psm1        # Motor de extracción y parcheo de imágenes ChromeOS
-    ├── UsbFlasher.psm1          # Grabador directo a pendrives USB con protección de discos
-    ├── RecoveryCatalog.psm1     # Base de datos de compatibilidad y perfiles de hardware
-    ├── DiskManager.psm1         # Utilidades de disco y descompresión
-    └── BootManager.psm1         # Generador de configuraciones de arranque y GRUB
+    ├── HardwareDetector.psm1    # Detêççiôn de CPU, GPU, UEFI x64 / ia32 y BitLocker
+    ├── RecoveryDownloader.psm1  # Kliente Chromium Dash API y dehkargadôh ofiçiâh de Google
+    ├── ImagePatcher.psm1        # Motôh de êttraççiôn y parcheo de imâhenêh ChromeOS
+    ├── UsbFlasher.psm1          # Grabâh dirêtto a pendraîh USB kon proteççiôn de dîkkô
+    ├── RecoveryCatalog.psm1     # Baçe de datô de kompatibilidá y perfîh de hardware
+    ├── DiskManager.psm1         # Utiliáêh de dîkko y dehkompreçiôn
+    └── BootManager.psm1         # Heneradôh de konfiguraçionêh de arrankê y GRUB
 ```
 
-### Instrucciones de uso rápido:
-1. Conecta un pendrive USB de **al menos 16 GB**.
-2. Haz doble clic en el ejecutable **`TapeOS-Installer.exe`** (descargado de la sección Releases) o, si usas el ZIP, en **`installer\windows\Run-Installer.cmd`**.
-3. El instalador detectará tu PC (CPU, GPU, WiFi, Bluetooth, audio y táctil) y seleccionará el recovery y los parches de hardware adecuados.
-4. Elige si quieres **Google Play (Store + Android)** o **sin Google Play con apps APK (Aurora Store)**.
-5. Elige el modo: **Live-USB** (grabar en pendrive) o **Instalador** (crear el medio de instalación `.img` sin grabar).
-6. Haz clic en **`⚡ Descargar, Parchear y Crear (1-Clic)`**.
-7. ¡Listo! Al terminar, reinicia tu PC y arranca desde el pendrive (tecla F12, F11 o Esc según tu placa base).
+### Îttrûççionêh de uço rápido:
+1. Konêtta un pendraîh USB de **ar menô 16 GB**.
+2. Âtte doble klik en er ehekutable **`TapeOS-Installer.exe`** (dehkargao de la çeççiôn Releases) u, çi uçâ er ZIP, en **`installer\windows\Run-Installer.cmd`**.
+3. Er îttaladôh detêttará tu PC (CPU, GPU, WiFi, Bluetooth, audio y tâttîh) y çelehçionará er rekûperaçiôn y lô parcheh de hardware adekuáô.
+4. Elihe çi kierêh **Googlêh Play (Çtore + Android)** u **çîn Googlêh Play kon apph APK (Aurora Çtore)**.
+5. Elihe er modo: **Live-USB** (grabâh en pendraîh) u **Îttaladôh** (kreâh er medio de îttalaçiôn `.img` çîn grabâh).
+6. Âtte klik en **`⚡ Dehkargâh, Parcheâh y Kreâh (1-Klik)`**.
+7. ¡Lîtta! Ar terminâh, reiníçia tu PC y arranka dêhde er pendraîh (têkla F12, F11 u Eç çegún tu plaka baçe).
 
 ---
 
-## 📊 Matriz de Codenames Oficiales Soportados
+## 📊 Matrî de Codenamê Ofiçiâlê Çoportáô
 
-| Generación de Procesador | Codename Oficial | Milestone Google | Kernel TapeOS | Tipo de Equipo |
+| Heneraçiôn de Proçeçadôh | Codename Ofiçiâh | Milestone Google | Kernel TapeOS | Tipo de Ekîpo |
 |---|---|---|---|---|
-| **Intel Core 14ª Gen / Ultra** | `brya` / `kanix` | **M156+** (Último) | `kernel-6.6` | Moderno (Meteor Lake) |
-| **Intel Core 11ª - 13ª Gen** | `volteer` / `voxel` | **M156+** (Último) | `kernel-6.1` | Moderno (Tiger / Alder Lake) |
-| **Intel Core 10ª Gen** | `hatch` / `jinlon` | **M156+** (Último) | `kernel-6.1` | Moderno (Comet Lake) |
-| **Intel Core 4ª - 9ª Gen** | `rammus` | **M149** (Estable) | `kernel-5.10` | Legacy (Haswell a Coffee Lake) |
-| **Intel Core 2ª - 3ª Gen** | `samus` / `rammus` | **M149** (Parcheado) | `kernel-legacy-5.4` | Retro (Sandy / Ivy Bridge) |
-| **Intel Atom Bay / Cherry Trail** | `cyan` / `rammus` | **M149** (Parcheado) | `kernel-legacy-4.19` | Retro (UEFI 32-bit / Tablets) |
-| **AMD Ryzen (Zen / Zen+ / Zen 2-4)**| `zork` / `gumboz` | **M156+** (Último) | `kernel-6.1` | Moderno (Radeon Vega/RDNA) |
-| **AMD Legacy APU (A4-A10 / Stoney)**| `grunt` | **M149** (Estable) | `kernel-legacy-5.4` | Retro (Radeon clásica) |
+| **Intel Core 14ª Hên / Ultra** | `brya` / `kanix` | **M156+** (Ûrtimo) | `kernel-6.6` | Moderno (Meteor Lake) |
+| **Intel Core 11ª - 13ª Hên** | `volteer` / `voxel` | **M156+** (Ûrtimo) | `kernel-6.1` | Moderno (Tiger / Alder Lake) |
+| **Intel Core 10ª Hên** | `hatch` / `jinlon` | **M156+** (Ûrtimo) | `kernel-6.1` | Moderno (Comet Lake) |
+| **Intel Core 4ª - 9ª Hên** | `rammus` | **M149** (Êttable) | `kernel-5.10` | Legacy (Haswell a Coffee Lake) |
+| **Intel Core 2ª - 3ª Hên** | `samus` / `rammus` | **M149** (Parxeao) | `kernel-legacy-5.4` | Retro (Sandy / Ivy Bridge) |
+| **Intel Atom Bay / Cherry Trail** | `cyan` / `rammus` | **M149** (Parxeao) | `kernel-legacy-4.19` | Retro (UEFI 32-bit / Tableth) |
+| **AMD Ryzen (Zen / Zen+ / Zen 2-4)**| `zork` / `gumboz` | **M156+** (Ûrtimo) | `kernel-6.1` | Moderno (Radeon Vega/RDNA) |
+| **AMD Legacy APU (A4-A10 / Stoney)**| `grunt` | **M149** (Êttable) | `kernel-legacy-5.4` | Retro (Radeon kláçika) |
 
 ---
 
-## 🛠️ Desarrollo en el Repositorio
+## 🛠️ Deçarroyo en er Repoçitorio
 
-Si vas a trabajar en este proyecto con **VS Code** o cualquier IDE:
+Çi bâ a trabahâh en êtte proyêtto kon **VS Code** u kualkiêh IDE:
 
-- **Tareas preconfiguradas** en `.vscode/tasks.json`:
-  - `Ctrl + Shift + P` -> **Tasks: Run Task** -> `TapeOS: Launch Windows Installer (GUI)` para probar la interfaz.
-  - `TapeOS: Run Hardware Detection` para verificar el diagnóstico de tu máquina.
-- **Fuentes upstream**: La carpeta de referencia técnica local (material descargado de terceros) está excluida del repositorio y no se publica.
+- **Tareâ prekonfigurâh** en `.vscode/tasks.json`:
+  - `Ctrl + Shift + P` -> **Tasks: Run Task** -> `TapeOS: Launch Windows Installer (GUI)` pa probâh la interfaç.
+  - `TapeOS: Run Hardware Detection` pa berifikâh er diagnóttiko de tu mákina.
+- **Fûentê âttream**: La karpeta de referençia ténnika lokâh (materiâh dehkargao de terçerô) êttá êkkluía der repoçitorio y no çe publika.
 
 ---
 
-## 📄 Licencia
+## 📄 Liçençia
 
-TapeOS se distribuye bajo la licencia **GNU GPLv3**. Componentes derivados de ChromiumOS o del kernel de Linux mantienen sus licencias originales respectivas (BSD / GPLv2).
+TapeOS çe dîttribuye baho la liçençia **GNU GPLv3**. Komponentêh deribáô de ChromiumOS u der kernel de Linux mantienen çû liçençiâ orihinâlêh rêppêttibâ (BSD / GPLv2).

@@ -298,12 +298,12 @@ function Get-TapeOSHardwareReport {
     foreach ($w in $wifiAdapters) { if ($w.FrameworkOption) { $frameworkPatches += [PSCustomObject]@{ Option = $w.FrameworkOption; Component = "WiFi: $($w.Name)" } } }
     foreach ($b in $bluetoothAdapters) { if ($b.FrameworkOption) { $frameworkPatches += [PSCustomObject]@{ Option = $b.FrameworkOption; Component = "Bluetooth: $($b.Name)" } } }
     foreach ($a in $audioDevices) { $frameworkPatches += [PSCustomObject]@{ Option = $a.FrameworkOption; Component = "Audio: $($a.Name)" } }
-    foreach ($t in $touchDevices) { $frameworkPatches += [PSCustomObject]@{ Option = $t.FrameworkOption; Component = "Táctil: $($t.Name)" } }
+    foreach ($t in $touchDevices) { $frameworkPatches += [PSCustomObject]@{ Option = $t.FrameworkOption; Component = "Tâttîh: $($t.Name)" } }
     if ($dgpuOption) {
-        $dgpuDesc = if ($hasNvidia) { 'dGPU NVIDIA (renderiza la iGPU)' } elseif ($hasAmd) { 'dGPU AMD (renderiza con amdgpu)' } else { 'dGPU (switchable)' }
+        $dgpuDesc = if ($hasNvidia) { 'dGPU NVIDIA (renderiça la iGPU)' } elseif ($hasAmd) { 'dGPU AMD (renderiça kon amdgpu)' } else { 'dGPU (çwîtcheable)' }
         $frameworkPatches += [PSCustomObject]@{ Option = $dgpuOption; Component = $dgpuDesc }
     }
-    if ($macbookOption) { $frameworkPatches += [PSCustomObject]@{ Option = $macbookOption; Component = 'MacBook (trackpad Apple)' } }
+    if ($macbookOption) { $frameworkPatches += [PSCustomObject]@{ Option = $macbookOption; Component = 'MacBook (trâkpa Apple)' } }
     $frameworkPatches = @($frameworkPatches | Sort-Object Option -Unique)
 
     # Construir objeto resumen de hardware

@@ -1,80 +1,80 @@
-# Guía de Instalación en Windows — TapeOS
+# Guía de Îttalaçiôn en Windows — TapeOS
 
-Esta guía describe cómo instalar **TapeOS** directamente desde Windows utilizando el instalador gráfico interactivo o la línea de comandos, sin necesidad de configurar manualmente WSL2 ni recurrir a herramientas complejas.
-
----
-
-## 🚀 Requisitos Previos
-
-1. **Equipo con Windows 10 u 11** (64 bits).
-2. **Espacio en disco**: Mínimo 16 GB libres (se recomiendan 32 GB o más).
-3. **Privilegios de Administrador**: El instalador solicitará elevación automáticamente.
-4. **Desactivar BitLocker y Fast Startup**:
-   - Si tu partición `C:` está cifrada con BitLocker, debes suspenderlo o desactivarlo temporalmente para permitir que GRUB lea el disco sin bloqueos.
-   - Desactiva el inicio rápido de Windows (*Fast Startup*) para evitar que el sistema de archivos NTFS quede bloqueado en estado de hibernación.
+Êtta guía dêkribe kómo îttalâh **TapeOS** dirêttamente dêhde Windows utiliçando er îttaladôh gráfiko întêratibo u la línea de komandô, çîn neçeçidá de konfigurâh manûmente WSL2 ni rekûrrîh a erramientâ komplehâ.
 
 ---
 
-## ⚡ Método 0: Ejecutable (EXE) autocontenido
+## 🚀 Rekîçitô Prebiô
 
-La forma más sencilla para el usuario final:
-
-1. Descarga **`TapeOS-Installer-<versión>.exe`** desde la sección [Releases](https://github.com/jesuscastilla/TapeOS/releases).
-2. Haz doble clic. El ejecutable incluye la interfaz y los 7 módulos (no necesita PowerShell configurado ni asociaciones de archivos) y pedirá permisos de administrador (UAC).
-3. Si Windows SmartScreen muestra un aviso, instala el certificado de TapeOS (`tapeos-signing.cer`, adjunto en la release) como **Editor de confianza**: doble clic -> "Instalar certificado" -> Equipo local -> "Colocar todos los certificados en el siguiente almacén" -> **Editores de confianza**. También puedes pulsar **"Más información" -> "Ejecutar de todos modos"**.
-
----
-
-## 🛠️ Método 1: Instalador Gráfico Interactivo (GUI)
-
-El método recomendado para la mayoría de usuarios:
-
-1. Ve a la carpeta `installer\windows\` dentro de este repositorio.
-2. Haz doble clic en **`Run-Installer.cmd`** (o clic derecho en `TapeOS-Installer.ps1` -> *Ejecutar con PowerShell*).
-3. El instalador detectará automáticamente:
-   - Tu modelo de procesador y generación.
-   - El modo de arranque del equipo (UEFI 64-bit, UEFI 32-bit o BIOS Legacy).
-   - Estado de BitLocker y Secure Boot.
-   - **WiFi, Bluetooth, códecs de audio y pantalla táctil**, y elegirá los parches de compatibilidad adecuados (`iwlwifi_backport`, `broadcom_wl`, `rtl*`, `rtbth`, `essx8336`, `ipts/goodix`, ...).
-   - La imagen de recuperación de ChromeOS recomendada (ej. `voxel`, `jinlon`, `rammus`, `grunt`, etc.).
-4. Selecciona tus preferencias:
-   - **Modo**: **Live-USB** (graba TapeOS en un pendrive para arrancar desde él) o **Instalador** (crea el medio de instalación `.img` sin grabar; elige la carpeta de destino).
-   - **Google Apps**: Elige entre **Con Google Apps** (Play Store + aplicaciones Android, recomendado) o **Sin Google Play** (Android con apps APK y tienda alternativa Aurora Store).
-   - **Opciones Legacy**: Activa las casillas de GPU antigua o UEFI de 32 bits si tienes un equipo antiguo.
-
-5. Pulsa **"Descargar, Parchear y Crear (1-Clic)"**.
-6. ¡Listo! Con el modo **Live-USB**, reinicia el PC y arranca desde el pendrive (tecla F12/F11/Esc); con el modo **Instalador**, graba el `.img` cuando quieras.
+1. **Ekîpo kon Windows 10 u 11** (64 bit).
+2. **Êppaçio en dîkko**: Mínimo 16 GB librê (çe rekomiendan 32 GB u mâh).
+3. **Pribilehiô de Adminîttradôh**: Er îttaladôh çoliçitará elebaçiôn automátikamente.
+4. **Dehattibâh BitLocker y Fâtt Startup**:
+   - Çi tu partiçiôn `C:` êttá çifrá kon BitLocker, debêh çûppendêl-lo u dehattibâl-lo temporalmente pa permettîh ke GRUB lea er dîkko çîn blokeô.
+   - Dehattiba er iniçio rápido de Windows (*Fast Startup*) pa ebitâh ke er çîttema de arxivô NTFS kede blokeao en êttao de ibernaçiôn.
 
 ---
 
-## 💻 Método 2: Asistente Interactivo por Consola (CLI)
+## ⚡ Método 0: Ehekutable (EXE) autokontenío
 
-Para entornos automatizados o administración remota:
+La forma mâh çençiya pa er uçuario finâh:
 
-1. Abre PowerShell como Administrador.
-2. Navega a `installer\windows\` y ejecuta:
+1. Dehkarga **`TapeOS-Installer-<berçiôn>.exe`** dêhde la çeççiôn [Releases](https://github.com/jesuscastilla/TapeOS/releases).
+2. Âtte doble klik. Er ehekutable inkluye la interfaç y lô 7 módulô (no neçeçita PowerShell konfigurao ni açôçiaçionêh de arxivô) y pedirá permiçô de adminîttradôh (UAC).
+3. Çi Windows SmartScreen muêttra un abiço, îttala er çertifikao de TapeOS (`tapeos-signing.cer`, âhunto en la release) komo **Editôh de konfiança**: doble klik -> "Îttalâh çertifikao" -> Ekîpo lokâh -> "Kolokâh tô lô çertifikáô en er çiguiente âhmaçên" -> **Editorêh de konfiança**. También pueêh pulçâh **"Mâh informaçiôn" -> "Ehekutâh de tô modô"**.
+
+---
+
+## 🛠️ Método 1: Îttaladôh Gráfiko Întêratibo (GUI)
+
+Er método rekomendao pa la mayoría de uçuariô:
+
+1. Bé a la karpeta `installer\windows\` dentro de êtte repoçitorio.
+2. Âtte doble klik en **`Run-Installer.cmd`** (u klik derexo en `TapeOS-Installer.ps1` -> *Ehekutâh kon PowerShell*).
+3. Er îttaladôh detêttará automátikamente:
+   - Tu modelo de proçeçadôh y heneraçiôn.
+   - Er modo de arrankê der ekîpo (UEFI 64-bit, UEFI 32-bit u BIOS Legacy).
+   - Êttao de BitLocker y Secure Boot.
+   - **WiFi, Bluetooth, kódek de audio y pantaya tâttîh**, y elehirá lô parcheh de kompatibilidá adekuáô (`iwlwifi_backport`, `broadcom_wl`, `rtl*`, `rtbth`, `essx8336`, `ipts/goodix`, ...).
+   - La imâhen de rekûperaçiôn de ChromeOS rekomendá (êh. `voxel`, `jinlon`, `rammus`, `grunt`, êtt.).
+4. Çelehçiona tû preferençiâ:
+   - **Modo**: **Live-USB** (graba TapeOS en un pendraîh pa arrankâh dêhde él) u **Îttaladôh** (krea er medio de îttalaçiôn `.img` çîn grabâh; elihe la karpeta de dêttino).
+   - **Googlêh Play**: Elihe entre **Kon Googlêh Play** (Çtore + aplikâçionêh Android, rekomendao) u **Çîn Googlêh Play** (Android kon apph APK y tienda âttênatiba Aurora Çtore).
+   - **Ôççionêh Legacy**: Attiba lâ kaçiyâ de GPU antigua u UEFI de 32 bit çi tienêh un ekîpo antiguo.
+
+5. Pulça **"Dehkargâh, Parcheâh y Kreâh (1-Klik)"**.
+6. ¡Lîtta! Kon er modo **Live-USB**, reiníçia er PC y arranka dêhde er pendraîh (têkla F12/F11/Eç); kon er modo **Îttaladôh**, graba er `.img` kuando kierâh.
+
+---
+
+## 💻 Método 2: Açîtente Întêratibo po Konçola (CLI)
+
+Pa entornô âttomatiçáô u adminîttraçiôn remota:
+
+1. Abre PowerShell komo Adminîttradôh.
+2. Nabega a `installer\windows\` y ehekuta:
    ```powershell
    .\TapeOS-CLI.ps1
    ```
-3. Sigue las instrucciones paso a paso en pantalla: diagnóstico, modo Live-USB o Instalador, Google Apps (con Play Store o sin ellas) y confirmación.
+3. Çigue lâ îttrûççionêh paço a paço en pantaya: diagnóttiko, modo Live-USB u Îttaladôh, Googlêh Play (kon Çtore u çîn él) y konfîrmaçiôn.
 
 ---
 
-## 🛡️ Secure Boot (Arranque Seguro)
+## 🛡️ Secure Boot (Arrankê Çeguro)
 
-Si tu equipo tiene **Secure Boot activado**, en el primer arranque podría aparecer una pantalla azul indicando `Verification failed: Access Denied`.
+Çi tu ekîpo tiene **Secure Boot attibao**, en er primêh arrankê podría apareçêh una pantaya açûh indikando `Verification failed: Access Denied`.
 
-Para autorizar la clave de TapeOS:
-1. Pulsa **OK**.
-2. Selecciona **Enroll key from disk**.
-3. Navega a la partición **EFI-SYSTEM** o busca el archivo **`tapeos.der`**.
-4. Pulsa **Continue** y reinicia el equipo.
+Pa otoriçâh la yabe de TapeOS:
+1. Pulça **OK**.
+2. Çelehçiona **Enroll key from disk**.
+3. Nabega a la partiçiôn **EFI-SYSTEM** u bûhka er arxibo **`tapeos.der`**.
+4. Pulça **Continue** y reiníçia er ekîpo.
 
 ---
 
-## 🔧 Solución de Problemas Comunes
+## 🔧 Çoluçiôn de Problemâ Komunêh
 
-- **El equipo se queda en el logo de ChromeOS**:
-  - TapeOS detecta y parchea automáticamente las GPUs dedicadas (opción `dgpu`: NVIDIA suspendida renderizando con la iGPU; AMD con `amdgpu`). Si aun así no arranca, entra en el menú de configuración del arranque (*Settings*) y desactiva la GPU dedicada para usar los gráficos integrados.
-- **Sin audio en portátiles antiguos**:
-  - Selecciona un kernel *Legacy* (5.10 o 5.4) en el instalador y habilita la opción de parches ALSA UCM antiguos.
+- **Er ekîpo çe keda en er logo de ChromeOS**:
+  - TapeOS detêtta y parchea automátikamente lâ GPU dediká (ôççiôn `dgpu`: NVIDIA çûppendía renderiçando kon la iGPU; AMD kon `amdgpu`). Çi aun açí no arranka, entra en er menú de konfiguraçiôn der arrankê (*Settings*) y dehattiba la GPU dediká pa uçâh lô gráfikô integráô.
+- **Çîn audio en portátilêh antiguô**:
+  - Çelehçiona un kernel *Legacy* (5.10 u 5.4) en er îttaladôh y abilita la ôççiôn de parcheh ALSA UCM antiguô.

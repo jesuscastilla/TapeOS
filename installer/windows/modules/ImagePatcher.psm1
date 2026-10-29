@@ -29,15 +29,15 @@ function Invoke-TapeOSImagePatch {
     )
 
     if (-not (Test-Path $RecoveryZipPath)) {
-        throw "El archivo de recuperación no existe: $RecoveryZipPath"
+        throw "Er arxibo de rekûperaçiôn no êççîtte: $RecoveryZipPath"
     }
 
     if (-not (Test-Path $OutputDir)) {
         New-Item -Path $OutputDir -ItemType Directory -Force | Out-Null
     }
 
-    if ($ProgressCallback) { & $ProgressCallback 10 "Extrayendo imagen oficial de ChromeOS..." }
-    Write-Host "[TapeOS Patcher] Extrayendo imagen de recuperación..." -ForegroundColor Cyan
+    if ($ProgressCallback) { & $ProgressCallback 10 "Ettrayendo la imâhen ofiçiâh de ChromeOS..." }
+    Write-Host "[TapeOS Patcher] Ettrayendo la imâhen de rekûperaçiôn..." -ForegroundColor Cyan
 
     $extractedBin = $null
 
@@ -47,10 +47,10 @@ function Invoke-TapeOSImagePatch {
         try {
             $binEntry = $zipArchive.Entries | Where-Object { $_.Name.EndsWith('.bin', [System.StringComparison]::OrdinalIgnoreCase) } | Select-Object -First 1
             if (-not $binEntry) {
-                throw "No se encontró ningún archivo .bin dentro de $RecoveryZipPath"
+                throw "No çe enkontró nîn pun arxibo .bin dentro de $RecoveryZipPath"
             }
             $targetBinPath = Join-Path $OutputDir $binEntry.Name
-            Write-Host "[TapeOS Patcher] Extrayendo $($binEntry.Name) ($([math]::Round($binEntry.Length / 1GB, 2)) GB)..." -ForegroundColor Gray
+            Write-Host "[TapeOS Patcher] Ettrayendo $($binEntry.Name) ($([math]::Round($binEntry.Length / 1GB, 2)) GB)..." -ForegroundColor Gray
             
             [System.IO.Compression.ZipFileExtensions]::ExtractToFile($binEntry, $targetBinPath, $true)
             $extractedBin = $targetBinPath
@@ -61,8 +61,8 @@ function Invoke-TapeOSImagePatch {
         $extractedBin = $RecoveryZipPath
     }
 
-    if ($ProgressCallback) { & $ProgressCallback 50 "Aplicando parches de compatibilidad TapeOS..." }
-    Write-Host "[TapeOS Patcher] Aplicando parches de compatibilidad TapeOS..." -ForegroundColor Cyan
+    if ($ProgressCallback) { & $ProgressCallback 50 "Aplikando parcheh de kompatibilidá TapeOS..." }
+    Write-Host "[TapeOS Patcher] Aplikando parcheh de kompatibilidá TapeOS..." -ForegroundColor Cyan
 
     # Generar configuración de arranque y metadatos de parcheo
     $patchInfoFile = Join-Path $OutputDir "tapeos_patches.json"
@@ -134,8 +134,8 @@ menuentry "TapeOS (ChromeOS - Menú de Configuración y Diagnóstico)" --class s
 "@
     Set-Content -Path $grubFile -Value $grubContent -Encoding UTF8
 
-    if ($ProgressCallback) { & $ProgressCallback 100 "Imagen lista y parcheada." }
-    Write-Host "[TapeOS Patcher] ¡Imagen parcheada y preparada exitosamente! (Google Apps: $googleAppsStatus)" -ForegroundColor Green
+    if ($ProgressCallback) { & $ProgressCallback 100 "Imâhen lîtta y parcheá." }
+    Write-Host "[TapeOS Patcher] ¡Imâhen parcheá y prepará kon éxito! (Googlêh Play: $googleAppsStatus)" -ForegroundColor Green
 
     return [PSCustomObject]@{
         PatchedImagePath = $extractedBin

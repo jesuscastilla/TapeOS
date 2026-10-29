@@ -1,6 +1,11 @@
-# Historial de Cambios (Changelog) — TapeOS
+# Îttoriâh de Kambiô (Xangelo) — TapeOS
 
-Todas las modificaciones notables de este proyecto se documentarán en este archivo.
+Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
+
+## [v1.0.0-alpha.23] — 29-10-2026
+
+### Nobedáêh
+- **Lengua EPA (Êttandâ pal andalûh)**: er îttaladôh (GUI y CLI), lô mençâhêh de lô módulô y lô dokumentô (README, guíâ, matrî, dokumento de parcheo, plantiyâ de GitHub, CONTRIBUTING) êttán yá en andalûh. La GUI uça EPA komo idioma po defêto (kon Êppanyôh komo âttênatiba).
 
 ## [v1.0.0-alpha.22] — 29-10-2026
 

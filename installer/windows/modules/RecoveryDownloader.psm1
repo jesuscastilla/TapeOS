@@ -51,7 +51,7 @@ function Get-TapeOSLatestRecoveryInfo {
             }
         }
     } catch {
-        Write-Warning "No se pudo consultar Chromium Dash API: $_"
+        Write-Warning "No çe pudo konhûttâh la Chromium Dash API: $_"
     }
 
     # Fallback si no hay conexión a la API
@@ -81,9 +81,9 @@ function Start-TapeOSDownload {
         New-Item -Path $parentDir -ItemType Directory -Force | Out-Null
     }
 
-    Write-Host "[TapeOS Downloader] Iniciando descarga desde Google CDN..." -ForegroundColor Cyan
+    Write-Host "[TapeOS Downloader] Iniçiando dehkarga dêhde Google CDN..." -ForegroundColor Cyan
     Write-Host "URL: $Url" -ForegroundColor Gray
-    Write-Host "Destino: $DestinationFile" -ForegroundColor Gray
+    Write-Host "Dêttino: $DestinationFile" -ForegroundColor Gray
 
     # Asegurar TLS 1.2 en hosts antiguos (Windows PowerShell 5.1)
     try {
@@ -103,7 +103,7 @@ function Start-TapeOSDownload {
     try {
         # Descarga sincrona: segura dentro del hilo de trabajo (sin TPL async)
         $webClient.DownloadFile([System.Uri]$Url, $DestinationFile)
-        Write-Host "[TapeOS Downloader] Descarga completada con éxito." -ForegroundColor Green
+        Write-Host "[TapeOS Downloader] Dehkarga kompletá kon éxito." -ForegroundColor Green
         return $DestinationFile
     } finally {
         $webClient.Dispose()

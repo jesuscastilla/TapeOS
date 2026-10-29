@@ -21,14 +21,14 @@ function Expand-TapeOSArchive {
     )
 
     if (-not (Test-Path $ArchivePath)) {
-        throw "El archivo origen no existe: $ArchivePath"
+        throw "Er arxibo orihen no êççîtte: $ArchivePath"
     }
 
     if (-not (Test-Path $DestinationPath)) {
         New-Item -Path $DestinationPath -ItemType Directory -Force | Out-Null
     }
 
-    Write-Host "[TapeOS DiskManager] Descomprimiendo '$ArchivePath'..." -ForegroundColor Cyan
+    Write-Host "[TapeOS DiskManager] Dehkomprimiendo '$ArchivePath'..." -ForegroundColor Cyan
 
     if ($ArchivePath.EndsWith('.zip', [System.StringComparison]::OrdinalIgnoreCase)) {
         [System.IO.Compression.ZipFile]::ExtractToDirectory($ArchivePath, $DestinationPath)
@@ -36,13 +36,13 @@ function Expand-TapeOSArchive {
         # Usar tar nativo de Windows 10/11
         & tar.exe -zxvf $ArchivePath -C $DestinationPath
         if ($LASTEXITCODE -ne 0) {
-            throw "Error al descomprimir tar.gz con tar.exe (Código de salida $LASTEXITCODE)"
+            throw "Errôh al dehkomprimîh tar.gz kon tar.exe (Kódiho de çalía $LASTEXITCODE)"
         }
     } else {
-        throw "Formato de archivo no reconocido: $ArchivePath"
+        throw "Formato de arxibo no rekonocío: $ArchivePath"
     }
 
-    Write-Host "[TapeOS DiskManager] Descompresión finalizada con éxito." -ForegroundColor Green
+    Write-Host "[TapeOS DiskManager] Dehkompreçiôn finaliçá kon éxito." -ForegroundColor Green
 }
 
 function Get-TapeOSUSBTargets {

@@ -97,7 +97,7 @@ menuentry "TapeOS (Modo Seguro / Fallback - Kernel Legacy)" --class recovery {
 "@
 
     Set-Content -Path $OutputPath -Value $grubTemplate -Encoding UTF8
-    Write-Host "[TapeOS BootManager] Configuración de GRUB guardada en '$OutputPath'." -ForegroundColor Green
+    Write-Host "[TapeOS BootManager] Konfiguraçiôn de GRUB guâddá en '$OutputPath'." -ForegroundColor Green
 }
 
 Export-ModuleMember -Function New-TapeOSGrubConfig

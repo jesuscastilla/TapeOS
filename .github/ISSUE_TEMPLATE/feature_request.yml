@@ -1,21 +1,21 @@
-name: 💡 Solicitud de Función / Feature Request
-description: Sugiere una mejora, soporte para nuevo hardware o función para el instalador
+name: 💡 Çoliçitû de Funçiôn / Feature Request
+description: Çuhere una mehora, çoporte pa nuebo hardware u funçiôn pa er îttaladôh
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
-      value: ¡Queremos hacer TapeOS lo más compatible posible con equipos de todo tipo!
+      value: ¡Keremô açêh TapeOS lo mâh kompatible poçible kon ekîpô de too tipo!
   - type: input
     id: title
     attributes:
-      label: Resumen de la sugerencia
-      placeholder: Soporte para driver Wi-Fi RTL8821CE en kernel legacy, etc.
+      label: Reçûmen de la çuherençia
+      placeholder: Çoporte pa drîber Wi-Fi RTL8821CE en kernel legacy, êtt.
     validations:
       required: true
   - type: textarea
     id: details
     attributes:
-      label: Detalle de la propuesta
-      description: Explica por qué sería útil y cómo imaginas su funcionamiento.
+      label: Detaye de la propûêtta
+      description: Êpplíka po ké çería útîh y kómo imahinâh çu funçionamiento.
     validations:
       required: true

@@ -144,19 +144,19 @@ $hwText.Location = New-Object System.Drawing.Point(15, 22)
 $hwText.Size = New-Object System.Drawing.Size(815, 130)
 
 $rec = $hwReport.Recommendations
-$wifiSummary = if ($hwReport.Network.WiFi.Count -gt 0) { (($hwReport.Network.WiFi | ForEach-Object { $_.Name }) -join ', ') } else { 'No detectado' }
-$btSummary = if ($hwReport.Network.Bluetooth.Count -gt 0) { (($hwReport.Network.Bluetooth | ForEach-Object { $_.Name }) -join ', ') } else { 'No detectado' }
-$audioSummary = if ($hwReport.Audio.Count -gt 0) { (($hwReport.Audio | ForEach-Object { $_.Name }) -join ', ') } else { 'Soportado' }
-$touchSummary = if ($hwReport.Touchscreen.Count -gt 0) { (($hwReport.Touchscreen | ForEach-Object { $_.Name }) -join ', ') } else { 'No detectada' }
+$wifiSummary = if ($hwReport.Network.WiFi.Count -gt 0) { (($hwReport.Network.WiFi | ForEach-Object { $_.Name }) -join ', ') } else { 'No detêttao' }
+$btSummary = if ($hwReport.Network.Bluetooth.Count -gt 0) { (($hwReport.Network.Bluetooth | ForEach-Object { $_.Name }) -join ', ') } else { 'No detêttao' }
+$audioSummary = if ($hwReport.Audio.Count -gt 0) { (($hwReport.Audio | ForEach-Object { $_.Name }) -join ', ') } else { 'Çoportao' }
+$touchSummary = if ($hwReport.Touchscreen.Count -gt 0) { (($hwReport.Touchscreen | ForEach-Object { $_.Name }) -join ', ') } else { 'No detêttá' }
 $patchList = (($hwReport.FrameworkPatches | ForEach-Object { $_.Option }) -join ', ')
 $hwInfo = @"
 • CPU: $($hwReport.CPU.Name) ($($hwReport.CPU.Generation))
-• Firmware: $($hwReport.Firmware.Type)  |  Secure Boot: $(if ($hwReport.Firmware.SecureBoot) { 'Activo' } else { 'Inactivo' })  |  BitLocker: $(if ($hwReport.Security.BitLockerActive) { 'ACTIVO ⚠️' } else { 'Inactivo ✅' })
+• Firmware: $($hwReport.Firmware.Type)  |  Secure Boot: $(if ($hwReport.Firmware.SecureBoot) { 'Attibo' } else { 'Inattibo' })  |  BitLocker: $(if ($hwReport.Security.BitLockerActive) { 'ATTIBO ⚠️' } else { 'Inattibo ✅' })
 • GPU: $(($hwReport.GPU | ForEach-Object { "$($_.Name) $(if ($_.VendorId -eq '10DE') { '(NVIDIA)' } elseif ($_.VendorId -eq '1002') { '(AMD)' } elseif ($_.VendorId -eq '8086') { '(Intel)' } else { '' })" }) -join ', ')
 • WiFi: $wifiSummary   |   Bluetooth: $btSummary
-• Audio: $audioSummary   |   Táctil: $touchSummary
-• Parches hardware detectados: $(if ($patchList) { $patchList } else { 'ninguno necesario' })
-• Recomendación: Recovery [$($rec.RecoveryCodename.ToUpper())] con Kernel [$($rec.Kernel)]
+• Audio: $audioSummary   |   Tâttîh: $touchSummary
+• Parcheh de hardware detêttáô: $(if ($patchList) { $patchList } else { 'nîn guno neçeçario' })
+• Rekomendaçiôn: Rekûperaçiôn [$($rec.RecoveryCodename.ToUpper())] kon Kernel [$($rec.Kernel)]
 "@
 $hwText.Text = $hwInfo
 $hwGroup.Controls.Add($hwText)
@@ -327,7 +327,7 @@ $radioUsb.Add_Click({
     $txtImageDir.Enabled = $false
     $btnBrowseDir.Enabled = $false
     Refresh-UsbList
-    $logBox.AppendText("[Modo] Live-USB seleccionado. Dispositivos detectados en la lista.`r`n")
+    $logBox.AppendText("[Modo] Live-USB çelehçionao. Lô dippoçitivô detêttáô êttán en la lîtta.`r`n")
 })
 $radioImageOnly.Add_Click({
     $cbUsbDrives.Enabled = $false
@@ -337,7 +337,7 @@ $radioImageOnly.Add_Click({
 })
 $btnBrowseDir.Add_Click({
     $dlg = New-Object System.Windows.Forms.FolderBrowserDialog
-    $dlg.Description = "Selecciona la carpeta donde guardar la imagen TapeOS (.img)"
+    $dlg.Description = "Elihe la karpeta pa guâddâh er medio de îttalaçiôn TapeOS (.img)"
     $dlg.SelectedPath = $txtImageDir.Text
     if ($dlg.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
         $txtImageDir.Text = $dlg.Path
@@ -349,7 +349,7 @@ function Refresh-UsbList {
     $cbUsbDrives.Items.Clear()
     $usbList = Get-TapeOSUsbDrives
     if ($usbList.Count -eq 0) {
-        [void]$cbUsbDrives.Items.Add("⚠️ No se detectó ningún pendrive USB. Conecta uno y pulsa 'Refrescar'.")
+        [void]$cbUsbDrives.Items.Add("⚠️ No çe detêttó nîn pun pendraîh USB. Konêtta uno y pulça 'Refrehkâh'.")
         $cbUsbDrives.SelectedIndex = 0
     } else {
         foreach ($d in $usbList) {
@@ -421,14 +421,14 @@ $btnFullAuto.Add_Click({
         if ($usbList.Count -eq 0 -or $selectedUsbIdx -ge $usbList.Count) {
             # Sin pendrive: informar y ofrecer reintento (sin cambiar de modo)
             $retry = [System.Windows.Forms.MessageBox]::Show(
-                "No se detectó ningún pendrive USB.`r`n`r`nConecta el dispositivo, espera unos segundos y pulsa '🔄 Refrescar'.`r`n`r`n¿Quieres que TapeOS reintente la detección ahora?",
-                "Pendrive no detectado",
+                "No çe detêttó nîn pun pendraîh USB.`r`n`r`nKonêtta er dippoçitibo, êppera unô çegundô y pulça '🔄 Refrehkâh'.`r`n`r`n¿Kierêh ke TapeOS reintente la detêççiôn ahora?",
+                "Pendraîh no detêttao",
                 [System.Windows.Forms.MessageBoxButtons]::YesNo,
                 [System.Windows.Forms.MessageBoxIcon]::Warning
             )
             if ($retry -eq [System.Windows.Forms.DialogResult]::Yes) {
                 Refresh-UsbList
-                $logBox.AppendText("[Modo] Detección de pendrives reintentada. Revisa la lista y vuelve a pulsar Crear.`r`n")
+                $logBox.AppendText("[Modo] Deteççiôn de pendraîh reintentá. Rebîça la lîtta y bûerbe a pulçâh Kreâh.`r`n")
             }
             return
         }
@@ -437,12 +437,12 @@ $btnFullAuto.Add_Click({
         $targetUsb = $null
         $imgDest = $txtImageDir.Text.Trim()
         if (-not $imgDest) { $imgDest = "C:\TapeOS\images" }
-        $confirmText = "Se descargará y parcheará la imagen de ChromeOS y se creará el medio de instalación (.img) en:`r`n$imgDest`r`n`r`nNo se grabará en ningún pendrive."
-        $confirmTitle = "Confirmación — Crear medio de instalación (.img)"
+        $confirmText = "Çe dehkargará y parcheará la imâhen de ChromeOS y çe kreará er medio de îttalaçiôn (.img) en:`r`n$imgDest`r`n`r`nNo çe grabará en nîn pun pendraîh."
+        $confirmTitle = "Konfîrmaçiôn — Kreâh er medio de îttalaçiôn (.img)"
     } else {
         $targetUsb = $usbList[$selectedUsbIdx]
-        $confirmText = "¿Estás seguro de que deseas grabar TapeOS en:`r`n$($targetUsb.DisplayName)?`r`n`r`nTODOS LOS DATOS DEL PENDRIVE SE BORRARÁN."
-        $confirmTitle = "Confirmación de Grabación"
+        $confirmText = "¿Êttâh çeguro de ke kierêh grabâh TapeOS en:`r`n$($targetUsb.DisplayName)?`r`n`r`nTÔ LÔ DATÔ DER PENDRAÎH ÇE BORRARÁN."
+        $confirmTitle = "Konfîrmaçiôn de Grabaçiôn"
     }
     $confirm = [System.Windows.Forms.MessageBox]::Show(
         $confirmText,
@@ -485,11 +485,11 @@ try {
     Write-PipelineLog "Pipeline (runspace) iniciado"
     Write-PipelineLog ("Pipeline: codename=$Codename, googleplay=$EnableGoogleApps, imageOnly=$ImageOnlyMode, destino=$ImageDestDir")
     $Form.Invoke([Action]{
-        $LogBox.AppendText("Modo Google Play: $(if ($EnableGoogleApps) { 'Activado (Play Store + Android)' } else { 'Desactivado (APK + Aurora Store)' })`r`n")
+        $LogBox.AppendText("Modo Googlêh Play: $(if ($EnableGoogleApps) { 'Attibao (Play Çtore + Android)' } else { 'Dehattibao (APK + Aurora Çtore)' })`r`n")
     })
 
     # 1. Consulta
-    $Form.Invoke([Action]{ $LogBox.AppendText("`r`n[Paso 1/4] Consultando ultima version oficial de Google para '$Codename'...`r`n") })
+    $Form.Invoke([Action]{ $LogBox.AppendText("`r`n[Paço 1/4] Konhûttando la ûrtima berçiôn ofiçiâh de Google pa '$Codename'...`r`n") })
     $info = Get-TapeOSLatestRecoveryInfo -BoardCodename $Codename
             
     # 2. Descarga (reutiliza un ZIP previo completo si existe)
@@ -497,11 +497,11 @@ try {
     $destZip = Join-Path $downloadDir $info.FileName
     if ((Test-Path $destZip) -and (Get-Item $destZip).Length -gt 100MB) {
         Write-PipelineLog "ZIP previo encontrado; se reutiliza: $destZip"
-        $Form.Invoke([Action]{ $LogBox.AppendText("[Paso 2/4] Descarga previa encontrada; se reutiliza.`r`n") })
+        $Form.Invoke([Action]{ $LogBox.AppendText("[Paço 2/4] Dehkarga anteriôh enkontrá; çe reûtiliça.`r`n") })
     } else {
         $Form.Invoke([Action]{
-            $LblStatus.Text = "Descargando: $($info.FileName)..."
-            $LogBox.AppendText("[Paso 2/4] Descargando imagen desde CDN oficial de Google...`r`n")
+            $LblStatus.Text = "Dehkargando: $($info.FileName)..."
+            $LogBox.AppendText("[Paço 2/4] Dehkargando la imâhen dêhde er CDN ofiçiâh de Google...`r`n")
         })
         Start-TapeOSDownload -Url $info.Url -DestinationFile $destZip -ProgressCallback {
             param($percent, $received, $total)
@@ -511,7 +511,7 @@ try {
 
     # 3. Parcheo
     $Form.Invoke([Action]{
-        $LogBox.AppendText("[Paso 3/4] Descomprimiendo y aplicando parches TapeOS (Legacy EFI, swtpm, GPU, Google Play: $(if ($EnableGoogleApps) { 'SÍ' } else { 'NO (APK/Aurora)' }))...`r`n")
+        $LogBox.AppendText("[Paço 3/4] Dehkomprimiendo y aplikando parcheh TapeOS (Legacy EFI, swtpm, GPU, Googlêh Play: $(if ($EnableGoogleApps) { 'ÇÍ' } else { 'NO (APK/Aurora)' }))...`r`n")
     })
     $patched = Invoke-TapeOSImagePatch `
         -RecoveryZipPath $destZip `
@@ -531,7 +531,7 @@ try {
 
     # 4. Medio de instalacion (.img)
     if ($ImageOnlyMode) {
-        $Form.Invoke([Action]{ $LogBox.AppendText("[Paso 4/4] Creando medio de instalacion (.img) sin grabar...`r`n") })
+        $Form.Invoke([Action]{ $LogBox.AppendText("[Paço 4/4] Kreando er medio de îttalaçiôn (.img) çîn grabâh...`r`n") })
         $destDir = $ImageDestDir.Trim()
         if (-not $destDir) { $destDir = "C:\TapeOS\images" }
         New-Item -ItemType Directory -Path $destDir -Force | Out-Null
@@ -541,17 +541,17 @@ try {
         if (Test-Path $patched.ConfigFile) { Copy-Item -Path $patched.ConfigFile -Destination (Join-Path $destDir "grub.cfg") -Force }
         $Form.Invoke([Action]{
             $ProgressBar.Value = 100
-            $LogBox.AppendText("`r`n✅ ¡MEDIO DE INSTALACIÓN CREADO!`r`nArchivo: $imgPath`r`nGrábalo cuando quieras con Rufus, Win32DiskImager o TapeOS (modo Live-USB).`r`n")
+            $LogBox.AppendText("`r`n✅ ¡MEDIO DE ÎTTALAÇIÔN KREAO!`r`nArxibo: $imgPath`r`nGrábalo kuando kierâh kon Rufû, Win32DiskImager u TapeOS (modo Live-USB).`r`n")
             [System.Windows.Forms.MessageBox]::Show(
-                "¡Medio de instalación TapeOS creado!`r`n`r`nRuta: $imgPath`r`n`r`nPara usarlo, grábalo en un pendrive con Rufus, Win32DiskImager o desde TapeOS (modo Live-USB).",
-                "Medio de instalación creado",
+                "¡Medio de îttalaçiôn TapeOS kreao!`r`n`r`nRûtta: $imgPath`r`n`r`nPa uçâl-lo, grábalo en un pendraîh kon Rufû, Win32DiskImager u dêhde TapeOS (modo Live-USB).",
+                "Medio de îttalaçiôn kreao",
                 [System.Windows.Forms.MessageBoxButtons]::OK,
                 [System.Windows.Forms.MessageBoxIcon]::Information
             ) | Out-Null
         })
     } else {
         # 4. Grabacion en pendrive USB
-        $Form.Invoke([Action]{ $LogBox.AppendText("[Paso 4/4] Grabando imagen parcheada directamente en $($TargetUsb.DeviceID)...`r`n") })
+        $Form.Invoke([Action]{ $LogBox.AppendText("[Paço 4/4] Grabando la imâhen parcheá dirêttamente en $($TargetUsb.DeviceID)...`r`n") })
         Start-TapeOSUsbFlash `
             -ImageFilePath $patched.PatchedImagePath `
             -PhysicalDriveId $TargetUsb.DeviceID `
@@ -564,10 +564,10 @@ try {
             } | Out-Null
         $Form.Invoke([Action]{
             $ProgressBar.Value = 100
-            $LogBox.AppendText("`r`n✅ ¡PROCESO COMPLETADO EXITOSAMENTE!`r`nEl pendrive está listo para arrancar en cualquier equipo con EFI.`r`n")
+            $LogBox.AppendText("`r`n✅ ¡PROÇEÇO KOMPLETAO KON ÉXITO!`r`nEr pendraîh êttá lîtta pa arrankâh en kualkiêh ekîpo kon EFI.`r`n")
             [System.Windows.Forms.MessageBox]::Show(
-                "¡TapeOS ha sido grabado exitosamente en tu pendrive!`r`n`r`nYa puedes reiniciar el equipo y arrancar desde el pendrive USB (tecla F12/F11/Esc en el logo).",
-                "Grabación Completada",
+                "¡TapeOS çe á grabao kon éxito en tu pendraîh!`r`n`r`nYa pueêh reiníçiâh er ekîpo y arrankâh dêhde er pendraîh USB (têkla F12/F11/Eç en er logo).",
+                "Grabaçiôn Kompletá",
                 [System.Windows.Forms.MessageBoxButtons]::OK,
                 [System.Windows.Forms.MessageBoxIcon]::Information
             ) | Out-Null
@@ -578,10 +578,10 @@ try {
     Write-PipelineLog ("ERROR pipeline: " + $_.Exception.ToString())
     try {
         $Form.Invoke([Action]{
-            $LogBox.AppendText("❌ ERROR: $($_.Exception.Message)`r`n")
+            $LogBox.AppendText("❌ ERRÔH: $($_.Exception.Message)`r`n")
             [System.Windows.Forms.MessageBox]::Show(
-                "Ocurrió un error en el proceso:`r`n$($_.Exception.Message)",
-                "Error",
+                "Okurrió un errôh en er proçeço:`r`n$($_.Exception.Message)",
+                "Errôh",
                 [System.Windows.Forms.MessageBoxButtons]::OK,
                 [System.Windows.Forms.MessageBoxIcon]::Error
             ) | Out-Null
@@ -625,7 +625,7 @@ try {
                 Write-TapeOSLog ("ERROR al finalizar pipeline: " + $_.Exception.ToString())
                 try {
                     [System.Windows.Forms.MessageBox]::Show(
-                        "Error en el proceso:`r`n$($_.Exception.Message)",
+                        "Errôh en er proçeço:`r`n$($_.Exception.Message)",
                         "TapeOS",
                         [System.Windows.Forms.MessageBoxButtons]::OK,
                         [System.Windows.Forms.MessageBoxIcon]::Error
@@ -644,7 +644,7 @@ try {
         Write-TapeOSLog ("ERROR en botón Crear: " + $_)
         try {
             [System.Windows.Forms.MessageBox]::Show(
-                "Error inesperado al iniciar el proceso:`r`n$($_.Exception.Message)",
+                "Errôh inepperao al iniçiâh er proçeço:`r`n$($_.Exception.Message)",
                 "TapeOS",
                 [System.Windows.Forms.MessageBoxButtons]::OK,
                 [System.Windows.Forms.MessageBoxIcon]::Error
@@ -669,25 +669,25 @@ function Set-TapeOSLanguage {
     if ($Lang -eq "Andaluz") {
         $titleLabel.Text = "TapeOS Îttaladôh Uniberçâh"
         $subtitleLabel.Text = "Piplîne completo: Deteççiôn -> Dehcarga ofiçiâh -> Parcheo -> Grabâh en Pendraîh"
-        $hwGroup.Text = " 1. Diagnóttico Automátto der Equipo "
-        $crosGroup.Text = " 2. Imâhen de Recuperaçiôn de ChromeOS (Ofiçiâh de Google) "
-        $lblRecovery.Text = "Erigîh Modelo:"
-        $btnCheckOnline.Text = "🌐 Bûhcâh l'Ûrtima Berçiôn"
-        $lblStatusUrl.Text = "Berçiôn ofiçiâh mâh reçiente: lîtta pa conhûltâh en Google CDN..."
+        $hwGroup.Text = " 1. Diagnóttiko Automátiko der Ekîpo "
+        $crosGroup.Text = " 2. Imâhen de Rekûperaçiôn de ChromeOS (Ofiçiâh de Google) "
+        $lblRecovery.Text = "Erihîh Modelo:"
+        $btnCheckOnline.Text = "🌐 Bûhkâh la Ûrtima Berçiôn"
+        $lblStatusUrl.Text = "Berçiôn ofiçiâh mâh reçiente: lîtta pa konhûttâh en Google CDN..."
         $lblProgressText.Text = "Progreço:"
         $gaGroup.Text = " 2b. Googlêh Play (Çtore u APK) "
-        $radioGoogleApps.Text = "✅ Con Googlêh Play — Çtore y aplicaçionêh Android (recomendao)"
-        $radioNoGoogleApps.Text = "🚫 Çin Googlêh Play — Android con apph APK (Aurora Çtore)"
+        $radioGoogleApps.Text = "✅ Kon Googlêh Play — Çtore y aplikâçionêh Android (rekomendao)"
+        $radioNoGoogleApps.Text = "🚫 Çîn Googlêh Play — Android kon apph APK (Aurora Çtore)"
         $usbGroup.Text = " 3. Modo: Live-USB u Îttaladôh "
-        $radioUsb.Text = "💾 Live-USB — Grabâh en un pendraîh USB y arrancâh dêhde éh"
-        $radioImageOnly.Text = "📀 Îttaladôh — Creâh er medio de îttalaçiôn (.img) çin grabâh"
-        $btnRefreshUsb.Text = "🔄 Refrehcâh"
-        $btnBrowseDir.Text = "📂 Ehgaminâh..."
-        $lblUsbWarning.Text = "⚠️ OJO: Er pendraîh elehçionao çe formateará pa îttalâh TapeOS arrancable con ChromeOS."
-        $lblImgHint.Text = "Er .img êh er medio de îttalaçiôn: grábalo cuando quierâh con Rufû, Win32DiskImager u TapeOS (modo Live-USB)."
-        $btnFullAuto.Text = "⚡ Dehcargâh, Parcheâh y Creâh (1-Clic)"
+        $radioUsb.Text = "💾 Live-USB — Grabâh en un pendraîh USB y arrankâh dêhde él"
+        $radioImageOnly.Text = "📀 Îttaladôh — Kreâh er medio de îttalaçiôn (.img) çîn grabâh"
+        $btnRefreshUsb.Text = "🔄 Refrehkâh"
+        $btnBrowseDir.Text = "📂 Ehkaminâh..."
+        $lblUsbWarning.Text = "⚠️ OHO: Er pendraîh elehçionao çe formateará pa îttalâh TapeOS arrankable kon ChromeOS."
+        $lblImgHint.Text = "Er .img êh er medio de îttalaçiôn: grábalo kuando kierâh kon Rufû, Win32DiskImager u TapeOS (modo Live-USB)."
+        $btnFullAuto.Text = "⚡ Dehkargâh, Parcheâh y Kreâh (1-Klik)"
         $btnExit.Text = "Çerrâh"
-        $logBox.Text = "=== TapeOS Lîtta ===`r`nModo por defêto: Îttaladôh (crea er .img çin pendraîh). Cambia a Live-USB çi quierêh grabâh un pendraîh. Pulça 'Creâh en 1 Clic' pa empeçâh.`r`n"
+        $logBox.Text = "=== TapeOS Lîtta ===`r`nModo por defêto: Îttaladôh (krea er .img çîn pendraîh). Kambia a Live-USB çi kierêh grabâh un pendraîh. Pulça 'Kreâh en 1 Klik' pa empeçâh.`r`n"
     } else {
         $titleLabel.Text = "TapeOS Universal Installer"
         $subtitleLabel.Text = "Pipeline Completo: Detección -> Descarga Oficial Actualizada -> Parcheo Legacy -> Grabación en Pendrive"
@@ -716,6 +716,7 @@ function Set-TapeOSLanguage {
 $cbLang.Add_SelectedIndexChanged({
     Set-TapeOSLanguage -Lang $cbLang.SelectedItem.ToString()
 })
+Set-TapeOSLanguage -Lang "Andaluz"
 
 # Mostrar formulario
 [void]$form.ShowDialog()

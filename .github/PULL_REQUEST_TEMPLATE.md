@@ -1,19 +1,19 @@
-## Descripción del cambio
-<!-- Explica brevemente qué aporta este Pull Request y qué problema soluciona -->
+## Dêkripçiôn der kambio
+<!-- Êpplíka brebemente ké aporta êtte Pull Request y ké problema çoluçiona -->
 
-## Tipo de cambio
-- [ ] 🐛 Corrección de bug
-- [ ] ✨ Nueva funcionalidad (instalador, soporte de hardware, etc.)
-- [ ] 🔧 Refactorización o mejora de rendimiento
-- [ ] 📚 Documentación
+## Tipo de kambio
+- [ ] 🐛 Korreççiôn de bug
+- [ ] ✨ Nueba funçionalidá (îttaladôh, çoporte de hardware, êtt.)
+- [ ] 🔧 Refaktoriçaçiôn u mehora de rendimiento
+- [ ] 📚 Dokumentaçiôn
 
-## Pruebas realizadas
-<!-- ¿Cómo has probado estos cambios? (Hardware real, máquina virtual QEMU/Hyper-V, Windows 10/11) -->
-- Hardware probado:
-- Modo de arranque (UEFI / BIOS Legacy):
-- Resultado:
+## Pruebâ realiçâh
+<!-- ¿Kómo âh probao êttô kambiô? (Hardware reâh, mákina bîttuâh QEMU/Hyper-V, Windows 10/11) -->
+- Hardware probao:
+- Modo de arrankê (UEFI / BIOS Legacy):
+- Reçûttao:
 
-## Checklist
-- [ ] Mi código sigue el estilo y estándares del proyecto.
-- [ ] He probado que no rompe instalaciones existentes.
-- [ ] La documentación se ha actualizado si procede.
+## Checklîtt
+- [ ] Mi kódiho çige er êttilo y lô êttándarêh der proyêtto.
+- [ ] É probao ke no rompe îttalaçionêh êççîtentêh.
+- [ ] La dokumentaçiôn çe á âttualiçao çi proçede.
