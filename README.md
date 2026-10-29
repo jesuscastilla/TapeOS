@@ -85,7 +85,7 @@ installer/windows/
 ### Instrucciones de uso rápido:
 1. Conecta un pendrive USB de **al menos 16 GB**.
 2. Haz doble clic en el ejecutable **`TapeOS-Installer.exe`** (descargado de la sección Releases) o, si usas el ZIP, en **`installer\windows\Run-Installer.cmd`**.
-3. El instalador detectará tu PC y seleccionará el recovery adecuado.
+3. El instalador detectará tu PC (CPU, GPU, WiFi, Bluetooth, audio y táctil) y seleccionará el recovery y los parches de hardware adecuados.
 4. Elige si quieres **Google Apps (Play Store + Android)** o el modo ligero **sin ellas**.
 5. Selecciona el destino: **grabar en pendrive USB** o **crear solo el archivo .img** (sin grabar).
 6. Haz clic en **`⚡ Descargar, Parchear y Crear (1-Clic)`**.

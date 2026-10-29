@@ -33,7 +33,7 @@ $catalog = Get-TapeOSCatalog
 # Ventana Principal
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "TapeOS Installer — Suite Automatizada de ChromeOS para PC (Legacy & Moderno)"
-$form.Size = New-Object System.Drawing.Size(900, 820)
+$form.Size = New-Object System.Drawing.Size(900, 860)
 $form.StartPosition = "CenterScreen"
 $form.FormBorderStyle = "FixedDialog"
 $form.MaximizeBox = $false
@@ -67,20 +67,28 @@ $headerPanel.Controls.Add($subtitleLabel)
 $hwGroup = New-Object System.Windows.Forms.GroupBox
 $hwGroup.Text = " 1. Diagnóstico Automático del Equipo "
 $hwGroup.Location = New-Object System.Drawing.Point(20, 90)
-$hwGroup.Size = New-Object System.Drawing.Size(845, 110)
+$hwGroup.Size = New-Object System.Drawing.Size(845, 160)
 $hwGroup.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
 $form.Controls.Add($hwGroup)
 
 $hwText = New-Object System.Windows.Forms.Label
 $hwText.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Regular)
 $hwText.Location = New-Object System.Drawing.Point(15, 22)
-$hwText.Size = New-Object System.Drawing.Size(815, 80)
+$hwText.Size = New-Object System.Drawing.Size(815, 130)
 
 $rec = $hwReport.Recommendations
+$wifiSummary = if ($hwReport.Network.WiFi.Count -gt 0) { (($hwReport.Network.WiFi | ForEach-Object { $_.Name }) -join ', ') } else { 'No detectado' }
+$btSummary = if ($hwReport.Network.Bluetooth.Count -gt 0) { (($hwReport.Network.Bluetooth | ForEach-Object { $_.Name }) -join ', ') } else { 'No detectado' }
+$audioSummary = if ($hwReport.Audio.Count -gt 0) { (($hwReport.Audio | ForEach-Object { $_.Name }) -join ', ') } else { 'Soportado' }
+$touchSummary = if ($hwReport.Touchscreen.Count -gt 0) { (($hwReport.Touchscreen | ForEach-Object { $_.Name }) -join ', ') } else { 'No detectada' }
+$patchList = (($hwReport.FrameworkPatches | ForEach-Object { $_.Option }) -join ', ')
 $hwInfo = @"
 • CPU: $($hwReport.CPU.Name) ($($hwReport.CPU.Generation))
 • Firmware: $($hwReport.Firmware.Type)  |  Secure Boot: $(if ($hwReport.Firmware.SecureBoot) { 'Activo' } else { 'Inactivo' })  |  BitLocker: $(if ($hwReport.Security.BitLockerActive) { 'ACTIVO ⚠️' } else { 'Inactivo ✅' })
 • GPU: $(($hwReport.GPU | ForEach-Object { $_.Name }) -join ', ')
+• WiFi: $wifiSummary   |   Bluetooth: $btSummary
+• Audio: $audioSummary   |   Táctil: $touchSummary
+• Parches hardware detectados: $(if ($patchList) { $patchList } else { 'ninguno necesario' })
 • Recomendación: Recovery [$($rec.RecoveryCodename.ToUpper())] con Kernel [$($rec.Kernel)]
 "@
 $hwText.Text = $hwInfo
@@ -89,7 +97,7 @@ $hwGroup.Controls.Add($hwText)
 # 2. Grupo: Configuración y Descarga de ChromeOS Actualizado
 $crosGroup = New-Object System.Windows.Forms.GroupBox
 $crosGroup.Text = " 2. Imagen de Recuperación de ChromeOS (Oficial de Google) "
-$crosGroup.Location = New-Object System.Drawing.Point(20, 210)
+$crosGroup.Location = New-Object System.Drawing.Point(20, 250)
 $crosGroup.Size = New-Object System.Drawing.Size(845, 130)
 $crosGroup.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
 $form.Controls.Add($crosGroup)
@@ -150,7 +158,7 @@ $crosGroup.Controls.Add($lblProgressText)
 # 2b. Grupo: Google Apps (Play Store)
 $gaGroup = New-Object System.Windows.Forms.GroupBox
 $gaGroup.Text = " 2b. Google Apps (Play Store) "
-$gaGroup.Location = New-Object System.Drawing.Point(20, 350)
+$gaGroup.Location = New-Object System.Drawing.Point(20, 390)
 $gaGroup.Size = New-Object System.Drawing.Size(845, 70)
 $gaGroup.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
 $form.Controls.Add($gaGroup)
@@ -173,7 +181,7 @@ $gaGroup.Controls.Add($radioNoGoogleApps)
 # 3. Grupo: Destino (Pendrive USB o archivo .img)
 $usbGroup = New-Object System.Windows.Forms.GroupBox
 $usbGroup.Text = " 3. Destino de Instalación (Pendrive USB o Archivo .img) "
-$usbGroup.Location = New-Object System.Drawing.Point(20, 430)
+$usbGroup.Location = New-Object System.Drawing.Point(20, 470)
 $usbGroup.Size = New-Object System.Drawing.Size(845, 165)
 $usbGroup.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
 $form.Controls.Add($usbGroup)
@@ -280,7 +288,7 @@ $btnRefreshUsb.Add_Click({ Refresh-UsbList })
 
 # 4. Consola de Log y Estado
 $logBox = New-Object System.Windows.Forms.TextBox
-$logBox.Location = New-Object System.Drawing.Point(20, 605)
+$logBox.Location = New-Object System.Drawing.Point(20, 645)
 $logBox.Size = New-Object System.Drawing.Size(845, 95)
 $logBox.Multiline = $true
 $logBox.ScrollBars = "Vertical"
@@ -298,7 +306,7 @@ $btnFullAuto.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawi
 $btnFullAuto.BackColor = [System.Drawing.Color]::FromArgb(26, 115, 232)
 $btnFullAuto.ForeColor = [System.Drawing.Color]::White
 $btnFullAuto.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-$btnFullAuto.Location = New-Object System.Drawing.Point(445, 710)
+$btnFullAuto.Location = New-Object System.Drawing.Point(445, 750)
 $btnFullAuto.Size = New-Object System.Drawing.Size(420, 45)
 $btnFullAuto.Cursor = [System.Windows.Forms.Cursors]::Hand
 $form.Controls.Add($btnFullAuto)
@@ -306,7 +314,7 @@ $form.Controls.Add($btnFullAuto)
 $btnExit = New-Object System.Windows.Forms.Button
 $btnExit.Text = "Cerrar"
 $btnExit.Font = New-Object System.Drawing.Font("Segoe UI", 10)
-$btnExit.Location = New-Object System.Drawing.Point(325, 710)
+$btnExit.Location = New-Object System.Drawing.Point(325, 750)
 $btnExit.Size = New-Object System.Drawing.Size(105, 45)
 $btnExit.Add_Click({ $form.Close() })
 $form.Controls.Add($btnExit)
@@ -406,6 +414,7 @@ $btnFullAuto.Add_Click({
                 -EnableLegacyGPU $true `
                 -EnableSwtpm $true `
                 -EnableGoogleApps $enableGoogleApps `
+                -AdditionalFrameworkOptions @($hwReport.FrameworkPatches | ForEach-Object { $_.Option }) `
                 -ProgressCallback {
                     param($pct, $msg)
                     $form.Invoke([Action]{

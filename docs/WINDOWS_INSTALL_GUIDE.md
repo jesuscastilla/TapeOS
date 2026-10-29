@@ -35,6 +35,7 @@ El método recomendado para la mayoría de usuarios:
    - Tu modelo de procesador y generación.
    - El modo de arranque del equipo (UEFI 64-bit, UEFI 32-bit o BIOS Legacy).
    - Estado de BitLocker y Secure Boot.
+   - **WiFi, Bluetooth, códecs de audio y pantalla táctil**, y elegirá los parches de compatibilidad adecuados (`iwlwifi_backport`, `broadcom_wl`, `rtl*`, `rtbth`, `essx8336`, `ipts/goodix`, ...).
    - La imagen de recuperación de ChromeOS recomendada (ej. `voxel`, `jinlon`, `rammus`, `grunt`, etc.).
 4. Selecciona tus preferencias:
    - **Dual-Boot**: Instala TapeOS en un disco virtual junto a Windows en `C:\TapeOS\chromeos.img`.

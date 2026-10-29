@@ -34,6 +34,10 @@ $rec = $hw.Recommendations
 Write-Host "  • CPU:        $($hw.CPU.Name)" -ForegroundColor Green
 Write-Host "  • Firmware:   $($hw.Firmware.Type)" -ForegroundColor Green
 Write-Host "  • GPU:        $(($hw.GPU | ForEach-Object { $_.Name }) -join ', ')" -ForegroundColor Green
+Write-Host "  • WiFi:       $(if ($hw.Network.WiFi.Count -gt 0) { (($hw.Network.WiFi | ForEach-Object { $_.Name }) -join ', ') } else { 'No detectado' })" -ForegroundColor Green
+Write-Host "  • Bluetooth:  $(if ($hw.Network.Bluetooth.Count -gt 0) { (($hw.Network.Bluetooth | ForEach-Object { $_.Name }) -join ', ') } else { 'No detectado' })" -ForegroundColor Green
+$hwPatchesStr = (($hw.FrameworkPatches | ForEach-Object { $_.Option }) -join ', ')
+if ($hwPatchesStr) { Write-Host "  • Parches hardware detectados: $hwPatchesStr" -ForegroundColor Magenta }
 Write-Host "  • Sugerido:   Recovery [$($rec.RecoveryCodename.ToUpper())] con Kernel [$($rec.Kernel)]" -ForegroundColor Magenta
 Write-Host ""
 
@@ -115,7 +119,8 @@ $patched = Invoke-TapeOSImagePatch `
     -EnableIA32 ($hw.Firmware.IsIA32UEFI) `
     -EnableLegacyGPU $true `
     -EnableSwtpm $true `
-    -EnableGoogleApps $enableGoogleApps
+    -EnableGoogleApps $enableGoogleApps `
+    -AdditionalFrameworkOptions @($hw.FrameworkPatches | ForEach-Object { $_.Option })
 
 if ($destChoice -eq '1') {
     Write-Host ""

@@ -2,6 +2,14 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.6] — 29-10-2026
+
+### Novedades
+- **Detección ampliada de hardware**: el instalador ahora detecta **WiFi** (con vendor ID y mapeo a parche: `iwlwifi_backport`, `broadcom_wl`, `brcmfmac`, `rtl*`...), **Bluetooth** (`rtbth` para RT3290), **códecs de audio** (`essx8336`, `legacy_audio_ucm`), **pantallas táctiles** (`ipts_touchscreen`, `ithc_touchscreen`, `goodix`), **GPU dedicada** (`dgpu`) y **MacBook** (`macbook_trackpad`).
+- Las opciones detectadas se inyectan automáticamente en la línea del kernel (`options=...`) vía `Invoke-TapeOSImagePatch -AdditionalFrameworkOptions` y `New-TapeOSGrubConfig -FrameworkOptions`, y quedan registradas en `tapeos_patches.json` (`HardwarePatches`).
+- Nuevo parche del framework `core/patches/50-hardware_patches.sh`: fuerza la carga de los módulos kernel correspondientes (`modules-load.d`) en el arranque de ChromeOS.
+- La GUI muestra WiFi/Bluetooth/audio/táctil y los parches detectados en el panel de diagnóstico; la CLI los lista en el paso 1.
+
 ## [v1.0.0-alpha.5] — 29-10-2026
 
 ### Novedades

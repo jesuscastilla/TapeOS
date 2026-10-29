@@ -19,6 +19,7 @@ function New-TapeOSGrubConfig {
         [bool]$LegacyBIOS = $false,
         [bool]$IA32UEFI = $false,
         [bool]$EnableGoogleApps = $true,
+        [string[]]$FrameworkOptions = @(),
         [string[]]$CustomKernelParams = @()
     )
 
@@ -26,9 +27,12 @@ function New-TapeOSGrubConfig {
     if (-not (Test-Path $parent)) { New-Item -Path $parent -ItemType Directory -Force | Out-Null }
 
     # Parámetros por defecto de TapeOS (opciones de framework, formato Brunch)
-    $frameworkOptions = @("enable_updates")
-    if (-not $EnableGoogleApps) { $frameworkOptions += "no_google_apps" }
-    $cmdline = @("cros_debug", ("options=" + ($frameworkOptions -join ",")))
+    $kernelFrameworkOptions = @("enable_updates")
+    if (-not $EnableGoogleApps) { $kernelFrameworkOptions += "no_google_apps" }
+    foreach ($opt in $FrameworkOptions) {
+        if ($opt) { $kernelFrameworkOptions += $opt }
+    }
+    $cmdline = @("cros_debug", ("options=" + ($kernelFrameworkOptions -join ",")))
 
     if ($LegacyBIOS) {
         $cmdline += "cros_legacy"

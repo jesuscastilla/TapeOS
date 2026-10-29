@@ -20,6 +20,7 @@ function Invoke-TapeOSImagePatch {
         [bool]$EnableLegacyGPU = $true,
         [bool]$EnableSwtpm = $true,
         [bool]$EnableGoogleApps = $true,
+        [string[]]$AdditionalFrameworkOptions = @(),
         [scriptblock]$ProgressCallback = $null
     )
 
@@ -67,6 +68,7 @@ function Invoke-TapeOSImagePatch {
     if ($EnableSwtpm) { $appliedPatches += "20-swtpm_legacy_tpm" }
     if (-not $EnableGoogleApps) { $appliedPatches += "40-no_google_apps" }
     $appliedPatches += "30-legacy_audio_ucm"
+    if ($AdditionalFrameworkOptions.Count -gt 0) { $appliedPatches += "50-hardware_patches" }
 
     $bootloaders = @("bootx64.efi")
     if ($EnableIA32) { $bootloaders += "bootia32.efi" }
@@ -80,6 +82,7 @@ function Invoke-TapeOSImagePatch {
         PatchesApplied = $appliedPatches
         Bootloaders = $bootloaders
         GoogleApps = $googleAppsStatus
+        HardwarePatches = @($AdditionalFrameworkOptions)
         GeneratedAt = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
     }
     $patchData | ConvertTo-Json -Depth 3 | Set-Content -Path $patchInfoFile -Encoding UTF8
@@ -90,6 +93,9 @@ function Invoke-TapeOSImagePatch {
     # Opciones de framework en la línea de kernel (formato Brunch: options=<lista>)
     $kernelOptions = @("enable_updates")
     if (-not $EnableGoogleApps) { $kernelOptions += "no_google_apps" }
+    foreach ($opt in $AdditionalFrameworkOptions) {
+        if ($opt) { $kernelOptions += $opt }
+    }
     if ($EnableLegacyGPU) { $kernelOptions += "i915.enable_guc=0 i915.enable_psr=0" }
     if ($EnableIA32) { $kernelOptions += "efi=noruntime" }
     $optionsString = $kernelOptions -join " "

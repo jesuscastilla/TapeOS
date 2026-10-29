@@ -120,3 +120,9 @@ TapeOS/
 - **Tipo:** Configuración | Vista
 - **Cambio:** Herramientas `tools/sign-exe.ps1` (firma Authenticode con timestamp) y `tools/new-signing-cert.ps1` (certificado propio); CI firma el EXE si hay secretos de firma; releases incluyen `tapeos-signing.cer`. Nueva opción de destino en GUI y CLI: crear solo el archivo `.img` sin grabar en pendrive (`TapeOS-<board>-M<milestone>-googleapps|lite.img` + `grub.cfg`).
 - **Impacto:** `TapeOS-Installer.ps1`, `TapeOS-CLI.ps1`, workflow de release, docs.
+
+## [29-10-2026] — Detección ampliada de hardware (WiFi/Bluetooth/audio/táctil)
+
+- **Tipo:** Arquitectura | Vista
+- **Cambio:** `HardwareDetector.psm1` detecta WiFi (VID→opción de framework Brunch: `iwlwifi_backport`, `broadcom_wl`, `brcmfmac`, `rtl*`), Bluetooth (`rtbth`), audio (`essx8336`, `legacy_audio_ucm`), táctil (`ipts/ithc/goodix`), dGPU (`dgpu`) y MacBook (`macbook_trackpad`). Las opciones fluyen a `options=` del kernel vía `-AdditionalFrameworkOptions`/`-FrameworkOptions` y quedan en `tapeos_patches.json`. Nuevo `core/patches/50-hardware_patches.sh` (force-load de módulos vía `modules-load.d`).
+- **Impacto:** `HardwareDetector.psm1`, `ImagePatcher.psm1`, `BootManager.psm1`, GUI, CLI, `core/patches/`.
