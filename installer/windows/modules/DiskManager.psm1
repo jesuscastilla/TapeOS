@@ -6,6 +6,10 @@
     deteccion de destinos USB para el instalador (modos Live-USB e Instalador).
 #>
 
+# Dependencia de compresion: cargarla al importar (cada runspace debe tenerla)
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+
 function Expand-TapeOSArchive {
     [CmdletBinding()]
     param(

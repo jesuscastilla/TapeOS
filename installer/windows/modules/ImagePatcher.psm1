@@ -6,6 +6,10 @@
     (cargadores EFI x64/ia32, emulación swtpm, perfiles gráficos retro y audio).
 #>
 
+# Dependencia de compresion: cargarla al importar (cada runspace debe tenerla)
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+
 function Invoke-TapeOSImagePatch {
     [CmdletBinding()]
     param(

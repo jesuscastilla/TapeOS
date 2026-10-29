@@ -2,6 +2,11 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.16] — 29-10-2026
+
+### Correcciones
+- **Error "No se encuentra el tipo [System.IO.Compression.ZipFile]" corregido**: los módulos `ImagePatcher` y `DiskManager` cargan ahora la librería de compresión (`System.IO.Compression` + `.FileSystem`) al importarse, de modo que el runspace dedicado del pipeline tiene el tipo disponible.
+
 ## [v1.0.0-alpha.15] — 29-10-2026
 
 ### Correcciones críticas
