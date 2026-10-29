@@ -125,25 +125,42 @@ function Start-TapeOSUsbFlash {
 
     Write-Host "[TapeOS UsbFlasher] Preparando escritura en $PhysicalDriveId..." -ForegroundColor Cyan
 
-    # Desmontar TODOS los volumenes del disco (incluidos los que no tienen
-    # letra, como las ESP, que Windows protege y bloquean la escritura directa).
-    # En medios extraibles Windows rechaza FSCTL_LOCK_VOLUME (error 6); el
-    # desmontaje con mountvol /p libera el disco. Al finalizar, vuelve a
-    # conectar el dispositivo para que Windows lo remonte.
-    try {
-        $parts = Get-Partition -DiskNumber $targetNumber -ErrorAction SilentlyContinue
-        foreach ($p in $parts) {
-            foreach ($ap in @($p.AccessPaths)) {
-                if ($ap -like '\\?\Volume{*}\') {
-                    Write-Host "[TapeOS UsbFlasher] Desmontando el volumen $ap antes de grabar..." -ForegroundColor Gray
-                    $null = & mountvol.exe "$ap" /p 2>&1
+    # Preparar el disco: desmontar TODOS los volumenes (incluidas ESP sin letra,
+    # que Windows protege y bloquean la escritura directa) y limpiar la tabla
+    # de particiones con diskpart. Windows re-monta automaticamente, por lo que
+    # se limpia para que no quede nada que proteger o montar.
+    function Invoke-TapeOSDismountAndClean {
+        param([string]$DiskNum)
+        try {
+            $parts = Get-Partition -DiskNumber $DiskNum -ErrorAction SilentlyContinue
+            foreach ($p in $parts) {
+                foreach ($ap in @($p.AccessPaths)) {
+                    if ($ap -like '\\?\Volume{*}\') {
+                        Write-Host "[TapeOS UsbFlasher] Desmontando el volumen $ap..." -ForegroundColor Gray
+                        $null = & mountvol.exe "$ap" /p 2>&1
+                    }
                 }
             }
+        } catch {
+            Write-Warning "No se pudieron desmontar los volumenes: $_"
+        }
+        Start-Sleep -Milliseconds 500
+
+        $dpScript = Join-Path $env:TEMP ("tapeos-diskpart-" + $DiskNum + ".txt")
+        try {
+            Set-Content -Path $dpScript -Value ("select disk $DiskNum`r`nclean") -Encoding ASCII
+            $dpOut = (& diskpart.exe /s $dpScript 2>&1 | Out-String)
+            $dpSummary = ($dpOut.Trim() -replace "`r`n", '; ')
+            Write-Host "[TapeOS UsbFlasher] diskpart clean: $dpSummary" -ForegroundColor Gray
+        } catch {
+            Write-Warning "diskpart no disponible: $_"
+        } finally {
+            Remove-Item -LiteralPath $dpScript -Force -ErrorAction SilentlyContinue
         }
         Start-Sleep -Milliseconds 800
-    } catch {
-        Write-Warning "No se pudieron desmontar los volumenes: $_"
     }
+
+    Invoke-TapeOSDismountAndClean -DiskNum $targetNumber
 
     $sourceFileInfo = New-Object System.IO.FileInfo($ImageFilePath)
     $totalBytes = $sourceFileInfo.Length
@@ -152,53 +169,67 @@ function Start-TapeOSUsbFlash {
 
     Write-Host "[TapeOS UsbFlasher] Grabando $([math]::Round($totalBytes / 1GB, 2)) GB en $PhysicalDriveId..." -ForegroundColor Yellow
 
-    # Abrir el dispositivo fisico con la API nativa (GENERIC_READ|GENERIC_WRITE).
-    # En medios extraibles no se puede usar FSCTL_LOCK_VOLUME (error 6), asi que
-    # se escribe directamente con WriteFile, igual que dd/Win32DiskImager.
-    $hFile = [TapeOSWin32.NativeMethods]::CreateFile($PhysicalDriveId, [uint32]3221225472, [uint32]3, [IntPtr]::Zero, [uint32]3, [uint32]0, [IntPtr]::Zero)
-    if ($hFile -eq [IntPtr]::Zero -or $hFile -eq [IntPtr]::MinusOne) {
-        $errCode = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
-        throw "No se pudo abrir el dispositivo fisico $PhysicalDriveId (error Win32: $errCode). Cierra el Explorador u otras apps que usen el pendrive e intentalo de nuevo."
-    }
+    $maxAttempts = 2
+    $attempt = 0
+    $done = $false
 
-    $sourceStream = [System.IO.File]::OpenRead($ImageFilePath)
+    while (-not $done) {
+        $attempt++
+        $hFile = [IntPtr]::Zero
+        $sourceStream = $null
 
-    try {
-        $bytesWritten = 0L
-        $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-        $lastReportTime = 0
-
-        while (($read = $sourceStream.Read($buffer, 0, $buffer.Length)) -gt 0) {
-            $written = [uint32]0
-            $ok = [TapeOSWin32.NativeMethods]::WriteFile($hFile, $buffer, [uint32]$read, [ref]$written, [IntPtr]::Zero)
-            if (-not $ok -or $written -ne $read) {
-                $err = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
-                throw "WriteFile fallo (error Win32 $err): se escribieron $written de $read bytes. Cierra el Explorador y cualquier app que use el pendrive y vuelve a intentarlo."
+        try {
+            # Abrir el dispositivo fisico con la API nativa (GENERIC_READ|GENERIC_WRITE)
+            $hFile = [TapeOSWin32.NativeMethods]::CreateFile($PhysicalDriveId, [uint32]3221225472, [uint32]3, [IntPtr]::Zero, [uint32]3, [uint32]0, [IntPtr]::Zero)
+            if ($hFile -eq [IntPtr]::Zero -or $hFile -eq [IntPtr]::MinusOne) {
+                $errCode = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+                throw "No se pudo abrir el dispositivo fisico $PhysicalDriveId (error Win32: $errCode)."
             }
-            $bytesWritten += $read
 
-            $elapsedSec = $stopwatch.Elapsed.TotalSeconds
-            if ($elapsedSec - $lastReportTime -ge 0.5 -or $bytesWritten -ge $totalBytes) {
-                $lastReportTime = $elapsedSec
-                $percent = [math]::Round(($bytesWritten / $totalBytes) * 100, 1)
-                $speedMBs = if ($elapsedSec -gt 0) { [math]::Round(($bytesWritten / 1MB) / $elapsedSec, 1) } else { 0 }
-                
-                if ($ProgressCallback) {
-                    & $ProgressCallback $percent $speedMBs $bytesWritten $totalBytes
+            $sourceStream = [System.IO.File]::OpenRead($ImageFilePath)
+            $bytesWritten = 0L
+            $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+            $lastReportTime = 0
+
+            while (($read = $sourceStream.Read($buffer, 0, $buffer.Length)) -gt 0) {
+                $written = [uint32]0
+                $ok = [TapeOSWin32.NativeMethods]::WriteFile($hFile, $buffer, [uint32]$read, [ref]$written, [IntPtr]::Zero)
+                if (-not $ok -or $written -ne $read) {
+                    $err = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+                    throw "WriteFile fallo (error Win32 $err): se escribieron $written de $read bytes."
+                }
+                $bytesWritten += $read
+
+                $elapsedSec = $stopwatch.Elapsed.TotalSeconds
+                if ($elapsedSec - $lastReportTime -ge 0.5 -or $bytesWritten -ge $totalBytes) {
+                    $lastReportTime = $elapsedSec
+                    $percent = [math]::Round(($bytesWritten / $totalBytes) * 100, 1)
+                    $speedMBs = if ($elapsedSec -gt 0) { [math]::Round(($bytesWritten / 1MB) / $elapsedSec, 1) } else { 0 }
+
+                    if ($ProgressCallback) {
+                        & $ProgressCallback $percent $speedMBs $bytesWritten $totalBytes
+                    }
                 }
             }
-        }
 
-        $null = [TapeOSWin32.NativeMethods]::FlushFileBuffers($hFile)
-        $stopwatch.Stop()
-        Write-Host "[TapeOS UsbFlasher] Grabación finalizada con éxito en $([math]::Round($stopwatch.Elapsed.TotalSeconds, 1)) segundos." -ForegroundColor Green
-        return $true
-    } catch {
-        throw "Error al escribir en el disco físico: $($_.Exception.Message)"
-    } finally {
-        if ($sourceStream) { $sourceStream.Close() }
-        if ($hFile -ne [IntPtr]::Zero -and $hFile -ne [IntPtr]::MinusOne) {
-            try { $null = [TapeOSWin32.NativeMethods]::CloseHandle($hFile) } catch { }
+            $null = [TapeOSWin32.NativeMethods]::FlushFileBuffers($hFile)
+            $stopwatch.Stop()
+            $done = $true
+            Write-Host "[TapeOS UsbFlasher] Grabación finalizada con éxito en $([math]::Round($stopwatch.Elapsed.TotalSeconds, 1)) segundos." -ForegroundColor Green
+            return $true
+        } catch {
+            $errMsg = $_.Exception.Message
+            if ($attempt -lt $maxAttempts) {
+                Write-Host "[TapeOS UsbFlasher] Intento $attempt fallido ($errMsg). Limpiando el disco y reintentando..." -ForegroundColor Yellow
+                Invoke-TapeOSDismountAndClean -DiskNum $targetNumber
+                continue
+            }
+            throw "Error al escribir en el disco físico: $errMsg"
+        } finally {
+            if ($sourceStream) { $sourceStream.Close() }
+            if ($hFile -ne [IntPtr]::Zero -and $hFile -ne [IntPtr]::MinusOne) {
+                try { $null = [TapeOSWin32.NativeMethods]::CloseHandle($hFile) } catch { }
+            }
         }
     }
 }

@@ -2,6 +2,11 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.22] — 29-10-2026
+
+### Correcciones
+- **Limpieza de tabla de particiones antes de grabar**: Windows re-monta automáticamente los volúmenes desmontados y sigue protegiendo las ESP. TapeOS ahora ejecuta `diskpart clean` sobre el disco destino (tras desmontar todos los volúmenes) para que no quede nada que montar/proteger, y **reintenta automáticamente** la escritura si el primer intento falla con acceso denegado.
+
 ## [v1.0.0-alpha.21] — 29-10-2026
 
 ### Correcciones
