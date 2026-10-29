@@ -2,6 +2,11 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.20] — 29-10-2026
+
+### Correcciones
+- **Desmontaje automático de volúmenes antes de grabar**: como Windows rechaza el bloqueo de volúmenes en medios extraíbles (error 6), TapeOS ahora desmonta los puntos de montaje del pendrive con `mountvol /p` antes de la escritura directa, liberando el disco (error Win32 5 resuelto). Al terminar, basta con reconectar el dispositivo.
+
 ## [v1.0.0-alpha.19] — 29-10-2026
 
 ### Correcciones

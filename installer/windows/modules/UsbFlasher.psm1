@@ -125,28 +125,21 @@ function Start-TapeOSUsbFlash {
 
     Write-Host "[TapeOS UsbFlasher] Preparando escritura en $PhysicalDriveId..." -ForegroundColor Cyan
 
-    # Bloquear y desmontar los volumenes del disco para evitar bloqueos de Windows
-    # (FSCTL_LOCK_VOLUME + FSCTL_DISMOUNT_VOLUME, como hacen las herramientas de imagen)
-    $lockHandles = @()
+    # Desmontar los puntos de montaje del disco (mountvol /p). En medios
+    # extraibles Windows rechaza FSCTL_LOCK_VOLUME (error 6); el desmontaje
+    # libera el volumen y permite la escritura directa. Al finalizar, vuelve
+    # a conectar el dispositivo para que Windows lo remonte.
     try {
         $parts = Get-Partition -DiskNumber $targetNumber -ErrorAction SilentlyContinue
         foreach ($p in $parts) {
             if ($p.DriveLetter) {
-                $volPath = "\\.\" + $p.DriveLetter + ":"
-                Write-Host "[TapeOS UsbFlasher] Bloqueando y desmontando la unidad $($p.DriveLetter):..." -ForegroundColor Gray
-                $vh = [TapeOSWin32.NativeMethods]::CreateFile($volPath, [uint32]0xC0000000, [uint32]0x7, [IntPtr]::Zero, [uint32]3, [uint32]0, [IntPtr]::Zero)
-                if ($vh -eq [IntPtr]::MinusOne -or $vh -eq [IntPtr]::Zero) {
-                    Write-Warning "No se pudo abrir el volumen $volPath (error $([System.Runtime.InteropServices.Marshal]::GetLastWin32Error())). Cierra el Explorador y las apps que usen esa unidad."
-                    continue
-                }
-                $bytesRet = [uint32]0
-                $null = [TapeOSWin32.NativeMethods]::DeviceIoControl($vh, [uint32]0x90018, [IntPtr]::Zero, [uint32]0, [IntPtr]::Zero, [uint32]0, [ref]$bytesRet, [IntPtr]::Zero)
-                $null = [TapeOSWin32.NativeMethods]::DeviceIoControl($vh, [uint32]0x90020, [IntPtr]::Zero, [uint32]0, [IntPtr]::Zero, [uint32]0, [ref]$bytesRet, [IntPtr]::Zero)
-                $lockHandles += $vh
+                Write-Host "[TapeOS UsbFlasher] Desmontando la unidad $($p.DriveLetter): antes de grabar..." -ForegroundColor Gray
+                $null = & mountvol.exe "$($p.DriveLetter):" /p 2>&1
             }
         }
+        Start-Sleep -Milliseconds 800
     } catch {
-        Write-Warning "No se pudieron bloquear los volumenes: $_"
+        Write-Warning "No se pudieron desmontar los volumenes: $_"
     }
 
     $sourceFileInfo = New-Object System.IO.FileInfo($ImageFilePath)
@@ -203,9 +196,6 @@ function Start-TapeOSUsbFlash {
         if ($sourceStream) { $sourceStream.Close() }
         if ($hFile -ne [IntPtr]::Zero -and $hFile -ne [IntPtr]::MinusOne) {
             try { $null = [TapeOSWin32.NativeMethods]::CloseHandle($hFile) } catch { }
-        }
-        foreach ($vh in $lockHandles) {
-            try { $dummyBytes = [uint32]0; $null = [TapeOSWin32.NativeMethods]::DeviceIoControl($vh, [uint32]0x9001C, [IntPtr]::Zero, [uint32]0, [IntPtr]::Zero, [uint32]0, [ref]$dummyBytes, [IntPtr]::Zero) } catch { }
         }
     }
 }
