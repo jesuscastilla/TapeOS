@@ -19,6 +19,12 @@
 - **Kambio:** README kon çelettôh **EPA/Êppanyôh** (`README.md` / `README.es.md`), çeççiôn de identidá (çîttema operatibo propio andalûh, çoftware libre, Googlêh Play ôççionalêh, baçao en ChromeOS/ChromiumOS) y çeççiôn de kréditô a Brunch (Sebanc) kon lâ diferençiâ. Dêkripçiôn y topî der repo âttualiáô (software-libre, andalucia, chromiumos, e-waste).
 - **Impâtto:** `README.md`, `README.es.md`, `release.yml`, dêkripçiôn/topî de GitHub.
 
+## [29-10-2026] — Wîçâh po paçô kon ETA y lîtta TODO
+
+- **Tipo:** Bîtta
+- **Kambio:** `TapeOS-Installer.ps1` reêkkrito komo açîtente de 5 paçô (detêççiôn, rekûperaçiôn, konfiguraçiôn, reçûmen, ehekuçiôn) kon barra de progreço y ETA po etapa y çelettôh EPA/Êppanyôh. Lîtta TODO en README.md y README.es.md (identidá andalûça, dok de âttualiçaçionêh, eliminâh referençiâ a Google).
+- **Impâtto:** `TapeOS-Installer.ps1`, `README.md`, `README.es.md`.
+
 ---
 
 ## Glosario

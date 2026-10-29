@@ -148,6 +148,14 @@ TapeOS naçe der proyêtto **[Brunch](https://github.com/sebanc/brunch)** de **S
 
 ---
 
+## ✅ TODO / Próççimô Paçô
+
+- [ ] **Mâh identidá andalûça en er çîttema**: bandera, pîttâ y erramientâ de bîenbenía; çonidô, fondo de pantaya y tema andalûh en ChromeOS; çelebraçionêh (Día de Andalûçia, Feriâ) y guiñô a la kûttûra (tapâh, flamenko, kaí).
+- [ ] **Dokumentaçiôn de âttualiçaçionêh**: añadîh un dokumento (`docs/UPDATES.md`) kon tô lâ poçibilidáêh de âttualiçaçiôn (kanal êttable/beta/dev, AUE, kernel legacy vs moderno, parcheh) pa ebaluâh hunto kálêh aplikâh.
+- [ ] **Eliminâh referençiâ a Google dentro der çîttema**: êppeçiâmente en la berçiôn çîn Googlêh Play (çerbiçiô, kuentâ, çînkronîçaçiôn, pantayâ y menúh), manteniendo çolo lo neçeçario pa er funçionamiento de ChromeOS.
+
+---
+
 ## 📄 Liçençia
 
 TapeOS çe dîttribuye baho la liçençia **GNU GPLv3**. Komponentêh deribáô de ChromiumOS u der kernel de Linux mantienen çû liçençiâ orihinâlêh rêppêttibâ (BSD / GPLv2).

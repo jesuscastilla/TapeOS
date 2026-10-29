@@ -2,6 +2,12 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.26] — 29-10-2026
+
+### Nobedáêh
+- **GUI reêkkrita komo wîçâh po paçô**: 1. Detêççiôn de hardware → 2. Rekomendaçiôn de rekûperaçiôn → 3. Konfiguraçiôn → 4. Reçûmen → 5. Ehekuçiôn, kon indikadôh de etapa, barra de progreço y **ETA (tiempo êttimao) propî en kada etapa** (konhûtta, dehkarga, parcheo y grabaçiôn). EPA po defêto, kon çelettôh a Êppanyôh.
+- **TODO en er README** (EPA y Êppanyôh): identidá andalûça, dokumentaçiôn de âttualiçaçionêh y eliminâh referençiâ a Google.
+
 ## [v1.0.0-alpha.25] — 29-10-2026
 
 ### Nobedáêh
