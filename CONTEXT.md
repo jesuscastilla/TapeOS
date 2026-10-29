@@ -214,3 +214,8 @@ TapeOS/
 - **Tipo:** Arkîtêttûra | Configuración
 - **Kambio:** El kernel del recovery de ChromeOS no arranca en PCs (vboot/`cros_efi`): pantalla negra o reinicio. Se inyecta un kernel Linux de PC (`dist/tapeos-vmlinuz`, Ubuntu 6.8) en `\tapeos\vmlinuz` de la ESP y el menú GRUB pasa a 8 entradas (4 con kernel de PC, 2 con el del recovery, consola y apagar). El EXE empaqueta kernel + initramfs; el pipeline los inyecta automáticamente al grabar.
 - **Impâtto:** `installer/windows/modules/BootManager.psm1`, `TapeOS-Installer.ps1`, `tools/build-exe.ps1`, `dist/tapeos-vmlinuz`.
+## [30-10-2026] — TapeOS sobre Brunch r154 (base + capa propia)
+
+- **Tipo:** Arkîtêttûra
+- **Kambio:** El framework pasa a basarse en Brunch r154 (ChromeOS r154, kernels r156): el asistente instala Brunch + capa TapeOS vía WSL (`install-brunch-usb.sh`: particionado, copia por offsets y `apply-tapeos.sh` con parches 90-96, Aurora Store y GRUB de 6 entradas sin menú de configuración). Parches automáticos según el hardware detectado (dGPU, legacy, WiFi, audio/táctil, zram, no_google_play).
+- **Impâtto:** `core/brunch/`, `installer/windows/modules/BrunchInstaller.psm1`, `TapeOS-Installer.ps1`, `tools/build-exe.ps1`.

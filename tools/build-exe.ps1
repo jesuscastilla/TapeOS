@@ -117,6 +117,19 @@ if (Test-Path $kernelFile) {
     Write-Host "[TapeOS] AVISO: dist\tapeos-vmlinuz no existe; el bundle se crea sin kernel de PC."
 }
 
+# Scripts de Brunch+TapeOS para la instalacion via WSL
+$brunchScriptSrc = Join-Path (Split-Path -Parent $PSScriptRoot) "core\brunch"
+if (Test-Path (Join-Path $brunchScriptSrc "install-brunch-usb.sh")) {
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('$bsDir = Join-Path $appDir ''assets\brunch-scripts''')
+    [void]$sb.AppendLine('New-Item -ItemType Directory -Force -Path $bsDir | Out-Null')
+    Get-ChildItem -Path $brunchScriptSrc -Filter *.sh | ForEach-Object {
+        $bsB64 = Get-Base64 -Path $_.FullName
+        [void]$sb.AppendLine("[System.IO.File]::WriteAllBytes((Join-Path `$bsDir '$($_.Name)'), [Convert]::FromBase64String('$bsB64'))")
+    }
+    Write-Host "[TapeOS] Scripts de Brunch+TapeOS incluidos en el bundle."
+}
+
 [void]$sb.AppendLine('& $mainPath')
 [void]$sb.AppendLine('exit $LASTEXITCODE')
 

@@ -7,6 +7,7 @@ set -e
 DISK="$1"
 [ -n "$DISK" ] || { echo "Uso: apply-tapeos.sh /dev/sdX"; exit 1; }
 SRC="$(cd "$(dirname "$0")/../.." && pwd)"
+BR="${TAPEOOS_BRUNCH_DIR:-$SRC/dist/brunch}"
 P7=/tmp/tapeos-p7
 P12=/tmp/tapeos-p12
 mkdir -p $P7 $P12
@@ -19,9 +20,9 @@ cp "$SRC"/core/brunch/patches/[0-9]*.sh $P7/patches/
 # 2) Instalador a disco + herramientas (resize2fs/e2fsck + libs)
 mkdir -p $P7/tapeos/bin $P7/tapeos/apps $P7/tapeos/lib
 cp "$SRC"/core/brunch/tapeos-install.sh $P7/tapeos/
-cp "$SRC"/dist/brunch/tapeos-tools/bin/* $P7/tapeos/bin/
-cp -r "$SRC"/dist/brunch/tapeos-tools/lib/* $P7/tapeos/lib/
-cp "$SRC"/dist/brunch/AuroraStore.apk $P7/tapeos/apps/
+cp "$BR"/tapeos-tools/bin/* $P7/tapeos/bin/
+cp -r "$BR"/tapeos-tools/lib/* $P7/tapeos/lib/
+cp "$BR"/AuroraStore.apk $P7/tapeos/apps/
 
 # 3) GRUB de TapeOS (sin menu de configuracion de Brunch)
 cp "$SRC"/core/brunch/grub/grub.cfg $P12/efi/boot/grub.cfg

@@ -2,6 +2,15 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.37] — 30-10-2026
+
+### Nobedáêh
+- **Base Brunch r154**: el asistente instala Brunch (ChromeOS r154, kernels r156) + capa TapeOS vía WSL: particionado Brunch (`brunch-partition.sh`), copia rápida por offsets (`write-brunch-fast.sh`) y capa TapeOS (`apply-tapeos.sh`: parches 90-96, Aurora Store, herramientas del instalador a disco y GRUB sin menú de configuración).
+- **Parches automáticos según el hardware**: dGPU AMD (`dgpu`), GPU Intel legacy (`legacy_gpu`), WiFi (`iwlwifi_backport`), audio/táctil, zram 150%, branding y sin Google Play + Aurora Store (`no_google_play`).
+- **Menú GRUB de 6 entradas sin configuración de Brunch**: normal / verbose / seguro / Instalar en disco / consola / apagar, con `options=` fijas calculadas por el instalador.
+- **Instalador a disco duro**: `tapeos-install.sh` en ROOT-C con resize2fs/e2fsck (vuelca el USB, repara la GPT y expande ROOT-A al tamaño del disco).
+- **Fallback**: sin WSL o sin artefactos de Brunch se usa la grabación clásica del recovery.
+
 ## [v1.0.0-alpha.36] — 29-10-2026
 
 ### Korreççionêh

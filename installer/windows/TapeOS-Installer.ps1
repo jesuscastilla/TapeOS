@@ -910,6 +910,7 @@ Import-Module (Join-Path $ModuleDir "RecoveryDownloader.psm1") -Force
 Import-Module (Join-Path $ModuleDir "ImagePatcher.psm1") -Force
 Import-Module (Join-Path $ModuleDir "UsbFlasher.psm1") -Force
 Import-Module (Join-Path $ModuleDir "BootManager.psm1") -Force
+Import-Module (Join-Path $ModuleDir "BrunchInstaller.psm1") -Force
 
 try {
     Write-PipelineLog "Pipeline (runspace) iniciado"
@@ -989,6 +990,29 @@ try {
             ) | Out-Null
         })
     } else {
+        $fwMsg = ""
+        $brunchAssetsDir = ""
+        $brunchScriptDir = ""
+        foreach ($cand in @("G:\TapeOS\dist\brunch", "C:\TapeOS\brunch", (Join-Path $ModuleDir "..\assets\brunch-assets"))) {
+            if (Test-Path -LiteralPath (Join-Path $cand "rootc.img")) { $brunchAssetsDir = $cand; break }
+        }
+        foreach ($cand in @("G:\TapeOS\core\brunch", (Join-Path $ModuleDir "..\assets\brunch-scripts"))) {
+            if (Test-Path -LiteralPath (Join-Path $cand "install-brunch-usb.sh")) { $brunchScriptDir = $cand; break }
+        }
+        $usedBrunch = $false
+        if ($brunchAssetsDir -and $brunchScriptDir -and (Test-TapeOSWsl)) {
+            try {
+                $Form.Invoke([Action]{ $LblPhase.Text = '🍱 Îttalando Brunch + TapeOS (WSL)...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: ~5 min' })
+                Invoke-TapeOSBrunchInstall -ImageFilePath $patched.PatchedImagePath -DiskNumber $TargetUsb.DiskNumber -BrunchScriptDir $brunchScriptDir -BrunchAssetsDir $brunchAssetsDir | Out-Null
+                $usedBrunch = $true
+                $fwMsg = "`r`nBrunch + TapeOS instalados: menu de 6 entradas, parches automaticos segun el hardware y Aurora Store disponible."
+                $Form.Invoke([Action]{ $LogBox.AppendText("[Brunch] Îttalaçiôn Brunch + TapeOS kompletá.`r`n") })
+            } catch {
+                Write-PipelineLog ("Brunch+TapeOS fallo; se usa la grabacion clasica: " + $_.Exception.Message)
+                $usedBrunch = $false
+            }
+        }
+        if (-not $usedBrunch) {
         $Form.Invoke([Action]{ $LblPhase.Text = '💾 Grabaçiôn en er pendraîh USB'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
         Start-TapeOSUsbFlash `
             -ImageFilePath $patched.PatchedImagePath `
@@ -1030,6 +1054,7 @@ try {
                 "Grabaçiôn Kompletá", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information
             ) | Out-Null
         })
+        }
     }
     Write-PipelineLog "Pipeline finalizado con exito."
 } catch {
