@@ -2,6 +2,11 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.21] — 29-10-2026
+
+### Correcciones
+- **Desmontaje de TODOS los volúmenes antes de grabar**: Windows protege las particiones de sistema (ESP) montadas aunque no tengan letra, denegando la escritura directa del disco (error Win32 5). TapeOS ahora desmonta con `mountvol /p` todos los volúmenes del pendrive (con y sin letra) antes de escribir. Escritura directa verificada con éxito en un adaptador SSD-USB.
+
 ## [v1.0.0-alpha.20] — 29-10-2026
 
 ### Correcciones

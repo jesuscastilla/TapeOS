@@ -125,16 +125,19 @@ function Start-TapeOSUsbFlash {
 
     Write-Host "[TapeOS UsbFlasher] Preparando escritura en $PhysicalDriveId..." -ForegroundColor Cyan
 
-    # Desmontar los puntos de montaje del disco (mountvol /p). En medios
-    # extraibles Windows rechaza FSCTL_LOCK_VOLUME (error 6); el desmontaje
-    # libera el volumen y permite la escritura directa. Al finalizar, vuelve
-    # a conectar el dispositivo para que Windows lo remonte.
+    # Desmontar TODOS los volumenes del disco (incluidos los que no tienen
+    # letra, como las ESP, que Windows protege y bloquean la escritura directa).
+    # En medios extraibles Windows rechaza FSCTL_LOCK_VOLUME (error 6); el
+    # desmontaje con mountvol /p libera el disco. Al finalizar, vuelve a
+    # conectar el dispositivo para que Windows lo remonte.
     try {
         $parts = Get-Partition -DiskNumber $targetNumber -ErrorAction SilentlyContinue
         foreach ($p in $parts) {
-            if ($p.DriveLetter) {
-                Write-Host "[TapeOS UsbFlasher] Desmontando la unidad $($p.DriveLetter): antes de grabar..." -ForegroundColor Gray
-                $null = & mountvol.exe "$($p.DriveLetter):" /p 2>&1
+            foreach ($ap in @($p.AccessPaths)) {
+                if ($ap -like '\\?\Volume{*}\') {
+                    Write-Host "[TapeOS UsbFlasher] Desmontando el volumen $ap antes de grabar..." -ForegroundColor Gray
+                    $null = & mountvol.exe "$ap" /p 2>&1
+                }
             }
         }
         Start-Sleep -Milliseconds 800
