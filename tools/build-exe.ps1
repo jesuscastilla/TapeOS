@@ -104,6 +104,19 @@ if (Test-Path $initramfsFile) {
     Write-Host "[TapeOS] AVISO: dist\tapeos-initramfs.cpio.gz no existe; el bundle se crea sin framework de arranque."
 }
 
+# Kernel Linux de PC para el framework TapeOS (si existe en dist)
+$kernelFile = Join-Path (Split-Path -Parent $PSScriptRoot) "dist\tapeos-vmlinuz"
+if (Test-Path $kernelFile) {
+    $kernelB64 = Get-Base64 -Path $kernelFile
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('$assetsDir = Join-Path $appDir ''assets''')
+    [void]$sb.AppendLine('New-Item -ItemType Directory -Force -Path $assetsDir | Out-Null')
+    [void]$sb.AppendLine("[System.IO.File]::WriteAllBytes((Join-Path `$assetsDir 'tapeos-vmlinuz'), [Convert]::FromBase64String('$kernelB64'))")
+    Write-Host "[TapeOS] Kernel Linux de PC incluido en el bundle ($([math]::Round((Get-Item $kernelFile).Length / 1MB, 1)) MB)."
+} else {
+    Write-Host "[TapeOS] AVISO: dist\tapeos-vmlinuz no existe; el bundle se crea sin kernel de PC."
+}
+
 [void]$sb.AppendLine('& $mainPath')
 [void]$sb.AppendLine('exit $LASTEXITCODE')
 
