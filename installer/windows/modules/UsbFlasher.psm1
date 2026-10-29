@@ -13,16 +13,24 @@ function Get-TapeOSUsbDrives {
     $drives = @()
     $usbNumbers = @()
 
+    # Fuente 1: BusType USB (Get-Disk)
     try {
-        # Fuente 1: BusType USB (Get-Disk)
         $usbNumbers += @(Get-Disk | Where-Object { $_.BusType -eq 'USB' } | Select-Object -ExpandProperty Number)
+    } catch {
+        Write-Warning "Fuente 1 (BusType USB) no disponible: $_"
+    }
 
-        # Fuente 2: MediaType "External" (adaptadores SSD/HDD-USB con UASP se
-        #           reportan como SCSI con medio externo, no como USB)
+    # Fuente 2: MediaType "External" (adaptadores SSD/HDD-USB con UASP se
+    #           reportan como SCSI con medio externo, no como USB)
+    try {
         $usbNumbers += @(Get-CimInstance Win32_DiskDrive | Where-Object { $_.MediaType -match 'External' } | ForEach-Object { [int]$_.Index })
+    } catch {
+        Write-Warning "Fuente 2 (MediaType External) no disponible: $_"
+    }
 
-        # Fuente 3: recorrer el arbol PnP hasta encontrar una raiz USB
-        #           (cubre puentes USB-SATA/NVMe reportados como SCSI o NVMe)
+    # Fuente 3: recorrer el arbol PnP hasta encontrar una raiz USB
+    #           (cubre puentes USB-SATA/NVMe reportados como SCSI o NVMe)
+    try {
         $pnpDisks = Get-PnpDevice -Class DiskDrive -PresentOnly -ErrorAction SilentlyContinue
         foreach ($dev in $pnpDisks) {
             $cur = $dev
@@ -37,10 +45,14 @@ function Get-TapeOSUsbDrives {
                 $cur = Get-PnpDevice -InstanceId $parent -ErrorAction SilentlyContinue
             }
         }
+    } catch {
+        Write-Warning "Fuente 3 (arbol PnP) no disponible: $_"
+    }
 
-        $usbNumbers = @($usbNumbers | Sort-Object -Unique)
+    $usbNumbers = @($usbNumbers | Sort-Object -Unique)
 
-        foreach ($number in $usbNumbers) {
+    foreach ($number in $usbNumbers) {
+        try {
             $disk = Get-Disk -Number $number -ErrorAction SilentlyContinue
             if (-not $disk) { continue }
             # Seguridad: nunca ofrecer discos de sistema o arranque
@@ -58,9 +70,9 @@ function Get-TapeOSUsbDrives {
                 DriveLetters = $letters
                 DisplayName  = "Disco $number`: $($disk.FriendlyName) ($([math]::Round(($disk.Size / 1GB), 1)) GB) [$letters]"
             }
+        } catch {
+            Write-Warning "No se pudo leer el disco $number`: $_"
         }
-    } catch {
-        Write-Warning "Fallo al consultar discos USB: $_"
     }
 
     return $drives

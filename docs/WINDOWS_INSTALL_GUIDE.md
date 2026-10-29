@@ -39,7 +39,7 @@ El método recomendado para la mayoría de usuarios:
    - La imagen de recuperación de ChromeOS recomendada (ej. `voxel`, `jinlon`, `rammus`, `grunt`, etc.).
 4. Selecciona tus preferencias:
    - **Modo**: **Live-USB** (graba TapeOS en un pendrive para arrancar desde él) o **Instalador** (crea el medio de instalación `.img` sin grabar; elige la carpeta de destino).
-   - **Google Apps**: Elige entre **Con Google Apps** (Play Store + aplicaciones Android, recomendado) o **Sin Google Apps** (ChromeOS ligero, solo navegador y aplicaciones web).
+   - **Google Apps**: Elige entre **Con Google Apps** (Play Store + aplicaciones Android, recomendado) o **Sin Google Play** (Android con apps APK y tienda alternativa Aurora Store).
    - **Opciones Legacy**: Activa las casillas de GPU antigua o UEFI de 32 bits si tienes un equipo antiguo.
 
 5. Pulsa **"Descargar, Parchear y Crear (1-Clic)"**.

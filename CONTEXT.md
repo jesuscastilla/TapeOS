@@ -21,7 +21,7 @@
 | **ia32 / UEFI 32-bit** | Firmware UEFI de 32 bits en procesadores de 64 bits (típico en convertibles y netbooks Intel Atom Bay Trail / Cherry Trail). |
 | **Freon / minigbm** | Subsistema gráfico y gestor de buffers de pantalla de ChromeOS nativo (sin servidor X11 ni Wayland externo). |
 | **ARC++ vs ARCVM** | Android Container (`ARC++`, más ligero para hardware retro) vs Android Virtual Machine (`ARCVM`, para hardware moderno). |
-| **no_google_apps** | Opción de framework de TapeOS (formato `options=`) que elimina la sección ARC del config unibuild: ChromeOS sin Play Store ni contenedor Android (modo ligero). |
+| **no_google_play** | Opción de framework de TapeOS (formato `options=`) que desactiva la Play Store pero conserva Android (ARC) para apps APK, con Aurora Store como tienda alternativa. |
 
 ---
 
@@ -156,3 +156,9 @@ TapeOS/
 - **Tipo:** Configuración
 - **Cambio:** Captura global de excepciones con log (`%ProgramData%\TapeOS\tapeos-installer.log`) y diálogo visible en la GUI; el botón "Crear" queda envuelto en try/catch con logging por pasos. `RecoveryDownloader` pasa a `DownloadFile` síncrono (+TLS 1.2), eliminando el patrón TPL async que puede matar el host PS 5.1 sin consola.
 - **Impacto:** `TapeOS-Installer.ps1`, `RecoveryDownloader.psm1`.
+
+## [29-10-2026] — Identidad andaluza, idioma andaluz y modo Aurora (APK)
+
+- **Tipo:** Vista | Arquitectura
+- **Cambio:** Fondo de la GUI con la bandera de Andalucía (verde #00843D / blanco), esquema verde/blanco y selector de idioma **Español/Andaluz** (andalûh). El modo "Sin Google Play" conserva Android para APK con Aurora Store: opción `no_google_play` + parche `core/patches/40-no_google_play.sh` (deshabilita vending, prepara APK) + metadatos `AppStore`/`ApkSideload`. Detección USB con fuentes independientes y logging granular del botón "Crear".
+- **Impacto:** `TapeOS-Installer.ps1`, `TapeOS-CLI.ps1`, `ImagePatcher.psm1`, `BootManager.psm1`, `UsbFlasher.psm1`, `core/patches/40-no_google_play.sh`.

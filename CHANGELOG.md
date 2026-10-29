@@ -2,6 +2,17 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.14] — 29-10-2026
+
+### Novedades
+- **Identidad andaluza**: fondo de la GUI con la **bandera de Andalucía** (verde-blanco-verde), esquema de colores verde (#00843D)/blanco en cabecera y botones, y selector de idioma **Español / Andaluz** (andalûh). El icono del EXE sigue siendo el logo de DiploTech.
+- **Modo "Sin Google Play" con APK y Aurora Store**: al elegirlo se conserva Android (ARC) para instalar aplicaciones APK y se prepara la tienda alternativa **Aurora Store**. La opción de framework pasa a `no_google_play` y el nuevo parche `core/patches/40-no_google_play.sh` deshabilita la Play Store y prepara las APK de la tienda alternativa (metadatos `AppStore=aurora`, `ApkSideload=enabled`).
+
+### Correcciones
+- **Detección USB robusta**: cada fuente de detección (BusType USB, MediaType External, árbol PnP) falla de forma independiente sin anular las demás.
+- **Aviso de pendrive claro**: eliminado el auto-cambio de modo; ahora informa y ofrece **reintentar la detección**.
+- **Logging granular** en todo el flujo del botón "Crear" (click, confirmación, worker y pasos) para localizar cualquier cierre inesperado.
+
 ## [v1.0.0-alpha.13] — 29-10-2026
 
 ### Correcciones

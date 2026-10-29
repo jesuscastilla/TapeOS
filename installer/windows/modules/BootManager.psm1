@@ -27,7 +27,7 @@ function New-TapeOSGrubConfig {
 
     # Parámetros por defecto de TapeOS (opciones de framework)
     $kernelFrameworkOptions = @("enable_updates")
-    if (-not $EnableGoogleApps) { $kernelFrameworkOptions += "no_google_apps" }
+    if (-not $EnableGoogleApps) { $kernelFrameworkOptions += "no_google_play" }
     foreach ($opt in $FrameworkOptions) {
         if ($opt) { $kernelFrameworkOptions += $opt }
     }
@@ -53,7 +53,7 @@ function New-TapeOSGrubConfig {
     }
 
     $cmdlineStr = ($cmdline -join " ")
-    $normalTitle = if ($EnableGoogleApps) { "TapeOS (ChromeOS) - Normal Boot" } else { "TapeOS (ChromeOS) - Sin Google Apps" }
+    $normalTitle = if ($EnableGoogleApps) { "TapeOS (ChromeOS) - Normal Boot" } else { "TapeOS (ChromeOS) - Sin Google Play / APK + Aurora" }
 
     $grubTemplate = @"
 # ===================================================================

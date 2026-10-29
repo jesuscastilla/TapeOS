@@ -100,7 +100,7 @@ if ($destChoice -eq '1') {
 Write-Host ""
 Write-Host "[3b/4] Modo Google Apps" -ForegroundColor Yellow
 Write-Host "  • SÍ (recomendado): ChromeOS con Play Store y aplicaciones Android."
-Write-Host "  • NO: ChromeOS ligero sin Google Apps (solo navegador y aplicaciones web)."
+Write-Host "  • NO: Sin Google Play — Android con apps APK (Aurora Store, sin cuenta de Google)."
 $gaChoice = Read-Host "¿Instalar Google Apps (Play Store)? (S/n)"
 $enableGoogleApps = -not ($gaChoice -match '^[nN]')
 
@@ -139,7 +139,7 @@ if ($destChoice -eq '1') {
     Write-Host ""
     Write-Host "[Paso C] Creando medio de instalación (.img) sin grabar..." -ForegroundColor Cyan
     New-Item -ItemType Directory -Path $imageDestDir -Force | Out-Null
-    $imgName = "TapeOS-$($recoveryInfo.Board)-M$($recoveryInfo.Milestone)-$(if ($enableGoogleApps) { 'googleapps' } else { 'lite' }).img"
+    $imgName = "TapeOS-$($recoveryInfo.Board)-M$($recoveryInfo.Milestone)-$(if ($enableGoogleApps) { 'googleapps' } else { 'aurora' }).img"
     $imgPath = Join-Path $imageDestDir $imgName
     Copy-Item -Path $patched.PatchedImagePath -Destination $imgPath -Force
     if (Test-Path $patched.ConfigFile) { Copy-Item -Path $patched.ConfigFile -Destination (Join-Path $imageDestDir "grub.cfg") -Force }

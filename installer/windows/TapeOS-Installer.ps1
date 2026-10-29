@@ -74,11 +74,23 @@ $form.MaximizeBox = $false
 $form.BackColor = [System.Drawing.Color]::FromArgb(248, 249, 250)
 $form.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
 
+# Fondo: bandera de Andalucía (verde - blanco - verde)
+$tapeosFlag = New-Object System.Drawing.Bitmap(600, 360)
+$flagG = [System.Drawing.Graphics]::FromImage($tapeosFlag)
+$greenBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(0, 132, 61))
+$whiteBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::White)
+$flagG.FillRectangle($greenBrush, 0, 0, 600, 120)
+$flagG.FillRectangle($whiteBrush, 0, 120, 600, 120)
+$flagG.FillRectangle($greenBrush, 0, 240, 600, 120)
+$flagG.Dispose()
+$form.BackgroundImage = $tapeosFlag
+$form.BackgroundImageLayout = [System.Windows.Forms.ImageLayout]::Stretch
+
 # Banner Superior
 $headerPanel = New-Object System.Windows.Forms.Panel
 $headerPanel.Location = New-Object System.Drawing.Point(0, 0)
 $headerPanel.Size = New-Object System.Drawing.Size(900, 80)
-$headerPanel.BackColor = [System.Drawing.Color]::FromArgb(26, 115, 232)
+$headerPanel.BackColor = [System.Drawing.Color]::FromArgb(0, 132, 61)
 $form.Controls.Add($headerPanel)
 
 $titleLabel = New-Object System.Windows.Forms.Label
@@ -123,6 +135,7 @@ $hwGroup.Text = " 1. Diagnóstico Automático del Equipo "
 $hwGroup.Location = New-Object System.Drawing.Point(20, 90)
 $hwGroup.Size = New-Object System.Drawing.Size(845, 160)
 $hwGroup.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+$hwGroup.BackColor = [System.Drawing.Color]::White
 $form.Controls.Add($hwGroup)
 
 $hwText = New-Object System.Windows.Forms.Label
@@ -154,6 +167,7 @@ $crosGroup.Text = " 2. Imagen de Recuperación de ChromeOS (Oficial de Google) "
 $crosGroup.Location = New-Object System.Drawing.Point(20, 250)
 $crosGroup.Size = New-Object System.Drawing.Size(845, 130)
 $crosGroup.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+$crosGroup.BackColor = [System.Drawing.Color]::White
 $form.Controls.Add($crosGroup)
 
 $lblRecovery = New-Object System.Windows.Forms.Label
@@ -215,6 +229,7 @@ $gaGroup.Text = " 2b. Google Apps (Play Store) "
 $gaGroup.Location = New-Object System.Drawing.Point(20, 390)
 $gaGroup.Size = New-Object System.Drawing.Size(845, 70)
 $gaGroup.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+$gaGroup.BackColor = [System.Drawing.Color]::White
 $form.Controls.Add($gaGroup)
 
 $radioGoogleApps = New-Object System.Windows.Forms.RadioButton
@@ -226,7 +241,7 @@ $radioGoogleApps.Checked = $true
 $gaGroup.Controls.Add($radioGoogleApps)
 
 $radioNoGoogleApps = New-Object System.Windows.Forms.RadioButton
-$radioNoGoogleApps.Text = "🚫 Sin Google Apps — ChromeOS ligero, solo navegador y aplicaciones web"
+$radioNoGoogleApps.Text = "🚫 Sin Google Play — Android con apps APK (Aurora Store)"
 $radioNoGoogleApps.Font = New-Object System.Drawing.Font("Segoe UI", 9)
 $radioNoGoogleApps.Location = New-Object System.Drawing.Point(440, 30)
 $radioNoGoogleApps.AutoSize = $true
@@ -238,6 +253,7 @@ $usbGroup.Text = " 3. Modo: Live-USB o Instalador "
 $usbGroup.Location = New-Object System.Drawing.Point(20, 470)
 $usbGroup.Size = New-Object System.Drawing.Size(845, 165)
 $usbGroup.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+$usbGroup.BackColor = [System.Drawing.Color]::White
 $form.Controls.Add($usbGroup)
 
 $radioUsb = New-Object System.Windows.Forms.RadioButton
@@ -362,7 +378,7 @@ $form.Controls.Add($logBox)
 $btnFullAuto = New-Object System.Windows.Forms.Button
 $btnFullAuto.Text = "⚡ Descargar, Parchear y Crear (1-Clic)"
 $btnFullAuto.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
-$btnFullAuto.BackColor = [System.Drawing.Color]::FromArgb(26, 115, 232)
+$btnFullAuto.BackColor = [System.Drawing.Color]::FromArgb(0, 132, 61)
 $btnFullAuto.ForeColor = [System.Drawing.Color]::White
 $btnFullAuto.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $btnFullAuto.Location = New-Object System.Drawing.Point(445, 750)
@@ -397,25 +413,24 @@ $btnFullAuto.Add_Click({
     $imageOnlyMode = $radioImageOnly.Checked
     $selectedUsbIdx = $null
     $usbList = @()
+    Write-TapeOSLog ("Click Crear: imageOnly=" + $imageOnlyMode)
     if (-not $imageOnlyMode) {
         $selectedUsbIdx = $cbUsbDrives.SelectedIndex
-        $usbList = Get-TapeOSUsbDrives
+        $usbList = @(Get-TapeOSUsbDrives)
+        Write-TapeOSLog ("Live-USB: usbList.Count=" + $usbList.Count + ", selectedIdx=" + $selectedUsbIdx)
         if ($usbList.Count -eq 0 -or $selectedUsbIdx -ge $usbList.Count) {
-            # Sin pendrive: ofrecer cambiar a modo Instalador
-            $switch = [System.Windows.Forms.MessageBox]::Show(
-                "No se detectó ningún pendrive USB conectado.`r`n`r`n¿Quieres cambiar al modo Instalador y crear el medio de instalación (.img) en su lugar?",
+            # Sin pendrive: informar y ofrecer reintento (sin cambiar de modo)
+            $retry = [System.Windows.Forms.MessageBox]::Show(
+                "No se detectó ningún pendrive USB.`r`n`r`nConecta el dispositivo, espera unos segundos y pulsa '🔄 Refrescar'.`r`n`r`n¿Quieres que TapeOS reintente la detección ahora?",
                 "Pendrive no detectado",
                 [System.Windows.Forms.MessageBoxButtons]::YesNo,
-                [System.Windows.Forms.MessageBoxIcon]::Question
+                [System.Windows.Forms.MessageBoxIcon]::Warning
             )
-            if ($switch -ne [System.Windows.Forms.DialogResult]::Yes) { return }
-            $imageOnlyMode = $true
-            $radioImageOnly.Checked = $true
-            $cbUsbDrives.Enabled = $false
-            $btnRefreshUsb.Enabled = $false
-            $txtImageDir.Enabled = $true
-            $btnBrowseDir.Enabled = $true
-            $logBox.AppendText("[Modo] Cambiado a Instalador (no se necesita pendrive).`r`n")
+            if ($retry -eq [System.Windows.Forms.DialogResult]::Yes) {
+                Refresh-UsbList
+                $logBox.AppendText("[Modo] Detección de pendrives reintentada. Revisa la lista y vuelve a pulsar Crear.`r`n")
+            }
+            return
         }
     }
     if ($imageOnlyMode) {
@@ -435,13 +450,15 @@ $btnFullAuto.Add_Click({
         [System.Windows.Forms.MessageBoxButtons]::YesNo,
         [System.Windows.Forms.MessageBoxIcon]::Warning
     )
-    if ($confirm -ne [System.Windows.Forms.DialogResult]::Yes) { return }
+    if ($confirm -ne [System.Windows.Forms.DialogResult]::Yes) { Write-TapeOSLog "Confirmacion cancelada por el usuario"; return }
+    Write-TapeOSLog "Confirmacion aceptada. Lanzando worker del pipeline..."
 
     $btnFullAuto.Enabled = $false
     $btnCheckOnline.Enabled = $false
 
     # Ejecutar en segundo plano para no congelar la UI
     [System.Threading.ThreadPool]::QueueUserWorkItem({
+        Write-TapeOSLog "Worker iniciado (hilo de fondo)"
         try {
             $selectedStr = $form.Invoke([Func[string]]{ $cbRecovery.SelectedItem.ToString() })
             $codename = $selectedStr.Split(' ')[0]
@@ -504,7 +521,7 @@ $btnFullAuto.Add_Click({
                 $destDir = $imageDestDir.Trim()
                 if (-not $destDir) { $destDir = "C:\TapeOS\images" }
                 New-Item -ItemType Directory -Path $destDir -Force | Out-Null
-                $imgName = "TapeOS-$($info.Board)-M$($info.Milestone)-$(if ($enableGoogleApps) { 'googleapps' } else { 'lite' }).img"
+                $imgName = "TapeOS-$($info.Board)-M$($info.Milestone)-$(if ($enableGoogleApps) { 'googleapps' } else { 'aurora' }).img"
                 $imgPath = Join-Path $destDir $imgName
                 Copy-Item -Path $patched.PatchedImagePath -Destination $imgPath -Force
                 if (Test-Path $patched.ConfigFile) { Copy-Item -Path $patched.ConfigFile -Destination (Join-Path $destDir "grub.cfg") -Force }
@@ -576,6 +593,70 @@ $btnFullAuto.Add_Click({
             ) | Out-Null
         } catch { }
     }
+})
+
+# Selector de idioma (Español / Andaluz)
+$cbLang = New-Object System.Windows.Forms.ComboBox
+$cbLang.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
+$cbLang.Location = New-Object System.Drawing.Point(735, 14)
+$cbLang.Size = New-Object System.Drawing.Size(140, 25)
+$cbLang.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+[void]$cbLang.Items.Add("Español")
+[void]$cbLang.Items.Add("Andaluz")
+$cbLang.SelectedIndex = 0
+$headerPanel.Controls.Add($cbLang)
+
+function Set-TapeOSLanguage {
+    param([string]$Lang)
+    if ($Lang -eq "Andaluz") {
+        $titleLabel.Text = "TapeOS Îttaladôh Uniberçâh"
+        $subtitleLabel.Text = "Piplîne completo: Deteççiôn -> Dehcarga ofiçiâh -> Parcheo -> Grabâh en Pendraîh"
+        $hwGroup.Text = " 1. Diagnóttico Automátto der Equipo "
+        $crosGroup.Text = " 2. Imâhen de Recuperaçiôn de ChromeOS (Ofiçiâh de Google) "
+        $lblRecovery.Text = "Erigîh Modelo:"
+        $btnCheckOnline.Text = "🌐 Bûhcâh l'Ûrtima Berçiôn"
+        $lblStatusUrl.Text = "Berçiôn ofiçiâh mâh reçiente: lîtta pa conhûltâh en Google CDN..."
+        $lblProgressText.Text = "Progreço:"
+        $gaGroup.Text = " 2b. Googlêh Play (Çtore u APK) "
+        $radioGoogleApps.Text = "✅ Con Googlêh Play — Çtore y aplicaçionêh Android (recomendao)"
+        $radioNoGoogleApps.Text = "🚫 Çin Googlêh Play — Android con apph APK (Aurora Çtore)"
+        $usbGroup.Text = " 3. Modo: Live-USB u Îttaladôh "
+        $radioUsb.Text = "💾 Live-USB — Grabâh en un pendraîh USB y arrancâh dêhde éh"
+        $radioImageOnly.Text = "📀 Îttaladôh — Creâh er medio de îttalaçiôn (.img) çin grabâh"
+        $btnRefreshUsb.Text = "🔄 Refrehcâh"
+        $btnBrowseDir.Text = "📂 Ehgaminâh..."
+        $lblUsbWarning.Text = "⚠️ OJO: Er pendraîh elehçionao çe formateará pa îttalâh TapeOS arrancable con ChromeOS."
+        $lblImgHint.Text = "Er .img êh er medio de îttalaçiôn: grábalo cuando quierâh con Rufû, Win32DiskImager u TapeOS (modo Live-USB)."
+        $btnFullAuto.Text = "⚡ Dehcargâh, Parcheâh y Creâh (1-Clic)"
+        $btnExit.Text = "Çerrâh"
+        $logBox.Text = "=== TapeOS Lîtta ===`r`nModo por defêto: Îttaladôh (crea er .img çin pendraîh). Cambia a Live-USB çi quierêh grabâh un pendraîh. Pulça 'Creâh en 1 Clic' pa empeçâh.`r`n"
+    } else {
+        $titleLabel.Text = "TapeOS Universal Installer"
+        $subtitleLabel.Text = "Pipeline Completo: Detección -> Descarga Oficial Actualizada -> Parcheo Legacy -> Grabación en Pendrive"
+        $hwGroup.Text = " 1. Diagnóstico Automático del Equipo "
+        $crosGroup.Text = " 2. Imagen de Recuperación de ChromeOS (Oficial de Google) "
+        $lblRecovery.Text = "Seleccionar Modelo:"
+        $btnCheckOnline.Text = "🌐 Buscar Última Versión"
+        $lblStatusUrl.Text = "Versión oficial más reciente: Lista para consultar en Google CDN..."
+        $lblProgressText.Text = "Progreso:"
+        $gaGroup.Text = " 2b. Google Apps (Play Store) "
+        $radioGoogleApps.Text = "✅ Con Google Apps — Play Store y aplicaciones Android (recomendado)"
+        $radioNoGoogleApps.Text = "🚫 Sin Google Play — Android con apps APK (Aurora Store)"
+        $usbGroup.Text = " 3. Modo: Live-USB o Instalador "
+        $radioUsb.Text = "💾 Live-USB — Grabar en un pendrive USB y arrancar desde él"
+        $radioImageOnly.Text = "📀 Instalador — Crear el medio de instalación (.img) sin grabar"
+        $btnRefreshUsb.Text = "🔄 Refrescar"
+        $btnBrowseDir.Text = "📂 Examinar..."
+        $lblUsbWarning.Text = "⚠️ ATENCIÓN: El pendrive seleccionado será formateado para instalar TapeOS booteable con ChromeOS."
+        $lblImgHint.Text = "El .img es el medio de instalación: grábalo cuando quieras con Rufus, Win32DiskImager o TapeOS (modo Live-USB)."
+        $btnFullAuto.Text = "⚡ Descargar, Parchear y Crear (1-Clic)"
+        $btnExit.Text = "Cerrar"
+        $logBox.Text = "=== TapeOS Automated Installation Engine Ready ===`r`nModo por defecto: Instalador (crea el .img sin pendrive). Cambia a Live-USB si quieres grabar un pendrive. Pulsa 'Crear en 1 Clic' para empezar.`r`n"
+    }
+}
+
+$cbLang.Add_SelectedIndexChanged({
+    Set-TapeOSLanguage -Lang $cbLang.SelectedItem.ToString()
 })
 
 # Mostrar formulario

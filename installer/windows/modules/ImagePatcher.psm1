@@ -66,7 +66,7 @@ function Invoke-TapeOSImagePatch {
     if ($EnableLegacyGPU) { $appliedPatches += "10-legacy_gpu_freon" }
     if ($EnableIA32) { $appliedPatches += "15-efi_ia32_runtime" }
     if ($EnableSwtpm) { $appliedPatches += "20-swtpm_legacy_tpm" }
-    if (-not $EnableGoogleApps) { $appliedPatches += "40-no_google_apps" }
+    if (-not $EnableGoogleApps) { $appliedPatches += "40-no_google_play" }
     $appliedPatches += "30-legacy_audio_ucm"
     if ($AdditionalFrameworkOptions.Count -gt 0) { $appliedPatches += "50-hardware_patches" }
 
@@ -82,6 +82,8 @@ function Invoke-TapeOSImagePatch {
         PatchesApplied = $appliedPatches
         Bootloaders = $bootloaders
         GoogleApps = $googleAppsStatus
+        AppStore = if ($EnableGoogleApps) { "playstore" } else { "aurora" }
+        ApkSideload = if ($EnableGoogleApps) { "disabled" } else { "enabled" }
         HardwarePatches = @($AdditionalFrameworkOptions)
         GeneratedAt = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
     }
@@ -92,14 +94,14 @@ function Invoke-TapeOSImagePatch {
 
     # Opciones de framework en la línea de kernel (options=<lista>)
     $kernelOptions = @("enable_updates")
-    if (-not $EnableGoogleApps) { $kernelOptions += "no_google_apps" }
+    if (-not $EnableGoogleApps) { $kernelOptions += "no_google_play" }
     foreach ($opt in $AdditionalFrameworkOptions) {
         if ($opt) { $kernelOptions += $opt }
     }
     if ($EnableLegacyGPU) { $kernelOptions += "i915.enable_guc=0 i915.enable_psr=0" }
     if ($EnableIA32) { $kernelOptions += "efi=noruntime" }
     $optionsString = $kernelOptions -join " "
-    $normalMenuTitle = if ($EnableGoogleApps) { "TapeOS (ChromeOS Actualizado - Modo Normal)" } else { "TapeOS (ChromeOS Ligero - Sin Google Apps)" }
+    $normalMenuTitle = if ($EnableGoogleApps) { "TapeOS (ChromeOS Actualizado - Modo Normal)" } else { "TapeOS (ChromeOS - Sin Google Play / APK + Aurora)" }
 
     $grubContent = @"
 # ===================================================================
