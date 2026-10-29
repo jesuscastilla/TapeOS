@@ -219,6 +219,7 @@ $cbUsbDrives.Location = New-Object System.Drawing.Point(160, 25)
 $cbUsbDrives.Size = New-Object System.Drawing.Size(510, 25)
 $cbUsbDrives.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
 $cbUsbDrives.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$cbUsbDrives.Enabled = $false
 $usbGroup.Controls.Add($cbUsbDrives)
 
 $btnRefreshUsb = New-Object System.Windows.Forms.Button
@@ -226,6 +227,7 @@ $btnRefreshUsb.Text = "🔄 Refrescar"
 $btnRefreshUsb.Font = New-Object System.Drawing.Font("Segoe UI", 8.5)
 $btnRefreshUsb.Location = New-Object System.Drawing.Point(680, 24)
 $btnRefreshUsb.Size = New-Object System.Drawing.Size(150, 27)
+$btnRefreshUsb.Enabled = $false
 $usbGroup.Controls.Add($btnRefreshUsb)
 
 $radioImageOnly = New-Object System.Windows.Forms.RadioButton
@@ -233,6 +235,7 @@ $radioImageOnly.Text = "📀 Instalador — Crear el medio de instalación (.img
 $radioImageOnly.Font = New-Object System.Drawing.Font("Segoe UI", 9)
 $radioImageOnly.Location = New-Object System.Drawing.Point(20, 58)
 $radioImageOnly.AutoSize = $true
+$radioImageOnly.Checked = $true
 $usbGroup.Controls.Add($radioImageOnly)
 
 $txtImageDir = New-Object System.Windows.Forms.TextBox
@@ -240,7 +243,7 @@ $txtImageDir.Text = "C:\TapeOS\images"
 $txtImageDir.Font = New-Object System.Drawing.Font("Segoe UI", 9)
 $txtImageDir.Location = New-Object System.Drawing.Point(160, 55)
 $txtImageDir.Size = New-Object System.Drawing.Size(510, 25)
-$txtImageDir.Enabled = $false
+$txtImageDir.Enabled = $true
 $usbGroup.Controls.Add($txtImageDir)
 
 $btnBrowseDir = New-Object System.Windows.Forms.Button
@@ -248,7 +251,7 @@ $btnBrowseDir.Text = "📂 Examinar..."
 $btnBrowseDir.Font = New-Object System.Drawing.Font("Segoe UI", 8.5)
 $btnBrowseDir.Location = New-Object System.Drawing.Point(680, 54)
 $btnBrowseDir.Size = New-Object System.Drawing.Size(150, 27)
-$btnBrowseDir.Enabled = $false
+$btnBrowseDir.Enabled = $true
 $usbGroup.Controls.Add($btnBrowseDir)
 
 $lblUsbWarning = New-Object System.Windows.Forms.Label
@@ -316,7 +319,7 @@ $logBox.ReadOnly = $true
 $logBox.BackColor = [System.Drawing.Color]::FromArgb(20, 24, 30)
 $logBox.ForeColor = [System.Drawing.Color]::FromArgb(0, 255, 128)
 $logBox.Font = New-Object System.Drawing.Font("Consolas", 8.5)
-$logBox.Text = "=== TapeOS Automated Installation Engine Ready ===`r`nElige el modo (Live-USB o Instalador) y pulsa 'Crear en 1 Clic' para ejecutar el proceso completo.`r`n"
+$logBox.Text = "=== TapeOS Automated Installation Engine Ready ===`r`nModo por defecto: Instalador (crea el .img sin pendrive). Cambia a Live-USB si quieres grabar un pendrive. Pulsa 'Crear en 1 Clic' para empezar.`r`n"
 $form.Controls.Add($logBox)
 
 # Botones de Acción Inferiores
@@ -355,27 +358,39 @@ $btnCheckOnline.Add_Click({
 # Evento: Flujo Completo Automatizado
 $btnFullAuto.Add_Click({
     $imageOnlyMode = $radioImageOnly.Checked
+    $selectedUsbIdx = $null
+    $usbList = @()
     if (-not $imageOnlyMode) {
         $selectedUsbIdx = $cbUsbDrives.SelectedIndex
         $usbList = Get-TapeOSUsbDrives
         if ($usbList.Count -eq 0 -or $selectedUsbIdx -ge $usbList.Count) {
-            [System.Windows.Forms.MessageBox]::Show(
-                "Por favor conecta un pendrive USB válido y pulsa 'Refrescar'.",
+            # Sin pendrive: ofrecer cambiar a modo Instalador
+            $switch = [System.Windows.Forms.MessageBox]::Show(
+                "No se detectó ningún pendrive USB conectado.`r`n`r`n¿Quieres cambiar al modo Instalador y crear el medio de instalación (.img) en su lugar?",
                 "Pendrive no detectado",
-                [System.Windows.Forms.MessageBoxButtons]::OK,
-                [System.Windows.Forms.MessageBoxIcon]::Warning
+                [System.Windows.Forms.MessageBoxButtons]::YesNo,
+                [System.Windows.Forms.MessageBoxIcon]::Question
             )
-            return
+            if ($switch -ne [System.Windows.Forms.DialogResult]::Yes) { return }
+            $imageOnlyMode = $true
+            $radioImageOnly.Checked = $true
+            $cbUsbDrives.Enabled = $false
+            $btnRefreshUsb.Enabled = $false
+            $txtImageDir.Enabled = $true
+            $btnBrowseDir.Enabled = $true
+            $logBox.AppendText("[Modo] Cambiado a Instalador (no se necesita pendrive).`r`n")
         }
-        $targetUsb = $usbList[$selectedUsbIdx]
-        $confirmText = "¿Estás seguro de que deseas grabar TapeOS en:`r`n$($targetUsb.DisplayName)?`r`n`r`nTODOS LOS DATOS DEL PENDRIVE SE BORRARÁN."
-        $confirmTitle = "Confirmación de Grabación"
-    } else {
+    }
+    if ($imageOnlyMode) {
         $targetUsb = $null
         $imgDest = $txtImageDir.Text.Trim()
         if (-not $imgDest) { $imgDest = "C:\TapeOS\images" }
         $confirmText = "Se descargará y parcheará la imagen de ChromeOS y se creará el medio de instalación (.img) en:`r`n$imgDest`r`n`r`nNo se grabará en ningún pendrive."
         $confirmTitle = "Confirmación — Crear medio de instalación (.img)"
+    } else {
+        $targetUsb = $usbList[$selectedUsbIdx]
+        $confirmText = "¿Estás seguro de que deseas grabar TapeOS en:`r`n$($targetUsb.DisplayName)?`r`n`r`nTODOS LOS DATOS DEL PENDRIVE SE BORRARÁN."
+        $confirmTitle = "Confirmación de Grabación"
     }
     $confirm = [System.Windows.Forms.MessageBox]::Show(
         $confirmText,

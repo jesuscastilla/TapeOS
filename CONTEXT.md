@@ -144,3 +144,9 @@ TapeOS/
 - **Tipo:** Arquitectura | Vista
 - **Cambio:** La aplicación ofrece únicamente dos modos: **Live-USB** (grabar en pendrive) e **Instalador** (crear el medio `.img` sin grabar). Eliminados `Register-TapeOSInWindowsBCD`, la entrada "Windows Boot Manager" y el arranque loopback de `New-TapeOSGrubConfig`, y `New-TapeOSDiskImage` de `DiskManager.psm1`. GUI y CLI renombradas en consecuencia.
 - **Impacto:** `BootManager.psm1`, `DiskManager.psm1`, `TapeOS-Installer.ps1`, `TapeOS-CLI.ps1`, README, guía de instalación.
+
+## [29-10-2026] — Instalador como modo predeterminado (sin pendrive)
+
+- **Tipo:** Vista
+- **Cambio:** El modo **Instalador** pasa a ser el predeterminado en la GUI (controles de USB deshabilitados al inicio). Si se elige Live-USB sin pendrive, la app ofrece cambiar a Instalador con un diálogo Sí/No.
+- **Impacto:** `TapeOS-Installer.ps1`.

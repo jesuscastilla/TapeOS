@@ -2,6 +2,13 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.10] — 29-10-2026
+
+### Correcciones y Mejoras de UX
+- El modo **Instalador** es ahora el predeterminado: al abrir la app no se pide ningún pendrive.
+- Si se elige **Live-USB** sin pendrive conectado, la app ofrece automáticamente cambiar al modo Instalador (en lugar de bloquearse con un aviso).
+- El log inicial explica ambos modos y los controles se habilitan/deshabilitan según el modo activo.
+
 ## [v1.0.0-alpha.9] — 29-10-2026
 
 ### Novedades
