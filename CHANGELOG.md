@@ -2,6 +2,11 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.27] — 29-10-2026
+
+### Nobedáêh
+- **Tradûttôh EPA kon andaluh-py**: erramienta `tools/epa-translate.py` (biblioteka [andaluh-py](https://github.com/andalugeeks/andaluh-py) de AndaluGeeks) pa henerâh traduççionêh konçîttentêh a andalûh; kréditô añadíô en README (EPA y Êppanyôh).
+
 ## [v1.0.0-alpha.26] — 29-10-2026
 
 ### Nobedáêh

@@ -146,6 +146,8 @@ TapeOS naçe der proyêtto **[Brunch](https://github.com/sebanc/brunch)** de **S
 - **Rebîtâliçaçiôn de hardware antiguo**: ênfaçî êppeçiâh en ekîpô legacy (UEFI 32-bit, GPU retro, çîn TPM) pa ke çigan çîrbiendo.
 - **Lûtta kontra er dehperdiçio teknolóhiko**: kada ekîpo rehkâtao êh meno xatarra êlektrónika.
 
+**Kreditô de traduççiôn**: lâ traduççionêh a andalûh (EPA) çe apoyan en **[andaluh-py](https://github.com/andalugeeks/andaluh-py)** de **AndaluGeeks** (biblioteka libre de tranlîtteraçiôn êppanyôh → andalûh, propûêtta EPA).
+
 ---
 
 ## ✅ TODO / Próççimô Paçô

@@ -143,6 +143,8 @@ TapeOS nace del proyecto **[Brunch](https://github.com/sebanc/brunch)** de **Sé
 - **Revitalización de hardware antiguo**: énfasis especial en equipos legacy (UEFI 32-bit, GPU retro, sin TPM) para que sigan sirviendo.
 - **Lucha contra el desperdicio tecnológico**: cada equipo rescatado es menos basura electrónica.
 
+**Créditos de traducción**: las traducciones a andaluh (EPA) se apoyan en **[andaluh-py](https://github.com/andalugeeks/andaluh-py)** de **AndaluGeeks** (biblioteca libre de transliteración español → andaluh, propuesta EPA).
+
 ---
 
 ## ✅ TODO / Próximos Pasos
