@@ -2,6 +2,18 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.30] — 29-10-2026
+
+### Nuevo
+- **Wizard rediseñado a 6 pasos**: Detección → Recovery → **Aplicaciones** (software libre con explicación / Google Play con explicación) → **Medio** (.img o Live-USB) → Resumen → Ejecución.
+- **Idioma dinámico completo**: el selector Andaluz/Español ahora retraduce también el resumen de detección de hardware, la recomendación de recovery, las explicaciones y el resumen final.
+- **DPI-aware**: la ventana ya no se ve borrosa en pantallas de alta densidad (SetProcessDPIAware + fondo redibujado a resolución exacta + logo re-escalado con interpolación de alta calidad).
+
+### Korreççionêh
+- **Timeout de 15 s en la consulta al CDN**: si no hay internet ya no se queda atascado el paso 2; avisa y usa la versión estable del catálogo local.
+- **Validación en Live-USB**: si no hay pendrive conectado, avisa y vuelve al paso Medio en lugar de avanzar a ciegas.
+- Ventana compacta (920x780) para que quepan todos los controles en pantallas de portátil.
+
 ## [v1.0.0-alpha.29] — 29-10-2026
 
 ### Korreççionêh
