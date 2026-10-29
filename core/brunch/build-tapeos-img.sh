@@ -9,6 +9,7 @@ set -e
 SRC_IMG="$1"
 OUT_IMG="$2"
 SIZE_GB="${3:-16}"
+export TAPEOOS_OPTIONS="${4:-enable_updates}"
 DIR="$(cd "$(dirname "$0")" && pwd)"
 BR="${TAPEOOS_BRUNCH_DIR:-$DIR/../../dist/brunch}"
 
@@ -39,7 +40,7 @@ cp "$DIR"/tapeos-install.sh /tmp/tp7/tapeos/
 cp "$BR"/tapeos-tools/bin/* /tmp/tp7/tapeos/bin/
 cp -r "$BR"/tapeos-tools/lib/* /tmp/tp7/tapeos/lib/
 cp "$BR"/AuroraStore.apk /tmp/tp7/tapeos/apps/
-cp "$DIR"/grub/grub.cfg /tmp/tp12/efi/boot/grub.cfg
+sed "s/__TAPEOOS_OPTIONS__/${TAPEOOS_OPTIONS:-enable_updates}/g" "$DIR"/grub/grub.cfg > /tmp/tp12/efi/boot/grub.cfg
 cp "$DIR"/grub/settings.cfg /tmp/tp12/efi/boot/settings.cfg
 sed -i 's/\r$//' /tmp/tp7/patches/[0-9]*.sh /tmp/tp7/tapeos/tapeos-install.sh
 chmod +x /tmp/tp7/patches/[0-9]*.sh /tmp/tp7/tapeos/tapeos-install.sh /tmp/tp7/tapeos/bin/*

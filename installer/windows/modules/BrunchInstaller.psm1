@@ -3,7 +3,7 @@
     Instalador Brunch + capa TapeOS a traves de WSL para el asistente Windows.
 .DESCRIPTION
     Detecta WSL, expone el disco destino con 'wsl --mount --bare' y ejecuta
-    core/brunch/install-brunch-usb.sh (particionado Brunch + copia rapida +
+        $cmd = "bash $wslScripts/install-brunch-usb.sh $wslBin $devName $wslAssets ""$Options"""
     capa TapeOS: parches, Aurora Store, GRUB sin menu de configuracion).
 #>
 
@@ -28,7 +28,8 @@ function Invoke-TapeOSBrunchInstall {
         [Parameter(Mandatory=$true)][string]$ImageFilePath,   # .bin del recovery (ruta Windows)
         [Parameter(Mandatory=$true)][int]$DiskNumber,
         [Parameter(Mandatory=$true)][string]$BrunchScriptDir, # carpeta core/brunch (Windows)
-        [Parameter(Mandatory=$true)][string]$BrunchAssetsDir  # carpeta con rootc.img, efi_legacy.img, tapeos-tools, AuroraStore.apk
+        [Parameter(Mandatory=$true)][string]$BrunchAssetsDir, # carpeta con rootc.img, efi_legacy.img, tapeos-tools, AuroraStore.apk
+        [string]$Options = "enable_updates"  # opciones de framework (parches automaticos segun hardware)
     )
 
     if (-not (Test-TapeOSWsl)) { throw "WSL no esta disponible: no se puede instalar Brunch+TapeOS." }
@@ -64,7 +65,7 @@ function Invoke-TapeOSBrunchInstall {
         if (-not $devName) { throw "No se pudo localizar el disco $DiskNumber dentro de WSL." }
 
         Write-Host "[TapeOS Brunch] Disco WSL: $devName ($winSizeBytes bytes)" -ForegroundColor Cyan
-        $cmd = "bash $wslScripts/install-brunch-usb.sh $wslBin $devName $wslAssets"
+
         Write-Host "[TapeOS Brunch] Ejecutando: $cmd" -ForegroundColor Cyan
         & wsl.exe -u root -e bash -c $cmd
         if ($LASTEXITCODE -ne 0) { throw "La instalacion Brunch+TapeOS fallo (exit $LASTEXITCODE)." }

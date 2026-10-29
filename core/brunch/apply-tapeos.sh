@@ -25,7 +25,7 @@ cp -r "$BR"/tapeos-tools/lib/* $P7/tapeos/lib/
 cp "$BR"/AuroraStore.apk $P7/tapeos/apps/
 
 # 3) GRUB de TapeOS (sin menu de configuracion de Brunch)
-cp "$SRC"/core/brunch/grub/grub.cfg $P12/efi/boot/grub.cfg
+sed "s/__TAPEOOS_OPTIONS__/${TAPEOOS_OPTIONS:-enable_updates}/g" "$SRC"/core/brunch/grub/grub.cfg > $P12/efi/boot/grub.cfg
 cp "$SRC"/core/brunch/grub/settings.cfg $P12/efi/boot/settings.cfg
 
 # 4) Normalizar y permisos

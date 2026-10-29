@@ -999,10 +999,16 @@ try {
         foreach ($cand in @("G:\TapeOS\core\brunch", (Join-Path $ModuleDir "..\assets\brunch-scripts"))) {
             if (Test-Path -LiteralPath (Join-Path $cand "install-brunch-usb.sh")) { $brunchScriptDir = $cand; break }
         }
+        # Opciones de framework para esta maquina (parches automaticos segun hardware)
+        $brunchOptions = (($HwReport.FrameworkPatches | ForEach-Object { $_.Option } | Where-Object { $_ }) -join ",")
+        if (-not $EnableGoogleApps) { $brunchOptions = if ($brunchOptions) { $brunchOptions + ",no_google_play" } else { "no_google_play" } }
+        if (-not $brunchOptions) { $brunchOptions = "enable_updates" }
+        Write-PipelineLog ("Opciones TapeOS: " + $brunchOptions)
+
         # Si existe una imagen completa TapeOS (Brunch + parches), grabarla directo: NO hace falta WSL.
         $tapeosImg = $null
         foreach ($imgDir in @("G:\TapeOS\dist", "C:\TapeOS\images", (Join-Path $ModuleDir "..\assets"))) {
-            $c = Get-ChildItem -Path (Join-Path $imgDir "TapeOS-*.img") -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+            $c = Get-ChildItem -Path (Join-Path $imgDir ("TapeOS-$Codename-*.img")) -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
             if ($c) { $tapeosImg = $c; break }
         }
         $usedBrunch = $false
@@ -1032,16 +1038,22 @@ try {
         if ($brunchAssetsDir -and $brunchScriptDir -and (Test-TapeOSWsl)) {
             try {
                 $Form.Invoke([Action]{ $LblPhase.Text = 'Îttalando Brunch + TapeOS (WSL)...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: ~5 min' })
-                Invoke-TapeOSBrunchInstall -ImageFilePath $patched.PatchedImagePath -DiskNumber $TargetUsb.DiskNumber -BrunchScriptDir $brunchScriptDir -BrunchAssetsDir $brunchAssetsDir | Out-Null
+                Invoke-TapeOSBrunchInstall -ImageFilePath $patched.PatchedImagePath -DiskNumber $TargetUsb.DiskNumber -BrunchScriptDir $brunchScriptDir -BrunchAssetsDir $brunchAssetsDir -Options $brunchOptions | Out-Null
                 $usedBrunch = $true
                 $fwMsg = "`r`nBrunch + TapeOS instalados: menu de 6 entradas, parches automaticos segun el hardware y Aurora Store disponible."
                 $Form.Invoke([Action]{ $LogBox.AppendText("[Brunch] Îttalaçiôn Brunch + TapeOS kompletá.`r`n") })
             } catch {
                 Write-PipelineLog ("Brunch+TapeOS fallo; se usa la grabacion clasica: " + $_.Exception.Message)
-                # Si existe una imagen completa TapeOS (Brunch + parches), grabarla directo: NO hace falta WSL.
+                # Opciones de framework para esta maquina (parches automaticos segun hardware)
+        $brunchOptions = (($HwReport.FrameworkPatches | ForEach-Object { $_.Option } | Where-Object { $_ }) -join ",")
+        if (-not $EnableGoogleApps) { $brunchOptions = if ($brunchOptions) { $brunchOptions + ",no_google_play" } else { "no_google_play" } }
+        if (-not $brunchOptions) { $brunchOptions = "enable_updates" }
+        Write-PipelineLog ("Opciones TapeOS: " + $brunchOptions)
+
+        # Si existe una imagen completa TapeOS (Brunch + parches), grabarla directo: NO hace falta WSL.
         $tapeosImg = $null
         foreach ($imgDir in @("G:\TapeOS\dist", "C:\TapeOS\images", (Join-Path $ModuleDir "..\assets"))) {
-            $c = Get-ChildItem -Path (Join-Path $imgDir "TapeOS-*.img") -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+            $c = Get-ChildItem -Path (Join-Path $imgDir ("TapeOS-$Codename-*.img")) -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
             if ($c) { $tapeosImg = $c; break }
         }
         $usedBrunch = $false

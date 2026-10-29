@@ -8,6 +8,7 @@ SRC="$1"
 DISK="$2"
 DIR="$(cd "$(dirname "$0")" && pwd)"
 export TAPEOOS_BRUNCH_DIR="${3:-}"
+export TAPEOOS_OPTIONS="${4:-enable_updates}"
 [ -f "$SRC" ] || { echo "Falta el recovery: $SRC"; exit 1; }
 [ -n "$DISK" ] || { echo "Uso: install-brunch-usb.sh <recovery.bin> /dev/sdX"; exit 1; }
 

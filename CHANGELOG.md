@@ -2,6 +2,13 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.39] — 30-10-2026
+
+### Nobedáêh
+- **Cualquier recovery**: el flujo Brunch+TapeOS ya no esta fijado a una board. El asistente usa el recovery elegido en el paso 2 (kanix/voxel/jinlon/gumboz/zork/rammus/samus/grunt/cyan), calcula las opciones de framework del hardware detectado (dgpu, wifi, audio, tactil, no_google_play...) y las aplica en el GRUB generado (plantilla `__TAPEOOS_OPTIONS__`).
+- **Imagenes por board**: la busqueda de imagen preconstruida filtra por codename (`TapeOS-<board>-*.img`) con fallback generico.
+- `build-tapeos-img.sh <recovery.bin> <salida.img> [GB] [opciones]` acepta las opciones como 4. argumento; `install-brunch-usb.sh` y `apply-tapeos.sh` usan `TAPEOOS_OPTIONS`.
+
 ## [v1.0.0-alpha.38] — 30-10-2026
 
 ### Nobedáêh
