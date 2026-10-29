@@ -132,3 +132,9 @@ TapeOS/
 - **Tipo:** Vista
 - **Cambio:** Eliminadas todas las referencias a proyectos de terceros de README, CONTEXT, CHANGELOG, docs y comentarios de código. Logo de **DiploTech** en la cabecera de la GUI y en el README; nuevo icono del EXE multi-tamaño generado desde el logo (`tools/make-icon.ps1`); carpeta local de referencia ignorada con patrón genérico.
 - **Impacto:** `TapeOS-Installer.ps1`, `tools/build-exe.ps1`, `tools/make-icon.ps1`, `tools/assets/`, `release.yml`, documentación.
+
+## [29-10-2026] — Compatibilidad con GPUs dedicadas (dGPU)
+
+- **Tipo:** Arquitectura
+- **Cambio:** `HardwareDetector.psm1` añade `VendorId` a cada GPU y detecta dGPU (NVIDIA `10DE` siempre; AMD `1002` en equipos Intel+AMD o multi-GPU) inyectando la opción `dgpu`. Nuevo parche `core/patches/45-dgpu.sh`: NVIDIA suspendida vía udev + blacklist `nouveau`; AMD con `amdgpu` forzado + blacklist `radeon`. GUI y CLI muestran el fabricante de cada GPU.
+- **Impacto:** `HardwareDetector.psm1`, `TapeOS-Installer.ps1`, `TapeOS-CLI.ps1`, `core/patches/`, README, guía de instalación.

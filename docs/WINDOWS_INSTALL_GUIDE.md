@@ -78,6 +78,6 @@ Para autorizar la clave de TapeOS:
 ## 🔧 Solución de Problemas Comunes
 
 - **El equipo se queda en el logo de ChromeOS**:
-  - Si tienes GPU dedicada (Nvidia / AMD), accede al menú de configuración en el arranque (*Settings*) y selecciona deshabilitar la GPU dedicada para arrancar con los gráficos integrados de Intel.
+  - TapeOS detecta y parchea automáticamente las GPUs dedicadas (opción `dgpu`: NVIDIA suspendida renderizando con la iGPU; AMD con `amdgpu`). Si aun así no arranca, entra en el menú de configuración del arranque (*Settings*) y desactiva la GPU dedicada para usar los gráficos integrados.
 - **Sin audio en portátiles antiguos**:
   - Selecciona un kernel *Legacy* (5.10 o 5.4) en el instalador y habilita la opción de parches ALSA UCM antiguos.

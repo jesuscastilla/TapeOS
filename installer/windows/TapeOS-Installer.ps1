@@ -105,7 +105,7 @@ $patchList = (($hwReport.FrameworkPatches | ForEach-Object { $_.Option }) -join 
 $hwInfo = @"
 • CPU: $($hwReport.CPU.Name) ($($hwReport.CPU.Generation))
 • Firmware: $($hwReport.Firmware.Type)  |  Secure Boot: $(if ($hwReport.Firmware.SecureBoot) { 'Activo' } else { 'Inactivo' })  |  BitLocker: $(if ($hwReport.Security.BitLockerActive) { 'ACTIVO ⚠️' } else { 'Inactivo ✅' })
-• GPU: $(($hwReport.GPU | ForEach-Object { $_.Name }) -join ', ')
+• GPU: $(($hwReport.GPU | ForEach-Object { "$($_.Name) $(if ($_.VendorId -eq '10DE') { '(NVIDIA)' } elseif ($_.VendorId -eq '1002') { '(AMD)' } elseif ($_.VendorId -eq '8086') { '(Intel)' } else { '' })" }) -join ', ')
 • WiFi: $wifiSummary   |   Bluetooth: $btSummary
 • Audio: $audioSummary   |   Táctil: $touchSummary
 • Parches hardware detectados: $(if ($patchList) { $patchList } else { 'ninguno necesario' })

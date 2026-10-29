@@ -58,6 +58,7 @@ Muchos ordenadores fabricados entre 2011 y 2018 cuentan con firmware **EFI** per
 | Reto en Hardware Antiguo | Causa en ChromeOS Moderno | Solución TapeOS |
 |---|---|---|
 | **Pantalla en negro al iniciar** | Drivers de Mesa modernos (`iris`) incompatibles con Intel HD 2000–4400. | Inyección de flags `INTEL_DEBUG=noccs`, forzado de driver `crocus` y OpenGL fallback. |
+| **PC con GPU dedicada (NVIDIA/AMD)** | El stack gráfico de ChromeOS no usa el driver propietario de NVIDIA y puede colgarse con dGPUs. | Opción `dgpu` automática: NVIDIA se suspende y renderiza la iGPU; AMD renderiza con el driver abierto `amdgpu`. |
 | **Error en inicio de sesión / Cuentas** | ChromeOS exige hardware TPM 2.0 inexistente en placas antiguas. | Emulación en segundo plano con `swtpm` (TPM 2.0 virtual) en el initramfs. |
 | **Tablets Atom no arrancan (Bay/Cherry Trail)** | Firmware UEFI de 32 bits (`ia32`) en CPUs de 64 bits (ej. Z3735F). | Inclusión del bootloader dual `bootia32.efi` y `bootx64.efi`. |
 | **Lentitud o congelamiento (2-4 GB RAM)** | El subsistema ARCVM (Android en VM) devora la memoria RAM. | Asignación preferente de recovery ARC++ (`rammus`) y compresión `zram` al 150%. |

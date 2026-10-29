@@ -2,6 +2,13 @@
 
 Todas las modificaciones notables de este proyecto se documentarán en este archivo.
 
+## [v1.0.0-alpha.8] — 29-10-2026
+
+### Novedades
+- **Compatibilidad con GPUs dedicadas (dGPU)**: detección por vendor ID (NVIDIA `10DE`, AMD `1002`) con reglas heurísticas (NVIDIA siempre; AMD en equipos Intel+AMD o multi-GPU). La opción `dgpu` se inyecta automáticamente en `options=`.
+- Nuevo parche del framework **`core/patches/45-dgpu.sh`**: en NVIDIA suspende la dGPU vía udev (renderiza la iGPU) y desactiva `nouveau`; en AMD fuerza `amdgpu` con modeset y desactiva `radeon`.
+- La GUI y la CLI muestran ahora el fabricante de cada GPU detectada (NVIDIA/AMD/Intel).
+
 ## [v1.0.0-alpha.7] — 29-10-2026
 
 ### Novedades

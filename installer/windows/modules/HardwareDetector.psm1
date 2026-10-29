@@ -180,8 +180,12 @@ function Get-TapeOSHardwareReport {
     $gpuList = @()
     $gpus = Get-CimInstance -ClassName Win32_VideoController
     foreach ($g in $gpus) {
+        $gpuVid = ''
+        $m = [regex]::Match([string]$g.PNPDeviceID, 'VEN_([0-9A-Fa-f]{4})')
+        if ($m.Success) { $gpuVid = $m.Groups[1].Value.ToUpper() }
         $gpuList += [PSCustomObject]@{
             Name = $g.Name
+            VendorId = $gpuVid
             DriverVersion = $g.DriverVersion
             AdapterRAM_MB = [math]::Round(($g.AdapterRAM / 1MB), 0)
         }
@@ -273,9 +277,13 @@ function Get-TapeOSHardwareReport {
         }
     }
 
-    # 11. GPU dedicada (Optimus/switchable) y MacBook
+    # 11. GPU dedicada (dGPU): NVIDIA siempre; AMD cuando el equipo es Intel+AMD
+    #     o hay mas de una GPU (Optimus/switchable). AMD APU + AMD CPU no lo necesita.
     $dgpuOption = ''
-    if (@($gpuList).Count -gt 1) { $dgpuOption = 'dgpu' }
+    $hasNvidia = @($gpuList | Where-Object { $_.VendorId -eq '10DE' }).Count -gt 0
+    $hasAmd = @($gpuList | Where-Object { $_.VendorId -eq '1002' }).Count -gt 0
+    $amdNeedsDgpu = $hasAmd -and ($cpuManufacturer -eq 'Intel' -or @($gpuList).Count -gt 1)
+    if ($hasNvidia -or $amdNeedsDgpu -or @($gpuList).Count -gt 1) { $dgpuOption = 'dgpu' }
 
     $macbookOption = ''
     try {
@@ -291,7 +299,10 @@ function Get-TapeOSHardwareReport {
     foreach ($b in $bluetoothAdapters) { if ($b.FrameworkOption) { $frameworkPatches += [PSCustomObject]@{ Option = $b.FrameworkOption; Component = "Bluetooth: $($b.Name)" } } }
     foreach ($a in $audioDevices) { $frameworkPatches += [PSCustomObject]@{ Option = $a.FrameworkOption; Component = "Audio: $($a.Name)" } }
     foreach ($t in $touchDevices) { $frameworkPatches += [PSCustomObject]@{ Option = $t.FrameworkOption; Component = "Táctil: $($t.Name)" } }
-    if ($dgpuOption) { $frameworkPatches += [PSCustomObject]@{ Option = $dgpuOption; Component = 'GPU dedicada (switchable)' } }
+    if ($dgpuOption) {
+        $dgpuDesc = if ($hasNvidia) { 'dGPU NVIDIA (renderiza la iGPU)' } elseif ($hasAmd) { 'dGPU AMD (renderiza con amdgpu)' } else { 'dGPU (switchable)' }
+        $frameworkPatches += [PSCustomObject]@{ Option = $dgpuOption; Component = $dgpuDesc }
+    }
     if ($macbookOption) { $frameworkPatches += [PSCustomObject]@{ Option = $macbookOption; Component = 'MacBook (trackpad Apple)' } }
     $frameworkPatches = @($frameworkPatches | Sort-Object Option -Unique)
 
