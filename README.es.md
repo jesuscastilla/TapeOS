@@ -2,9 +2,9 @@
 
 <img src="tools/assets/diplotech-logo.png" alt="DiploTech" width="180" />
 
-# 📼 TapeOS
-### Suite Automatizada de ChromeOS para PC (Edición Moderna & Legacy EFI)
-**Detecta tu hardware, descarga la última versión oficial de ChromeOS, aplica parches retro y la graba directamente en tu pendrive en 1 solo clic.**
+# 🟩⬜🟩 TapeOS
+### Sistema operativo basado en ChromiumOS, con identidad andaluz y opción de instalación sin servicios de terceros (Google).
+**Detecta tu hardware, descarga la última versión, aplica parches retro y la graba directamente en tu pendrive.**
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-blue.svg)](LICENSE)
 [![Platform: Windows / Linux](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-brightgreen.svg)]()
