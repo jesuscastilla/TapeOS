@@ -2,10 +2,11 @@
 .SYNOPSIS
     Gestor de Configuraciones de Arranque para TapeOS
 .DESCRIPTION
-    Genera el menu GRUB de TapeOS (normal / verbose / seguro / instalacion
-    a disco duro / recovery original / consola / apagar) e inyecta el menu y
-    el initramfs del framework en la particion EFI (ESP) del pendrive tras
-    la grabacion. No modifica el arranque de Windows.
+    Genera el menu GRUB de TapeOS con dos kernels:
+      - Kernel Linux de PC (/tapeos/vmlinuz): arranque real de TapeOS.
+      - Kernel del recovery de ChromeOS (/syslinux/vmlinuz.A): opcion legado.
+    Incluye modo verbose, modo seguro, instalador a disco y recovery original.
+    Inyecta el menu, el initramfs y el kernel en la ESP del pendrive.
 #>
 
 function New-TapeOSGrubConfig {
@@ -14,23 +15,21 @@ function New-TapeOSGrubConfig {
         [Parameter(Mandatory=$true)]
         [string]$OutputPath,
 
-        # Ruta del kernel dentro de la particion donde vive GRUB.
-        # Recovery ChromeOS: /syslinux/vmlinuz.A
-        # Framework propio:  /boot/vmlinuz
+        # Kernel Linux de PC para el framework TapeOS (entradas 1-4)
+        [string]$TestKernelPath = "/tapeos/vmlinuz",
+
+        # Kernel del recovery de ChromeOS (entrada 5)
         [string]$KernelPath = "/syslinux/vmlinuz.A",
 
         [string]$InitrdPath = "/tapeos/initramfs.img",
 
-        # PARTUUID de ROOT-A para la entrada de recovery original.
-        # Si se omite, la entrada de recovery no se genera.
+        # PARTUUID de ROOT-A para la entrada de recovery original (entrada 6)
         [string]$RootPartuuid = "",
-
-        # kern_b_hash= del kernel firmado del recovery original.
         [string]$KernelHash = "",
 
         [bool]$EnableGoogleApps = $true,
         [string[]]$FrameworkOptions = @(),
-        [int]$Timeout = 15
+        [int]$Timeout = 20
     )
 
     $parent = Split-Path -Path $OutputPath -Parent
@@ -50,7 +49,7 @@ function New-TapeOSGrubConfig {
     if ($RootPartuuid) {
         $hashParam = if ($KernelHash) { "kern_b_hash=$KernelHash" } else { "" }
         $recoveryEntry = @"
-menuentry "5. Arrancar el recovery original de ChromeOS" --class os {
+menuentry "6. Arrancar el recovery original de ChromeOS" --class os {
     linux $KernelPath init=/sbin/init rootwait ro noresume loglevel=7 noinitrd console=tty0 ramoops.ecc=1 tpm_tis.force=0 intel_pmc_core.warn_on_s0ix_failures=1 xdomain=0 intel_iommu=on i915.modeset=1 cros_efi root=PARTUUID=$RootPartuuid $hashParam
 }
 
@@ -62,10 +61,10 @@ menuentry "5. Arrancar el recovery original de ChromeOS" --class os {
 # TapeOS - Menu de arranque
 # Generado automaticamente por el instalador de TapeOS
 #
-#   1 = arranque normal con el framework TapeOS
-#   2 = diagnostico verbose: mensajes del kernel en pantalla
-#   3 = modo seguro: sin aceleracion grafica (nomodeset)
-#   4 = INSTALACION EN DISCO DURO (borra el disco destino)
+#   1-4  usan el kernel Linux de PC (/tapeos/vmlinuz) + initramfs TapeOS
+#   2    verbose: muestra los mensajes del kernel (usa esta si hay negro)
+#   4    INSTALACION EN DISCO DURO (borra el disco destino)
+#   5-6  usan el kernel del recovery original de ChromeOS
 #
 # Configuracion original del fabricante guardada como grub.cfg.bak
 # ===================================================================
@@ -77,53 +76,61 @@ set color_highlight=black/light-gray
 terminal_output console
 
 menuentry "1. Arrancar TapeOS - modo normal" --class os {
-    if [ -f $InitrdPath ]; then
-        linux $KernelPath $base
+    if [ -f $TestKernelPath ] && [ -f $InitrdPath ]; then
+        linux $TestKernelPath $base
         initrd $InitrdPath
     else
-        echo "ERROR: falta $InitrdPath en la particion EFI."
-        echo "El framework TapeOS no esta instalado en este medio."
+        echo "ERROR: falta $TestKernelPath o $InitrdPath en la particion EFI."
         sleep 15
     fi
 }
 
 menuentry "2. Arrancar TapeOS - Diagnostico verbose (ver mensajes)" --class os {
-    if [ -f $InitrdPath ]; then
-        linux $KernelPath $base $verboseExtra
+    if [ -f $TestKernelPath ] && [ -f $InitrdPath ]; then
+        linux $TestKernelPath $base $verboseExtra
         initrd $InitrdPath
     else
-        echo "ERROR: falta $InitrdPath en la particion EFI."
+        echo "ERROR: falta $TestKernelPath o $InitrdPath en la particion EFI."
         sleep 15
     fi
 }
 
 menuentry "3. Arrancar TapeOS - Modo seguro (sin graficos)" --class os {
-    if [ -f $InitrdPath ]; then
-        linux $KernelPath $base $safeExtra
+    if [ -f $TestKernelPath ] && [ -f $InitrdPath ]; then
+        linux $TestKernelPath $base $safeExtra
         initrd $InitrdPath
     else
-        echo "ERROR: falta $InitrdPath en la particion EFI."
+        echo "ERROR: falta $TestKernelPath o $InitrdPath en la particion EFI."
         sleep 15
     fi
 }
 
 menuentry "4. Instalar TapeOS en un disco duro" --class os {
-    if [ -f $InitrdPath ]; then
-        linux $KernelPath $base $installExtra
+    if [ -f $TestKernelPath ] && [ -f $InitrdPath ]; then
+        linux $TestKernelPath $base $installExtra
         initrd $InitrdPath
     else
-        echo "ERROR: falta $InitrdPath en la particion EFI."
-        echo "No se puede iniciar el instalador sin el framework TapeOS."
+        echo "ERROR: falta $TestKernelPath o $InitrdPath en la particion EFI."
+        sleep 15
+    fi
+}
+
+menuentry "5. Arrancar TapeOS con el kernel del recovery de ChromeOS" --class os {
+    if [ -f $KernelPath ] && [ -f $InitrdPath ]; then
+        linux $KernelPath $base $verboseExtra
+        initrd $InitrdPath
+    else
+        echo "ERROR: falta $KernelPath o $InitrdPath."
         sleep 15
     fi
 }
 
 $recoveryEntry
-menuentry "6. Consola de comandos GRUB" --class settings {
+menuentry "7. Consola de comandos GRUB" --class settings {
     commandline
 }
 
-menuentry "7. Apagar el equipo" --class halt {
+menuentry "8. Apagar el equipo" --class halt {
     halt
 }
 "@
@@ -139,12 +146,10 @@ function Write-TapeOSGrubToEsp {
         [int]$DiskNumber,
 
         [string]$KernelPath = "/syslinux/vmlinuz.A",
-        [int]$Timeout = 15,
+        [int]$Timeout = 20,
 
-        # Ruta (en Windows) del initramfs del framework a inyectar como
-        # \tapeos\initramfs.img. Si no existe, el menu se inyecta igual
-        # pero las entradas del framework avisaran de que falta el initramfs.
         [string]$InitramfsPath = "",
+        [string]$KernelImagePath = "",
         [bool]$EnableGoogleApps = $true,
         [string[]]$FrameworkOptions = @()
     )
@@ -188,26 +193,34 @@ function Write-TapeOSGrubToEsp {
             Copy-Item -LiteralPath $cfgPath -Destination ($cfgPath + '.bak') -Force
         }
 
+        $tapeosDir = Join-Path "${letter}:" 'tapeos'
+        if (-not (Test-Path -LiteralPath $tapeosDir)) { New-Item -ItemType Directory -Path $tapeosDir -Force | Out-Null }
+
+        $initramfsInjected = $false
+        if ($InitramfsPath -and (Test-Path -LiteralPath $InitramfsPath)) {
+            Copy-Item -LiteralPath $InitramfsPath -Destination (Join-Path $tapeosDir 'initramfs.img') -Force
+            $initramfsInjected = $true
+        }
+
+        $kernelInjected = $false
+        if ($KernelImagePath -and (Test-Path -LiteralPath $KernelImagePath)) {
+            Copy-Item -LiteralPath $KernelImagePath -Destination (Join-Path $tapeosDir 'vmlinuz') -Force
+            $kernelInjected = $true
+        }
+
         New-TapeOSGrubConfig -OutputPath $cfgPath -KernelPath $KernelPath `
             -RootPartuuid $rootPartuuid -KernelHash $kernelHash `
             -EnableGoogleApps $EnableGoogleApps -FrameworkOptions $FrameworkOptions `
             -Timeout $Timeout | Out-Null
 
-        $initramfsInjected = $false
-        if ($InitramfsPath -and (Test-Path -LiteralPath $InitramfsPath)) {
-            $tapeosDir = Join-Path "${letter}:" 'tapeos'
-            if (-not (Test-Path -LiteralPath $tapeosDir)) { New-Item -ItemType Directory -Path $tapeosDir -Force | Out-Null }
-            Copy-Item -LiteralPath $InitramfsPath -Destination (Join-Path $tapeosDir 'initramfs.img') -Force
-            $initramfsInjected = $true
-        }
-
-        Write-Host "[TapeOS BootManager] Menu inyectado en $cfgPath (PARTUUID=$rootPartuuid, initramfs=$initramfsInjected)." -ForegroundColor Green
+        Write-Host "[TapeOS BootManager] Menu inyectado en $cfgPath (PARTUUID=$rootPartuuid, initramfs=$initramfsInjected, kernel=$kernelInjected)." -ForegroundColor Green
         return [PSCustomObject]@{
             EspDrive          = "${letter}:"
             ConfigPath        = $cfgPath
             RootPartuuid      = $rootPartuuid
             KernelHash        = $kernelHash
             InitramfsInjected = $initramfsInjected
+            KernelInjected    = $kernelInjected
         }
     } finally {
         if ($assigned) {

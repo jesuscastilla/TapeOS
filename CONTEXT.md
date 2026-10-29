@@ -209,3 +209,8 @@ TapeOS/
 - **Tipo:** Arkîtêttûra
 - **Kambio:** Nuevo `core/build/build-initramfs.sh` (busybox estático + cgpt/sgdisk/resize2fs + swtpm + parches), `core/initramfs/init` con modos normal/verbose/install, `core/scripts/tapeos-install.sh` (vuelca el USB, arregla la GPT y expande ROOT-A al tamaño del disco). `BootManager.psm1` genera el menú GRUB de 7 entradas e inyecta menú + initramfs en la ESP del pendrive; el EXE empaqueta el initramfs y el CI lo construye en cada release.
 - **Impâtto:** `core/`, `installer/windows/modules/BootManager.psm1`, `ImagePatcher.psm1`, `TapeOS-Installer.ps1`, `tools/build-exe.ps1`, `.github/workflows/release.yml`.
+## [29-10-2026] — Kernel Linux de PC para el arranque de TapeOS
+
+- **Tipo:** Arkîtêttûra | Configuración
+- **Kambio:** El kernel del recovery de ChromeOS no arranca en PCs (vboot/`cros_efi`): pantalla negra o reinicio. Se inyecta un kernel Linux de PC (`dist/tapeos-vmlinuz`, Ubuntu 6.8) en `\tapeos\vmlinuz` de la ESP y el menú GRUB pasa a 8 entradas (4 con kernel de PC, 2 con el del recovery, consola y apagar). El EXE empaqueta kernel + initramfs; el pipeline los inyecta automáticamente al grabar.
+- **Impâtto:** `installer/windows/modules/BootManager.psm1`, `TapeOS-Installer.ps1`, `tools/build-exe.ps1`, `dist/tapeos-vmlinuz`.

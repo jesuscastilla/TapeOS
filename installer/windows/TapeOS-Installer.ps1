@@ -1009,14 +1009,18 @@ try {
         foreach ($cand in @((Join-Path $ModuleDir "..\assets\tapeos-initramfs.cpio.gz"), "C:\TapeOS\tapeos-initramfs.cpio.gz", (Join-Path $env:TEMP "TapeOS-App\assets\tapeos-initramfs.cpio.gz"))) {
             if (Test-Path -LiteralPath $cand) { $initramfsPath = (Resolve-Path -LiteralPath $cand).Path; break }
         }
+        $kernelImagePath = ""
+        foreach ($cand in @((Join-Path $ModuleDir "..\assets\tapeos-vmlinuz"), "C:\TapeOS\tapeos-vmlinuz", (Join-Path $env:TEMP "TapeOS-App\assets\tapeos-vmlinuz"))) {
+            if (Test-Path -LiteralPath $cand) { $kernelImagePath = (Resolve-Path -LiteralPath $cand).Path; break }
+        }
         $espInfo = $null
         try {
-            $espInfo = Write-TapeOSGrubToEsp -DiskNumber $TargetUsb.DiskNumber -Timeout 15 -InitramfsPath $initramfsPath
+            $espInfo = Write-TapeOSGrubToEsp -DiskNumber $TargetUsb.DiskNumber -Timeout 15 -InitramfsPath $initramfsPath -KernelImagePath $kernelImagePath
             Write-PipelineLog ("ESP: menu GRUB inyectado. PARTUUID=" + $espInfo.RootPartuuid + ", initramfs=" + $espInfo.InitramfsInjected)
         } catch {
             Write-PipelineLog ("AVISO: no se pudo inyectar el menu GRUB en la ESP: " + $_.Exception.Message)
         }
-        if ($espInfo -and $espInfo.InitramfsInjected) { $fwMsg = "`r`nFramework TapeOS inyettao: arrankêh normal/verbose/çeguro y êntrá de îttalaçiôn a dîkko dûhô dipponiblêh en er menú GRUB." } else { $fwMsg = "`r`n⚠️ AVISO: no çe enkontró er initramfs der framework (tapeos-initramfs.cpio.gz); er medio çolo arrankará er rekûperaçiôn ofiçiâh." }
+        if ($espInfo -and $espInfo.InitramfsInjected -and $espInfo.KernelInjected) { $fwMsg = "`r`nFramework TapeOS inyettao: arrankêh normal/verbose/çeguro y êntrá de îttalaçiôn a dîkko dûhô dipponiblêh en er menú GRUB." } else { $fwMsg = "`r`n⚠️ AVISO: no çe enkontró er initramfs der framework (tapeos-initramfs.cpio.gz); er medio çolo arrankará er rekûperaçiôn ofiçiâh." }
         $Form.Invoke([Action]{
             $ProgressBar.Value = 100
             $LblEta.Text = 'Kompletao'

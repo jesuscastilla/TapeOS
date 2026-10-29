@@ -2,6 +2,16 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.36] — 29-10-2026
+
+### Korreççionêh
+- **Arranque real con kernel Linux de PC**: el kernel del recovery de ChromeOS (`voxel`) no arranca en un PC normal (vboot/`cros_efi`: pantalla negra en modo normal y reinicio con `nomodeset`). El menú usa ahora un kernel Linux de PC (`/tapeos/vmlinuz`, Ubuntu 6.8) para las entradas 1-4 y deja el kernel del recovery como opción 5.
+- **Menú GRUB de 8 entradas** con timeout de 20 s y comprobación de `/tapeos/vmlinuz` + `/tapeos/initramfs.img` (aviso en pantalla si faltan).
+- **Inyección completa en la ESP**: el instalador Windows copia kernel + initramfs + menú; el EXE los empaqueta y el CI los publica en cada release.
+
+### Nobedáêh
+- `Write-TapeOSGrubToEsp -KernelImagePath` inyecta el kernel Linux de PC en `\tapeos\vmlinuz`.
+
 ## [v1.0.0-alpha.35] — 29-10-2026
 
 ### Nobedáêh
