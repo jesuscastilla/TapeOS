@@ -41,5 +41,12 @@ try { $null = Invoke-TapeOSImagePatch -RecoveryZipPath 'C:\noexiste.bin' -Output
 catch { $bindingMsg = $_.Exception.Message; if ($bindingMsg -notmatch 'par.+?metro|parameter|obligatorios') { $bindingOk = $true } }
 if ($bindingOk) { "OK: binding correcto ($bindingMsg)" } else { "FALLO: binding invalido: $bindingMsg"; $fail++ }
 
+# 5) seleccion de build por CPU (Intel -> iris, AMD -> apu)
+Import-Module (Join-Path $root 'installer\windows\modules\ImageCatalog.psm1') -Force
+$fakeIntel = [PSCustomObject]@{ CPU = [PSCustomObject]@{ Manufacturer = 'Intel' } }
+$fakeAmd = [PSCustomObject]@{ CPU = [PSCustomObject]@{ Manufacturer = 'AMD' } }
+if ((Get-TapeOSBaseBuild -HwReport $fakeIntel) -ne 'iris') { 'FALLO: Intel no resuelve a iris'; $fail++ } else { 'OK: Intel -> iris' }
+if ((Get-TapeOSBaseBuild -HwReport $fakeAmd) -ne 'apu') { 'FALLO: AMD no resuelve a apu'; $fail++ } else { 'OK: AMD -> apu' }
+
 if ($fail -gt 0) { "RESULTADO: $fail fallos"; exit 1 }
 'RESULTADO: VALIDACION-OK'

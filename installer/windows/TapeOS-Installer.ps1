@@ -929,11 +929,20 @@ try {
         Write-PipelineLog ("Opciones TapeOS: "+ $frameworkOptions)
 
         # 1) Imagen completa TapeOS (local o descargada): se graba directo, no hace falta WSL.
+        # Build de la base segun la CPU (apu=AMD, iris=Intel): la GPU dedicada se
+        # maneja con los parches automaticos (dgpu), no con la build.
+        $baseBuild = Get-TapeOSBaseBuild -HwReport $HwReport
+        $baseBuildName = Get-TapeOSBaseBuildName -Build $baseBuild
+        Write-PipelineLog ("Build de base segun hardware (CPU: " + $(if ($HwReport.CPU) { $HwReport.CPU.Manufacturer } else { '?' }) + "): " + $baseBuildName)
         $tapeosImg = $null
         if (-not $EnableGoogleApps) {
-            foreach ($imgDir in @("G:\TapeOS\dist", "C:\TapeOS\images", (Join-Path $ModuleDir "..\assets"))) {
-                $c = Get-ChildItem -Path (Join-Path $imgDir "TapeOS-Free-*.img") -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-                if ($c) { $tapeosImg = $c; break }
+            $localFree = Get-TapeOSFreeImageLocal -Build $baseBuild
+            if ($localFree) { $tapeosImg = Get-Item -LiteralPath $localFree }
+            if (-not $tapeosImg) {
+                foreach ($imgDir in @("G:\TapeOS\dist", "C:\TapeOS\images", (Join-Path $ModuleDir "..\assets"))) {
+                    $c = Get-ChildItem -Path (Join-Path $imgDir "TapeOS-Free-*.img") -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+                    if ($c) { $tapeosImg = $c; break }
+                }
             }
         }
         if (-not $tapeosImg) {
@@ -945,7 +954,7 @@ try {
         if (-not $tapeosImg) {
             try {
                 $Form.Invoke([Action]{ $LblPhase.Text = 'Dehkargando imâhen TapeOS dêhde er çerbidôh...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --'})
-                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -Version $(if ($EnableGoogleApps) { 'full'} else { 'free'}) -ProgressCallback {
+                $remoteImg = Get-TapeOSRemoteImage -Codename $(if ($EnableGoogleApps) { $Codename } else { $baseBuild }) -Version $(if ($EnableGoogleApps) { 'full'} else { 'free'}) -ProgressCallback {
                     param($pct, $mb, $tot)
                     try {
                         $pctInt = [math]::Min(100, [int]$pct)
@@ -955,6 +964,44 @@ try {
                 $tapeosImg = Get-Item -LiteralPath $remoteImg
             } catch {
                 Write-PipelineLog ("Descarga de imagen remota no disponible: "+ $_.Exception.Message)
+            }
+        }
+        if (-not $tapeosImg -and -not $EnableGoogleApps) {
+            # Sin imagen preconstruida: generarla con la base correcta y TODOS los parches del hardware (WSL).
+            try {
+                $binPath = Get-TapeOSBaseBin -Build $baseBuild
+                if (-not $binPath) {
+                    $zipPath = Get-TapeOSBaseZip -Build $baseBuild
+                    if ($zipPath) {
+                        $Form.Invoke([Action]{ $LblPhase.Text = 'Dêhkomprimiendo la imâhen de baçe...'; $LblEta.Text = 'Êttimao: ~2 min'})
+                        $binPath = Expand-TapeOSBaseZip -ZipPath $zipPath -DestDir "C:\TapeOS\work"
+                    }
+                }
+                if ($binPath) {
+                    $ver = 'v1'
+                    if ($binPath -match '_v(\d+\.\d+)') { $ver = 'v' + $Matches[1] }
+                    $outImg = Join-Path 'C:\TapeOS\images' ("TapeOS-Free-" + $baseBuildName + "-" + $ver + ".img")
+                    $Form.Invoke([Action]{ $LblPhase.Text = 'Hennerando la imâhen TapeOS Free kon tô lô parxêh de tu hardware (~10-15 min)...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: ~10-15 min'})
+                    $genImg = Invoke-TapeOSFreeImageBuild -BinPath $binPath -Options $frameworkOptions -OutImgPath $outImg -ProgressCallback {
+                        param($pct, $msg)
+                        try {
+                            if ($pct -ge 0) { $ProgressBar.Value = [math]::Min(100, $pct) }
+                            if ($msg) { $LogBox.AppendText("$msg`r`n") }
+                        } catch { }
+                    }
+                    $tapeosImg = Get-Item -LiteralPath $genImg
+                    Write-PipelineLog ("Imagen Free generada localmente: " + $tapeosImg.FullName)
+                } else {
+                    Write-PipelineLog ("No se encontro la imagen de base (" + $baseBuildName + ") en C:\TapeOS\downloads ni en G:\TapeOS\dist.")
+                    $Form.Invoke([Action]{
+                        [System.Windows.Forms.MessageBox]::Show(
+                            "No çe enkontró la imâhen de baçe pa tu equipo (" + $baseBuildName + ").`r`n`r`nKoloka er arxibo de baçe (FydeOS_for_PC_" + $baseBuild.ToLower() + "_*.bin.zip) en C:\TapeOS\downloads y buêlbe a îttentâl-lo.",
+                            "Imâhen de baçe farta", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning
+                        ) | Out-Null
+                    })
+                }
+            } catch {
+                Write-PipelineLog ("Generacion de la imagen Free no disponible: " + $_.Exception.Message)
             }
         }
 

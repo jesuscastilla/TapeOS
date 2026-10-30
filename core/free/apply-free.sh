@@ -87,6 +87,15 @@ sed -i 's/^CHROMEOS_RELEASE_DESCRIPTION=.*/CHROMEOS_RELEASE_DESCRIPTION=TapeOS F
 mkdir -p /tmp/ffroot/var/lib/tapeos
 touch /tmp/ffroot/var/lib/tapeos/free-applied
 
+# 5b) Sin logo de arranque: fondo negro y frames 1x1 (hasta que TapeOS tenga logo propio)
+echo "[TapeOS Free] Sin logo de arranque (fondo negro, frames 1x1)..."
+LOGO_BLACK='iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+printf '0xff000000' > /tmp/ffroot/usr/share/chromeos-assets/splash_background 2>/dev/null || true
+for f in /tmp/ffroot/usr/share/chromeos-assets/images_100_percent/boot_splash_frame*.png \
+         /tmp/ffroot/usr/share/chromeos-assets/images_200_percent/boot_splash_frame*.png; do
+    [ -f "$f" ] && echo "$LOGO_BLACK" | base64 -d > "$f"
+done
+
 echo "[TapeOS Free] Verificando..."
 grep -E '^CHROMEOS_RELEASE_(NAME|DESCRIPTION)=' /tmp/ffroot/etc/lsb-release
 for f in /etc/lsb-release /sbin/init /usr/local/bin/tapeos-apks.sh /usr/local/share/tapeos/apps/AuroraStore.apk /etc/modprobe.d/tapeos-dgpu.conf; do

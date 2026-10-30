@@ -2,6 +2,16 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.55] — 30-10-2026
+
+### Cambios
+- **Sin logo de arranque**: el cmdline quita el logo del kernel (`logo.nologo`, `fbcon=logo-count:0`) y `apply-free.sh` reemplaza los frames del splash por PNG negro 1x1 y fondo `0xff000000`. Hasta que TapeOS tenga logo propio, el arranque es en negro.
+- **Base elegida automaticamente segun el hardware**: el instalador resuelve la build por la CPU (Intel -> iris, AMD -> apu), busca la imagen Free correspondiente en local, en el catalogo remoto (por board) o la genera con WSL aplicando TODOS los parches detectados (dgpu, wifi, audio, no_google_play...). Si no hay base local, avisa con el nombre exacto del fichero a colocar en `C:\TapeOS\downloads`.
+- `publish-images.ps1` publica una entrada `free` por build (apu/iris) en `images.json`.
+
+### Correcciones
+- `Get-TapeOSRemoteImage` filtra la imagen `free` por board (antes cogia la primera del catalogo).
+
 ## [v1.0.0-alpha.54] — 30-10-2026
 
 ### Correcciones

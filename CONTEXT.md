@@ -224,3 +224,8 @@ TapeOS/
 - **Tipo:** Arkîtêttûra | Bîtta
 - **Kambio:** `apply-free.sh` rekreaba ROOT-A kon el 5% de reçerba y kopiaba kon `tar` çîn `--sparse`: er rootfs (2605 MB) no kabía (faltaban ~6 MB) y la imâhen arrankaba pero çe kolgaba en er logo. Ahora rekreaba kon `-m 0` y çîn jûnnâh, kopia kon `--sparse`, aplika lô parxêh en kaliente y berifika er reçûttao. La etiketa de façe pâhha de 28 a 38 px (têttô en negrita rekortao). Er grub.cfg de Free pîerde `noinitrd` y uça `console=tty0`.
 - **Impâtto:** `core/free/apply-free.sh`, `core/free/grub/grub.cfg`, `installer/windows/TapeOS-Installer.ps1`, `tools/wizard-smoke-test.ps1`, imâhen `TapeOS-Free-Iris-v23.1.img`.
+## [30-10-2026] — Çîn logo, baçe por hardware y parxêh kompletoh en Free
+
+- **Tipo:** Arkîtêttûra | Bîtta
+- **Kambio:** Er arrankêh yá no muêttra ningún logo (cmdline `logo.nologo` + frames der splash a 1x1 negro en `apply-free.sh`). Er îttaladôh elihe automátikamente la baçe (Intel -> iris, AMD -> apu), la dehkarga der katálogo por board o la hennera kon WSL aplikando tô lô parxêh detêttáô (dgpu, wifi, audio, no_google_play). `publish-images.ps1` publika una entrá `free` por build.
+- **Impâtto:** `installer/windows/modules/ImageCatalog.psm1`, `TapeOS-Installer.ps1`, `core/free/apply-free.sh`, `core/free/grub/grub.cfg`, `tools/validate-pipeline.ps1`, `tools/publish-images.ps1`.

@@ -29,6 +29,23 @@ $images = @(Get-ChildItem -Path (Join-Path $dist "TapeOS-*.img.gz") | ForEach-Ob
     }
 })
 if ($images.Count -eq 0) { throw "No hay imagenes TapeOS-*.img.gz en $dist" }
+# Entradas Free por build de base (apu/iris): TapeOS-Free-<build>-vX.Y.img.gz
+$images += @(Get-ChildItem -Path (Join-Path $dist "TapeOS-Free-*.img.gz") | ForEach-Object {
+    if ($_.Name -match '^TapeOS-Free-(APU|Iris|apu|iris)-v([0-9.]+)\.img\.gz$') {
+        $build = $Matches[1].ToLower()
+        $ver = $Matches[2]
+        $m2 = [regex]::Match($ver, '^(\d+)')
+        [PSCustomObject]@{
+            board     = $build
+            milestone = if ($m2.Success) { [int]$m2.Groups[1].Value } else { 0 }
+            firmware  = "uefi"
+            version   = "free"
+            file      = $_.Name
+            sha256    = (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLower()
+            sizeMB    = [math]::Round($_.Length / 1MB, 0)
+        }
+    }
+})
 $cat = [PSCustomObject]@{ generated = (Get-Date -Format "yyyy-MM-dd HH:mm:ss"); images = $images }
 $catJson = $cat | ConvertTo-Json -Depth 4
 $catPath = Join-Path $dist "images.json"
