@@ -2,6 +2,13 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.48] — 30-10-2026
+
+### Mejoras
+- **Descarga con curl.exe**: 4x-8x mas rapida que WebClient (fallback automatico si falta curl).
+- **Imagen Free local**: si existe `TapeOS-Free-*.img` en dist/, C:\TapeOS\images o assets, se graba directamente sin descargar.
+- Flujo de descarga Free validado de punta a punta en PS 5.1 (catalogo con BOM, curl, SHA256, descompresion).
+
 ## [v1.0.0-alpha.47] — 30-10-2026
 
 ### Korreççionêh

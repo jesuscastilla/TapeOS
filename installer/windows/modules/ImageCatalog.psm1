@@ -58,20 +58,26 @@ function Get-TapeOSRemoteImage {
         Set-TapeOSTlsDefault
         $url = $BaseUrl + $entry.file
         Write-Host "[TapeOS] Descargando $url ..."
-        $script:dlDone = $false
-        $wc = New-Object System.Net.WebClient
-        $wc.add_DownloadProgressChanged({
-            param($s, $e)
-            if ($ProgressCallback) {
-                $mb = [math]::Round($e.BytesReceived / 1MB, 0)
-                $tot = [math]::Round($e.TotalBytesToReceive / 1MB, 0)
-                & $ProgressCallback ([math]::Round($e.ProgressPercentage, 0)) $mb $tot
-            }
-        })
-        $wc.add_DownloadFileCompleted({ $script:dlDone = $true })
-        $wc.DownloadFileAsync($url, $gzPath)
-        while (-not $script:dlDone) { Start-Sleep -Milliseconds 300 }
-        $wc.Dispose()
+        $curl = Get-Command curl.exe -ErrorAction SilentlyContinue
+        if ($curl) {
+            & curl.exe -sS -L -o $gzPath $url
+            if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $gzPath)) { throw "Descarga fallida (curl exit $LASTEXITCODE)" }
+        } else {
+            $script:dlDone = $false
+            $wc = New-Object System.Net.WebClient
+            $wc.add_DownloadProgressChanged({
+                param($s, $e)
+                if ($ProgressCallback) {
+                    $mb = [math]::Round($e.BytesReceived / 1MB, 0)
+                    $tot = [math]::Round($e.TotalBytesToReceive / 1MB, 0)
+                    & $ProgressCallback ([math]::Round($e.ProgressPercentage, 0)) $mb $tot
+                }
+            })
+            $wc.add_DownloadFileCompleted({ $script:dlDone = $true })
+            $wc.DownloadFileAsync($url, $gzPath)
+            while (-not $script:dlDone) { Start-Sleep -Milliseconds 300 }
+            $wc.Dispose()
+        }
     }
     $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $gzPath).Hash.ToLower()
     if ($hash -ne $entry.sha256.ToLower()) { Remove-Item -LiteralPath $gzPath -Force; throw "SHA256 de $($entry.file) no coincide: $hash" }

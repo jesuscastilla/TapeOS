@@ -1025,6 +1025,12 @@ try {
 
         # Si existe una imagen completa TapeOS (Brunch + parches), grabarla directo: NO hace falta WSL.
         $tapeosImg = $null
+        if (-not $EnableGoogleApps) {
+            foreach ($imgDir in @("G:\TapeOS\dist", "C:\TapeOS\images", (Join-Path $ModuleDir "..\assets"))) {
+                $c = Get-ChildItem -Path (Join-Path $imgDir "TapeOS-Free-*.img") -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+                if ($c) { $tapeosImg = $c; break }
+            }
+        }
         foreach ($imgDir in @("G:\TapeOS\dist", "C:\TapeOS\images", (Join-Path $ModuleDir "..\assets"))) {
             $c = Get-ChildItem -Path (Join-Path $imgDir ("TapeOS-$Codename-*.img")) -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
             if ($c) { $tapeosImg = $c; break }
@@ -1100,6 +1106,12 @@ try {
 
         # Si existe una imagen completa TapeOS (Brunch + parches), grabarla directo: NO hace falta WSL.
         $tapeosImg = $null
+        if (-not $EnableGoogleApps) {
+            foreach ($imgDir in @("G:\TapeOS\dist", "C:\TapeOS\images", (Join-Path $ModuleDir "..\assets"))) {
+                $c = Get-ChildItem -Path (Join-Path $imgDir "TapeOS-Free-*.img") -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+                if ($c) { $tapeosImg = $c; break }
+            }
+        }
         foreach ($imgDir in @("G:\TapeOS\dist", "C:\TapeOS\images", (Join-Path $ModuleDir "..\assets"))) {
             $c = Get-ChildItem -Path (Join-Path $imgDir ("TapeOS-$Codename-*.img")) -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
             if ($c) { $tapeosImg = $c; break }
