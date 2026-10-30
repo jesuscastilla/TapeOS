@@ -2,6 +2,13 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.44] — 30-10-2026
+
+### Nobedáêh
+- **TapeOS Free sobre FydeOS/openFyde**: `core/free/apply-free.sh` adapta imagenes ChromiumOS (FydeOS v23.1) a TapeOS Free: cuenta local sin Google (de serie), rebranding, parches 90-97 (dGPU AMD, Aurora Store, Crostini + Centro de software, zram) y GRUB propio de 5 entradas.
+- Primera imagen Free generada y verificada: `TapeOS-Free-APU-v23.1.img` (AMD/APU, con parche dgpu).
+- Nota tecnica: ROOT-A de FydeOS usa features ext4 nuevos (se recrea con ext4 estandar); la variante iris es un instalador (rootfs en STATE/dev_image), pendiente de inyeccion directa.
+
 ## [v1.0.0-alpha.43] — 30-10-2026
 
 ### Nobedáêh
