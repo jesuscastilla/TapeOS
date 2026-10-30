@@ -526,6 +526,21 @@ $lblUsbWarning.Location = New-Object System.Drawing.Point(24, 248)
 $lblUsbWarning.Size = New-Object System.Drawing.Size(902, 24)
 $lblUsbWarning.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl4.Controls.Add($lblUsbWarning)
+# Opcion de firmware: BIOS Legacy (sin UEFI)
+$chkBiosMode = New-Object System.Windows.Forms.CheckBox
+$chkBiosMode.Text = "🖥️ Modo BIÔ (çin UEFI)"
+$chkBiosMode.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+$chkBiosMode.Location = New-Object System.Drawing.Point(24, 300)
+$chkBiosMode.AutoSize = $true
+$pnl4.Controls.Add($chkBiosMode)
+
+$lblBiosInfo = New-Object System.Windows.Forms.Label
+$lblBiosInfo.Text = "Pa ekîpô anteriôh a ~2012 çin UEFI: arrankâh por MBR en lûgâh de EFI. La imâhen de TapeOS êh îbriá (çirbe pa lô dô modô); márkalo çolo çi tu ekîpo arranka únikamente en BIÔ Legâyy."
+$lblBiosInfo.Font = New-Object System.Drawing.Font("Segoe UI", 8.5)
+$lblBiosInfo.ForeColor = [System.Drawing.Color]::FromArgb(107, 122, 114)
+$lblBiosInfo.Location = New-Object System.Drawing.Point(40, 326)
+$lblBiosInfo.Size = New-Object System.Drawing.Size(880, 44)
+$pnl4.Controls.Add($lblBiosInfo)
 
 $contentPanel.Controls.Add($pnl4)
 
@@ -780,6 +795,8 @@ function Set-TapeOSLanguage {
     $radioImageOnly.Text = if ($isEPA) { "📀 Kreâh er medio de îttalaçiôn (.img) — guâddâlo en er dîkko" } else { "📀 Crear el medio de instalación (.img) — guardarlo en el disco" }
     $btnBrowseDir.Text = if ($isEPA) { "📂 Ehkaminâh..." } else { "📂 Examinar..." }
     $lblUsbWarning.Text = if ($isEPA) { "⚠️ OHO: Er pendraîh çelehçionao çe formateará po kompleto pa îttalâh TapeOS." } else { "⚠️ ATENCIÓN: El pendrive seleccionado se formateará por completo para instalar TapeOS." }
+    $chkBiosMode.Text = if ($isEPA) { "🖥️ Modo BIÔ (çin UEFI)" } else { "🖥️ Modo BIOS (sin UEFI)" }
+    $lblBiosInfo.Text = if ($isEPA) { "Pa ekîpô anteriôh a ~2012 çin UEFI: arrankâh por MBR en lûgâh de EFI. La imâhen de TapeOS êh îbriá (çirbe pa lô dô modô); márkalo çolo çi tu ekîpo arranka únikamente en BIÔ Legâyy." } else { "Para equipos anteriores a ~2012 sin UEFI: arranque por MBR en lugar de EFI. La imagen de TapeOS es híbrida (sirve para ambos modos); márcalo solo si tu equipo arranca únicamente en BIOS Legacy." }
     $lblSumTitle.Text = if ($isEPA) { "Reçûmen de la îttalaçiôn" } else { "Resumen de la instalación" }
     $btnCreate.Text = if ($isEPA) { "⚡ Dehkargâh, Parcheâh y Kreâh (1-Klik)" } else { "⚡ Descargar, Parchear y Crear (1-Clic)" }
     $lblEta5.Text = if ($isEPA) { "Êttimao: --" } else { "Estimado: --" }

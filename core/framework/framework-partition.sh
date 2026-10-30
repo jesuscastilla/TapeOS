@@ -133,6 +133,12 @@ write_base_table()
   fi
   cgpt add -i 12 -b $(( curr / block_size )) -s ${blocks} -t efi     -l "EFI-SYSTEM" "${target}"
   : $(( curr += blocks * block_size ))
+  blocks=$(( 2097152 / block_size ))
+  if [ $(( 2097152 % block_size )) -gt 0 ]; then
+     : $(( blocks += 1 ))
+  fi
+  cgpt add -i 13 -b $(( curr / block_size )) -s ${blocks} -t 21686148-6449-6E6F-744E-656564454649 -l "BIOS-BOOT" "${target}"
+  : $(( curr += blocks * block_size ))
   if [ $(( curr % 4096 )) -gt 0 ]; then
     : $(( curr += 4096 - curr % 4096 ))
   fi
@@ -164,4 +170,4 @@ write_base_table()
   cgpt show "${target}"
 }
 write_base_table "$1"
-echo TABLA-BRUNCH-CREADA
+echo TABLA-TAPEOS-CREADA

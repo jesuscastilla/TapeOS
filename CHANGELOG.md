@@ -2,6 +2,13 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.41] — 30-10-2026
+
+### Nobedáêh
+- **Modo BIOS (sin UEFI)**: las imagenes son hibridas (UEFI + BIOS Legacy). Particion BIOS-BOOT (p13) + GRUB i386-pc instalado en el MBR (`grub-pc-bin`/`grub2-common`); el grub.cfg usa `search --set=root --file /kernel` (funciona en ambos firmwares).
+- **Wizard**: nueva opcion "Modo BIOS (sin UEFI)" en el paso Medio con explicacion breve en EPA/Espanol.
+- GRUB sin theme del framework base (texto limpio de TapeOS).
+
 ## [v1.0.0-alpha.40] — 30-10-2026
 
 ### Nobedáêh

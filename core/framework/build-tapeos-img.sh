@@ -44,6 +44,17 @@ sed "s/__TAPEOOS_OPTIONS__/${TAPEOOS_OPTIONS:-enable_updates}/g" "$DIR"/grub/gru
 cp "$DIR"/grub/settings.cfg /tmp/tp12/efi/boot/settings.cfg
 sed -i 's/\r$//' /tmp/tp7/patches/[0-9]*.sh /tmp/tp7/tapeos/tapeos-install.sh
 chmod +x /tmp/tp7/patches/[0-9]*.sh /tmp/tp7/tapeos/tapeos-install.sh /tmp/tp7/tapeos/bin/*
+if ! command -v grub-install >/dev/null 2>&1; then
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get install -y grub-pc-bin grub2-common >/dev/null 2>&1 || true
+fi
+if [ -x /usr/sbin/grub-install ]; then
+    mkdir -p /tmp/tp7/grub
+    cp "$DIR"/grub/grub.cfg /tmp/tp7/grub/grub.cfg
+    /usr/sbin/grub-install --target=i386-pc --boot-directory=/tmp/tp7 --recheck --no-floppy "$LOOP" 2>/dev/null \
+        && echo "[TapeOS] GRUB BIOS (sin UEFI) instalado" \
+        || echo "[TapeOS] aviso: GRUB BIOS no instalado"
+fi
 sync
 cleanup
 cp --sparse=always "$WORK_IMG" "$OUT_IMG"

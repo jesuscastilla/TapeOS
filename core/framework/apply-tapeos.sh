@@ -37,6 +37,19 @@ fi
 sed "s/__TAPEOOS_OPTIONS__/${TAPEOOS_OPTIONS:-enable_updates}/g" "$SRC"/core/framework/grub/grub.cfg > $P12/efi/boot/grub.cfg
 cp "$SRC"/core/framework/grub/settings.cfg $P12/efi/boot/settings.cfg
 
+# 3c) GRUB BIOS (i386-pc): arranque sin UEFI (imagenes hibridas)
+if ! command -v grub-install >/dev/null 2>&1; then
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get install -y grub-pc-bin grub2-common >/dev/null 2>&1 || true
+fi
+if [ -x /usr/sbin/grub-install ]; then
+    mkdir -p $P7/grub
+    cp "$SRC"/core/framework/grub/grub.cfg $P7/grub/grub.cfg
+    /usr/sbin/grub-install --target=i386-pc --boot-directory=$P7 --recheck --no-floppy "$DISK" 2>/dev/null \
+        && echo "[TapeOS] GRUB BIOS (sin UEFI) instalado" \
+        || echo "[TapeOS] aviso: GRUB BIOS no instalado"
+fi
+
 # 4) Normalizar y permisos
 sed -i 's/\r$//' $P7/patches/[0-9]*.sh $P7/tapeos/tapeos-install.sh
 chmod +x $P7/patches/[0-9]*.sh $P7/tapeos/tapeos-install.sh $P7/tapeos/bin/*
