@@ -219,3 +219,8 @@ TapeOS/
 - **Tipo:** Arkîtêttûra
 - **Kambio:** El framework pasa a basarse en Brunch r154 (ChromeOS r154, kernels r156): el asistente instala Brunch + capa TapeOS vía WSL (`install-brunch-usb.sh`: particionado, copia por offsets y `apply-tapeos.sh` con parches 90-96, Aurora Store y GRUB de 6 entradas sin menú de configuración). Parches automáticos según el hardware detectado (dGPU, legacy, WiFi, audio/táctil, zram, no_google_play).
 - **Impâtto:** `core/brunch/`, `installer/windows/modules/BrunchInstaller.psm1`, `TapeOS-Installer.ps1`, `tools/build-exe.ps1`.
+## [30-10-2026] — Imâhen Free kompleta y label de façe çîn rekortêh
+
+- **Tipo:** Arkîtêttûra | Bîtta
+- **Kambio:** `apply-free.sh` rekreaba ROOT-A kon el 5% de reçerba y kopiaba kon `tar` çîn `--sparse`: er rootfs (2605 MB) no kabía (faltaban ~6 MB) y la imâhen arrankaba pero çe kolgaba en er logo. Ahora rekreaba kon `-m 0` y çîn jûnnâh, kopia kon `--sparse`, aplika lô parxêh en kaliente y berifika er reçûttao. La etiketa de façe pâhha de 28 a 38 px (têttô en negrita rekortao). Er grub.cfg de Free pîerde `noinitrd` y uça `console=tty0`.
+- **Impâtto:** `core/free/apply-free.sh`, `core/free/grub/grub.cfg`, `installer/windows/TapeOS-Installer.ps1`, `tools/wizard-smoke-test.ps1`, imâhen `TapeOS-Free-Iris-v23.1.img`.
