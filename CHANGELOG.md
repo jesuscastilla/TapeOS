@@ -2,6 +2,18 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.49] — 30-10-2026
+
+### Correcciones
+- **La GUI ya termina**: el timer que vigilaba el pipeline era local del handler (PowerShell lo recogia y el Tick nunca corria). Ahora vive en el scope del script; al acabar: fase `✅ Kompletao`, barra 100%, ETA `Kompletao`, boton Siguiente visible y `Pipeline completado sin errores.` en el log.
+- **Rama Live-USB reescrita**: habia un bloque duplicado anidado en el catch de la rama WSL; el MessageBox de exito solo salia en el flujo clasico. Ahora hay cierre unico (imagen/WSL/clasico) con MessageBox `Grabaçiôn Kompletá`.
+- **Timers del paso 2** (consulta de version): mismo arreglo de scope (`$script:qTimer`, etc.).
+- **Acentos**: BOM UTF-8 en los 5 modulos que no lo tenian (se acabaron los `Ã¢` en el panel de log).
+- **Sin restos de la base original**: parametros `-FrameworkScriptDir/-FrameworkAssetsDir` (con alias retrocompatibles), textos y rutas `dist\framework`.
+
+### Novedades
+- **Barra de progreso al final**: la barra de la fase de ejecucion queda justo encima del log, con el ETA a su derecha sin recortarse (se recoloca al redimensionar).
+
 ## [v1.0.0-alpha.48] — 30-10-2026
 
 ### Mejoras

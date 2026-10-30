@@ -599,20 +599,28 @@ $lblPhase.Size = New-Object System.Drawing.Size(902, 28)
 $lblPhase.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl6.Controls.Add($lblPhase)
 
+# Barra de progreso al final del panel (justo encima del log) y ETA a su derecha, sin recortes.
 $pbStep5 = New-Object System.Windows.Forms.ProgressBar
-$pbStep5.Location = New-Object System.Drawing.Point(24, 60)
-$pbStep5.Size = New-Object System.Drawing.Size(902, 32)
-$pbStep5.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
+$pbStep5.Size = New-Object System.Drawing.Size(640, 30)
 $pnl6.Controls.Add($pbStep5)
 
 $lblEta5 = New-Object System.Windows.Forms.Label
 $lblEta5.Text = "Êttimao: --"
 $lblEta5.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Italic)
 $lblEta5.ForeColor = [System.Drawing.Color]::FromArgb(107, 122, 114)
-$lblEta5.Location = New-Object System.Drawing.Point(24, 108)
-$lblEta5.Size = New-Object System.Drawing.Size(902, 24)
-$lblEta5.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
+$lblEta5.Size = New-Object System.Drawing.Size(252, 24)
+$lblEta5.TextAlign = [System.Drawing.ContentAlignment]::MiddleLeft
 $pnl6.Controls.Add($lblEta5)
+
+$script:layoutStep6 = {
+    $pbStep5.Top = $pnl6.ClientSize.Height - 44
+    $pbStep5.Left = 24
+    $pbStep5.Width = [math]::Max(200, ($pnl6.ClientSize.Width - 24 - 12 - 252))
+    $lblEta5.Top = $pbStep5.Top + 3
+    $lblEta5.Left = $pbStep5.Left + $pbStep5.Width + 12
+}
+$pnl6.Add_Resize($script:layoutStep6)
+& $script:layoutStep6
 
 $contentPanel.Controls.Add($pnl6)
 
@@ -854,54 +862,55 @@ $script:recoveryInfo = $null
 $btnCheckOnline.Add_Click({
     $btnCheckOnline.Enabled = $false
     $pbStep2.Visible = $true
-    $sw = [System.Diagnostics.Stopwatch]::StartNew()
+    $script:qSw = [System.Diagnostics.Stopwatch]::StartNew()
     $lblEta2.Text = "Êttimao: ~5 ç"
     $queryScript = {
         param([string]$Codename, [string]$ModuleDir)
         Import-Module (Join-Path $ModuleDir "RecoveryDownloader.psm1") -Force
         Get-TapeOSLatestRecoveryInfo -BoardCodename $Codename
     }
-    $rs = [runspacefactory]::CreateRunspace(); $rs.ApartmentState = "STA"; $rs.Open()
-    $ps = [powershell]::Create(); $ps.Runspace = $rs
-    $null = $ps.AddScript($queryScript.ToString())
-    $null = $ps.AddParameter("Codename", (($cbRecovery.SelectedItem.ToString()).Split(' ')[0]))
-    $null = $ps.AddParameter("ModuleDir", $moduleDir)
-    $async = $ps.BeginInvoke()
-    $timedOut = $false
-    $qTimer = New-Object System.Windows.Forms.Timer
-    $qTimer.Interval = 200
-    $qTimer.Add_Tick({
-        $el = $sw.Elapsed.TotalSeconds
+    $script:qRs = [runspacefactory]::CreateRunspace(); $script:qRs.ApartmentState = "STA"; $script:qRs.Open()
+    $script:qPs = [powershell]::Create(); $script:qPs.Runspace = $script:qRs
+    $null = $script:qPs.AddScript($queryScript.ToString())
+    $null = $script:qPs.AddParameter("Codename", (($cbRecovery.SelectedItem.ToString()).Split(' ')[0]))
+    $null = $script:qPs.AddParameter("ModuleDir", $moduleDir)
+    $script:qAsync = $script:qPs.BeginInvoke()
+    $script:qTimedOut = $false
+    if ($script:qTimer) { $script:qTimer.Stop(); $script:qTimer.Dispose() }
+    $script:qTimer = New-Object System.Windows.Forms.Timer
+    $script:qTimer.Interval = 200
+    $script:qTimer.Add_Tick({
+        $el = $script:qSw.Elapsed.TotalSeconds
         $lblEta2.Text = "Êttimao: " + (Format-ETA ([math]::Max(0.5, (5 - $el))))
-        if ($async.IsCompleted -or $timedOut) {
-            $qTimer.Stop(); $qTimer.Dispose()
+        if ($script:qAsync.IsCompleted -or $script:qTimedOut) {
+            $script:qTimer.Stop(); $script:qTimer.Dispose()
             $pbStep2.Visible = $false
             try {
-                $script:recoveryInfo = $ps.EndInvoke($async)
-                if (-not $timedOut) {
+                $script:recoveryInfo = $script:qPs.EndInvoke($script:qAsync)
+                if (-not $script:qTimedOut) {
                     $lblStatusUrl.Text = "✔ Berçiôn: Milestone $($script:recoveryInfo.Milestone) | Arxibo: $($script:recoveryInfo.FileName)"
                     $lblEta2.Text = "Kompletao en $(Format-ETA $el)"
                     $logBox.AppendText("[ChromiumDash] Berçiôn Milestone $($script:recoveryInfo.Milestone) enkontrá.`r`n")
                 }
             } catch {
                 Write-TapeOSLog ("ERROR consulta API: " + $_.Exception.ToString())
-                if ($timedOut) {
+                if ($script:qTimedOut) {
                     $lblStatusUrl.Text = if ($script:langEPA) { "❌ Tîmpo agotao (15 ç, ¿çîn internet?). Çe uçará la berçiôn êttable der katálogo lokâh." } else { "❌ Tiempo agotado (15 s, ¿sin internet?). Se usará la versión estable del catálogo local." }
                 } else {
                     $lblStatusUrl.Text = "❌ No çe pudo konhûttâh la API: $($_.Exception.Message)"
                 }
                 $lblEta2.Text = ""
             } finally {
-                $ps.Dispose(); $rs.Dispose()
+                $script:qPs.Dispose(); $script:qRs.Dispose()
                 $btnCheckOnline.Enabled = $true
             }
         } elseif ($el -gt 15) {
             # Timeout: se cancela la consulta; el siguiente tick la recoge como completada con error
-            $timedOut = $true
-            try { $ps.Stop() | Out-Null } catch { }
+            $script:qTimedOut = $true
+            try { $script:qPs.Stop() | Out-Null } catch { }
         }
     })
-    $qTimer.Start()
+    $script:qTimer.Start()
 })
 
 $pipelineScript = @'
@@ -1011,19 +1020,19 @@ try {
         $fwMsg = ""
         $frameworkAssetsDir = ""
         $frameworkScriptDir = ""
-        foreach ($cand in @("G:\TapeOS\dist\brunch", "C:\TapeOS\brunch", (Join-Path $ModuleDir "..\assets\framework-assets"))) {
+        foreach ($cand in @("G:\TapeOS\dist\framework", "C:\TapeOS\framework", (Join-Path $ModuleDir "..\assets\framework-assets"))) {
             if (Test-Path -LiteralPath (Join-Path $cand "rootc.img")) { $frameworkAssetsDir = $cand; break }
         }
         foreach ($cand in @("G:\TapeOS\core\framework", (Join-Path $ModuleDir "..\assets\framework-scripts"))) {
             if (Test-Path -LiteralPath (Join-Path $cand "install-framework-usb.sh")) { $frameworkScriptDir = $cand; break }
         }
-        # Opciones de framework para esta maquina (parches automaticos segun hardware)
-        $brunchOptions = (($HwReport.FrameworkPatches | ForEach-Object { $_.Option } | Where-Object { $_ }) -join ",")
-        if (-not $EnableGoogleApps) { $brunchOptions = if ($brunchOptions) { $brunchOptions + ",no_google_play" } else { "no_google_play" } }
-        if (-not $brunchOptions) { $brunchOptions = "enable_updates" }
-        Write-PipelineLog ("Opciones TapeOS: " + $brunchOptions)
+        # Opciones del framework para esta maquina (parches automaticos segun hardware)
+        $frameworkOptions = (($HwReport.FrameworkPatches | ForEach-Object { $_.Option } | Where-Object { $_ }) -join ",")
+        if (-not $EnableGoogleApps) { $frameworkOptions = if ($frameworkOptions) { $frameworkOptions + ",no_google_play" } else { "no_google_play" } }
+        if (-not $frameworkOptions) { $frameworkOptions = "enable_updates" }
+        Write-PipelineLog ("Opciones TapeOS: " + $frameworkOptions)
 
-        # Si existe una imagen completa TapeOS (Brunch + parches), grabarla directo: NO hace falta WSL.
+        # 1) Imagen completa TapeOS (local o descargada): se graba directo, no hace falta WSL.
         $tapeosImg = $null
         if (-not $EnableGoogleApps) {
             foreach ($imgDir in @("G:\TapeOS\dist", "C:\TapeOS\images", (Join-Path $ModuleDir "..\assets"))) {
@@ -1031,9 +1040,11 @@ try {
                 if ($c) { $tapeosImg = $c; break }
             }
         }
-        foreach ($imgDir in @("G:\TapeOS\dist", "C:\TapeOS\images", (Join-Path $ModuleDir "..\assets"))) {
-            $c = Get-ChildItem -Path (Join-Path $imgDir ("TapeOS-$Codename-*.img")) -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-            if ($c) { $tapeosImg = $c; break }
+        if (-not $tapeosImg) {
+            foreach ($imgDir in @("G:\TapeOS\dist", "C:\TapeOS\images", (Join-Path $ModuleDir "..\assets"))) {
+                $c = Get-ChildItem -Path (Join-Path $imgDir ("TapeOS-$Codename-*.img")) -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+                if ($c) { $tapeosImg = $c; break }
+            }
         }
         if (-not $tapeosImg) {
             try {
@@ -1050,10 +1061,12 @@ try {
                 Write-PipelineLog ("Descarga de imagen remota no disponible: " + $_.Exception.Message)
             }
         }
+
+        # 2) Rutas de instalacion por orden: imagen completa -> framework via WSL -> grabacion clasica.
         $usedFramework = $false
         if ($tapeosImg) {
             try {
-                $Form.Invoke([Action]{ $LblPhase.Text = '💾 Grabando imagen TapeOS (Brunch + parches)...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
+                $Form.Invoke([Action]{ $LblPhase.Text = "💾 Grabando la imagen de TapeOS ($($tapeosImg.Name))..."; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
                 Start-TapeOSUsbFlash `
                     -ImageFilePath $tapeosImg.FullName `
                     -PhysicalDriveId $TargetUsb.DeviceID `
@@ -1067,144 +1080,59 @@ try {
                         } catch { Write-PipelineLog ("ERROR callback imagen: " + $_.Exception.ToString()) }
                     } | Out-Null
                 $usedFramework = $true
-                $fwMsg = "`r`nImagen completa TapeOS (Brunch + parches) grabada: menu normal/verbose/seguro/instalar."
+                $fwMsg = "`r`nImagen TapeOS grabada: menu normal/verbose/seguro/instalar."
                 $Form.Invoke([Action]{ $LogBox.AppendText("[Imagen] $($tapeosImg.Name) grabada en er pendraîh.`r`n") })
             } catch {
                 Write-PipelineLog ("Grabacion de imagen TapeOS fallo: " + $_.Exception.Message)
-                if (-not $tapeosImg) {
-            try {
-                $Form.Invoke([Action]{ $LblPhase.Text = '📥 Dehkargando imâhen TapeOS dêhde er çerbidôh...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
-                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -Version $(if ($EnableGoogleApps) { 'full' } else { 'free' }) -ProgressCallback {
-                    param($pct, $mb, $tot)
-                    try {
-                        $pctInt = [math]::Min(100, [int]$pct)
-                        $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = "Dehkargao $mb MB de $tot MB" })
-                    } catch { }
-                }
-                $tapeosImg = Get-Item -LiteralPath $remoteImg
-            } catch {
-                Write-PipelineLog ("Descarga de imagen remota no disponible: " + $_.Exception.Message)
             }
         }
-        $usedFramework = $false
-            }
-        }
-        if ($frameworkAssetsDir -and $frameworkScriptDir -and (Test-TapeOSWsl)) {
+        if (-not $usedFramework -and $frameworkAssetsDir -and $frameworkScriptDir -and (Test-TapeOSWsl)) {
             try {
-                $Form.Invoke([Action]{ $LblPhase.Text = 'Îttalando Brunch + TapeOS (WSL)...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: ~5 min' })
-                Invoke-TapeOSFrameworkInstall -ImageFilePath $patched.PatchedImagePath -DiskNumber $TargetUsb.DiskNumber -BrunchScriptDir $frameworkScriptDir -BrunchAssetsDir $frameworkAssetsDir -Options $brunchOptions | Out-Null
+                $Form.Invoke([Action]{ $LblPhase.Text = 'Îttalando TapeOS (WSL)...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: ~5 min' })
+                Invoke-TapeOSFrameworkInstall -ImageFilePath $patched.PatchedImagePath -DiskNumber $TargetUsb.DiskNumber -FrameworkScriptDir $frameworkScriptDir -FrameworkAssetsDir $frameworkAssetsDir -Options $frameworkOptions | Out-Null
                 $usedFramework = $true
                 $fwMsg = "`r`nTapeOS instalado: menu de 6 entradas, parches automaticos segun el hardware y Aurora Store disponible."
                 $Form.Invoke([Action]{ $LogBox.AppendText("[TapeOS] Îttalaçiôn kompletá.`r`n") })
             } catch {
                 Write-PipelineLog ("Instalacion TapeOS fallo; se usa la grabacion clasica: " + $_.Exception.Message)
-                # Opciones de framework para esta maquina (parches automaticos segun hardware)
-        $brunchOptions = (($HwReport.FrameworkPatches | ForEach-Object { $_.Option } | Where-Object { $_ }) -join ",")
-        if (-not $EnableGoogleApps) { $brunchOptions = if ($brunchOptions) { $brunchOptions + ",no_google_play" } else { "no_google_play" } }
-        if (-not $brunchOptions) { $brunchOptions = "enable_updates" }
-        Write-PipelineLog ("Opciones TapeOS: " + $brunchOptions)
-
-        # Si existe una imagen completa TapeOS (Brunch + parches), grabarla directo: NO hace falta WSL.
-        $tapeosImg = $null
-        if (-not $EnableGoogleApps) {
-            foreach ($imgDir in @("G:\TapeOS\dist", "C:\TapeOS\images", (Join-Path $ModuleDir "..\assets"))) {
-                $c = Get-ChildItem -Path (Join-Path $imgDir "TapeOS-Free-*.img") -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-                if ($c) { $tapeosImg = $c; break }
-            }
-        }
-        foreach ($imgDir in @("G:\TapeOS\dist", "C:\TapeOS\images", (Join-Path $ModuleDir "..\assets"))) {
-            $c = Get-ChildItem -Path (Join-Path $imgDir ("TapeOS-$Codename-*.img")) -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-            if ($c) { $tapeosImg = $c; break }
-        }
-        if (-not $tapeosImg) {
-            try {
-                $Form.Invoke([Action]{ $LblPhase.Text = '📥 Dehkargando imâhen TapeOS dêhde er çerbidôh...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
-                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -Version $(if ($EnableGoogleApps) { 'full' } else { 'free' }) -ProgressCallback {
-                    param($pct, $mb, $tot)
-                    try {
-                        $pctInt = [math]::Min(100, [int]$pct)
-                        $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = "Dehkargao $mb MB de $tot MB" })
-                    } catch { }
-                }
-                $tapeosImg = Get-Item -LiteralPath $remoteImg
-            } catch {
-                Write-PipelineLog ("Descarga de imagen remota no disponible: " + $_.Exception.Message)
-            }
-        }
-        $usedFramework = $false
-        if ($tapeosImg) {
-            try {
-                $Form.Invoke([Action]{ $LblPhase.Text = '💾 Grabando imagen TapeOS (Brunch + parches)...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
-                Start-TapeOSUsbFlash `
-                    -ImageFilePath $tapeosImg.FullName `
-                    -PhysicalDriveId $TargetUsb.DeviceID `
-                    -ProgressCallback {
-                        param($pct, $speedMBs, $written, $total)
-                        try {
-                            $eta = if ($speedMBs -gt 0) { (($total - $written) / 1MB) / $speedMBs } else { -1 }
-                            $etaStr = 'Êttimao: ' + (F-Eta $eta) + " ($speedMBs MB/s)"
-                            $pctInt = [math]::Min(100, [int]$pct)
-                            $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = $etaStr })
-                        } catch { Write-PipelineLog ("ERROR callback imagen: " + $_.Exception.ToString()) }
-                    } | Out-Null
-                $usedFramework = $true
-                $fwMsg = "`r`nImagen completa TapeOS (Brunch + parches) grabada: menu normal/verbose/seguro/instalar."
-                $Form.Invoke([Action]{ $LogBox.AppendText("[Imagen] $($tapeosImg.Name) grabada en er pendraîh.`r`n") })
-            } catch {
-                Write-PipelineLog ("Grabacion de imagen TapeOS fallo: " + $_.Exception.Message)
-                if (-not $tapeosImg) {
-            try {
-                $Form.Invoke([Action]{ $LblPhase.Text = '📥 Dehkargando imâhen TapeOS dêhde er çerbidôh...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
-                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -Version $(if ($EnableGoogleApps) { 'full' } else { 'free' }) -ProgressCallback {
-                    param($pct, $mb, $tot)
-                    try {
-                        $pctInt = [math]::Min(100, [int]$pct)
-                        $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = "Dehkargao $mb MB de $tot MB" })
-                    } catch { }
-                }
-                $tapeosImg = Get-Item -LiteralPath $remoteImg
-            } catch {
-                Write-PipelineLog ("Descarga de imagen remota no disponible: " + $_.Exception.Message)
-            }
-        }
-        $usedFramework = $false
-            }
-        }
             }
         }
         if (-not $usedFramework) {
-        $Form.Invoke([Action]{ $LblPhase.Text = '💾 Grabaçiôn en er pendraîh USB'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
-        Start-TapeOSUsbFlash `
-            -ImageFilePath $patched.PatchedImagePath `
-            -PhysicalDriveId $TargetUsb.DeviceID `
-            -ProgressCallback {
-                param($pct, $speedMBs, $written, $total)
-                try {
-                    $eta = if ($speedMBs -gt 0) { (($total - $written) / 1MB) / $speedMBs } else { -1 }
-                    $etaStr = 'Êttimao: ' + (F-Eta $eta) + " ($speedMBs MB/s)"
-                    $pctInt = [math]::Min(100, [int]$pct)
-                    $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = $etaStr })
-                } catch {
-                    Write-PipelineLog ("ERROR callback grabaçiôn: " + $_.Exception.ToString())
-                }
-            } | Out-Null
-        $Form.Invoke([Action]{ $LblPhase.Text = '🩹 Inyettando er arrankâh TapeOS (GRUB + initramfs)'; $LblEta.Text = 'Êttimao: --' })
-        $initramfsPath = ""
-        foreach ($cand in @((Join-Path $ModuleDir "..\assets\tapeos-initramfs.cpio.gz"), "C:\TapeOS\tapeos-initramfs.cpio.gz", (Join-Path $env:TEMP "TapeOS-App\assets\tapeos-initramfs.cpio.gz"))) {
-            if (Test-Path -LiteralPath $cand) { $initramfsPath = (Resolve-Path -LiteralPath $cand).Path; break }
+            # Grabacion clasica: recovery de ChromeOS parcheado + GRUB en la ESP.
+            $Form.Invoke([Action]{ $LblPhase.Text = '💾 Grabaçiôn en er pendraîh USB'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
+            Start-TapeOSUsbFlash `
+                -ImageFilePath $patched.PatchedImagePath `
+                -PhysicalDriveId $TargetUsb.DeviceID `
+                -ProgressCallback {
+                    param($pct, $speedMBs, $written, $total)
+                    try {
+                        $eta = if ($speedMBs -gt 0) { (($total - $written) / 1MB) / $speedMBs } else { -1 }
+                        $etaStr = 'Êttimao: ' + (F-Eta $eta) + " ($speedMBs MB/s)"
+                        $pctInt = [math]::Min(100, [int]$pct)
+                        $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = $etaStr })
+                    } catch {
+                        Write-PipelineLog ("ERROR callback grabaçiôn: " + $_.Exception.ToString())
+                    }
+                } | Out-Null
+            $Form.Invoke([Action]{ $LblPhase.Text = '🩹 Inyettando er arrankâh TapeOS (GRUB + initramfs)'; $LblEta.Text = 'Êttimao: --' })
+            $initramfsPath = ""
+            foreach ($cand in @((Join-Path $ModuleDir "..\assets\tapeos-initramfs.cpio.gz"), "C:\TapeOS\tapeos-initramfs.cpio.gz", (Join-Path $env:TEMP "TapeOS-App\assets\tapeos-initramfs.cpio.gz"))) {
+                if (Test-Path -LiteralPath $cand) { $initramfsPath = (Resolve-Path -LiteralPath $cand).Path; break }
+            }
+            $kernelImagePath = ""
+            foreach ($cand in @((Join-Path $ModuleDir "..\assets\tapeos-vmlinuz"), "C:\TapeOS\tapeos-vmlinuz", (Join-Path $env:TEMP "TapeOS-App\assets\tapeos-vmlinuz"))) {
+                if (Test-Path -LiteralPath $cand) { $kernelImagePath = (Resolve-Path -LiteralPath $cand).Path; break }
+            }
+            $espInfo = $null
+            try {
+                $espInfo = Write-TapeOSGrubToEsp -DiskNumber $TargetUsb.DiskNumber -Timeout 15 -InitramfsPath $initramfsPath -KernelImagePath $kernelImagePath
+                Write-PipelineLog ("ESP: menu GRUB inyectado. PARTUUID=" + $espInfo.RootPartuuid + ", initramfs=" + $espInfo.InitramfsInjected)
+            } catch {
+                Write-PipelineLog ("AVISO: no se pudo inyectar el menu GRUB en la ESP: " + $_.Exception.Message)
+            }
+            if ($espInfo -and $espInfo.InitramfsInjected -and $espInfo.KernelInjected) { $fwMsg = "`r`nFramework TapeOS inyettao: arrankêh normal/verbose/çeguro y êntrá de îttalaçiôn a dîkko dûhô dipponiblêh en er menú GRUB." } else { $fwMsg = "`r`n⚠️ AVISO: no çe enkontró er initramfs der framework (tapeos-initramfs.cpio.gz); er medio çolo arrankará er rekûperaçiôn ofiçiâh." }
         }
-        $kernelImagePath = ""
-        foreach ($cand in @((Join-Path $ModuleDir "..\assets\tapeos-vmlinuz"), "C:\TapeOS\tapeos-vmlinuz", (Join-Path $env:TEMP "TapeOS-App\assets\tapeos-vmlinuz"))) {
-            if (Test-Path -LiteralPath $cand) { $kernelImagePath = (Resolve-Path -LiteralPath $cand).Path; break }
-        }
-        $espInfo = $null
-        try {
-            $espInfo = Write-TapeOSGrubToEsp -DiskNumber $TargetUsb.DiskNumber -Timeout 15 -InitramfsPath $initramfsPath -KernelImagePath $kernelImagePath
-            Write-PipelineLog ("ESP: menu GRUB inyectado. PARTUUID=" + $espInfo.RootPartuuid + ", initramfs=" + $espInfo.InitramfsInjected)
-        } catch {
-            Write-PipelineLog ("AVISO: no se pudo inyectar el menu GRUB en la ESP: " + $_.Exception.Message)
-        }
-        if ($espInfo -and $espInfo.InitramfsInjected -and $espInfo.KernelInjected) { $fwMsg = "`r`nFramework TapeOS inyettao: arrankêh normal/verbose/çeguro y êntrá de îttalaçiôn a dîkko dûhô dipponiblêh en er menú GRUB." } else { $fwMsg = "`r`n⚠️ AVISO: no çe enkontró er initramfs der framework (tapeos-initramfs.cpio.gz); er medio çolo arrankará er rekûperaçiôn ofiçiâh." }
+        # 3) Cierre comun: todas las rutas muestran el resultado final.
         $Form.Invoke([Action]{
             $ProgressBar.Value = 100
             $LblEta.Text = 'Kompletao'
@@ -1214,7 +1142,6 @@ try {
                 "Grabaçiôn Kompletá", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information
             ) | Out-Null
         })
-        }
     }
     Write-PipelineLog "Pipeline finalizado con exito."
 } catch {
@@ -1258,45 +1185,50 @@ $btnCreate.Add_Click({
         $btnBack.Enabled = $false
         $btnNext.Visible = $false
 
-        $pipelineRunspace = [runspacefactory]::CreateRunspace()
-        $pipelineRunspace.ApartmentState = "STA"
-        $pipelineRunspace.Open()
-        $pipelinePS = [powershell]::Create()
-        $pipelinePS.Runspace = $pipelineRunspace
-        $null = $pipelinePS.AddScript($pipelineScript)
-        $null = $pipelinePS.AddParameter("Form", $form)
-        $null = $pipelinePS.AddParameter("LogBox", $logBox)
-        $null = $pipelinePS.AddParameter("ProgressBar", $pbStep5)
-        $null = $pipelinePS.AddParameter("LblPhase", $lblPhase)
-        $null = $pipelinePS.AddParameter("LblEta", $lblEta5)
-        $null = $pipelinePS.AddParameter("Codename", (($cbRecovery.SelectedItem.ToString()).Split(' ')[0]))
-        $null = $pipelinePS.AddParameter("EnableGoogleApps", $radioGoogleApps.Checked)
-        $null = $pipelinePS.AddParameter("ImageOnlyMode", $imageOnlyMode)
-        $null = $pipelinePS.AddParameter("ImageDestDir", $txtImageDir.Text)
-        $null = $pipelinePS.AddParameter("TargetUsb", $targetUsb)
-        $null = $pipelinePS.AddParameter("HwReport", $script:hwReport)
-        $null = $pipelinePS.AddParameter("ModuleDir", $moduleDir)
-        $null = $pipelinePS.AddParameter("LogFile", $script:__tapeosLogFile)
-        $pipelineAsync = $pipelinePS.BeginInvoke()
+        $script:pipelineRunspace = [runspacefactory]::CreateRunspace()
+        $script:pipelineRunspace.ApartmentState = "STA"
+        $script:pipelineRunspace.Open()
+        $script:pipelinePS = [powershell]::Create()
+        $script:pipelinePS.Runspace = $script:pipelineRunspace
+        $null = $script:pipelinePS.AddScript($pipelineScript)
+        $null = $script:pipelinePS.AddParameter("Form", $form)
+        $null = $script:pipelinePS.AddParameter("LogBox", $logBox)
+        $null = $script:pipelinePS.AddParameter("ProgressBar", $pbStep5)
+        $null = $script:pipelinePS.AddParameter("LblPhase", $lblPhase)
+        $null = $script:pipelinePS.AddParameter("LblEta", $lblEta5)
+        $null = $script:pipelinePS.AddParameter("Codename", (($cbRecovery.SelectedItem.ToString()).Split(' ')[0]))
+        $null = $script:pipelinePS.AddParameter("EnableGoogleApps", $radioGoogleApps.Checked)
+        $null = $script:pipelinePS.AddParameter("ImageOnlyMode", $imageOnlyMode)
+        $null = $script:pipelinePS.AddParameter("ImageDestDir", $txtImageDir.Text)
+        $null = $script:pipelinePS.AddParameter("TargetUsb", $targetUsb)
+        $null = $script:pipelinePS.AddParameter("HwReport", $script:hwReport)
+        $null = $script:pipelinePS.AddParameter("ModuleDir", $moduleDir)
+        $null = $script:pipelinePS.AddParameter("LogFile", $script:__tapeosLogFile)
+        $script:pipelineAsync = $script:pipelinePS.BeginInvoke()
 
-        $watchTimer = New-Object System.Windows.Forms.Timer
-        $watchTimer.Interval = 1000
-        $watchTimer.Add_Tick({
-            if ($pipelineAsync.IsCompleted) {
-                $watchTimer.Stop(); $watchTimer.Dispose()
+        # El timer vive en el scope del script para que el Tick lo vea (los timers locales mueren con el handler).
+        if ($script:watchTimer) { $script:watchTimer.Stop(); $script:watchTimer.Dispose() }
+        $script:watchTimer = New-Object System.Windows.Forms.Timer
+        $script:watchTimer.Interval = 1000
+        $script:watchTimer.Add_Tick({
+            if ($script:pipelineAsync -and $script:pipelineAsync.IsCompleted) {
+                $script:watchTimer.Stop(); $script:watchTimer.Dispose()
                 try {
-                    $null = $pipelinePS.EndInvoke($pipelineAsync)
+                    $null = $script:pipelinePS.EndInvoke($script:pipelineAsync)
                     Write-TapeOSLog "Pipeline completado sin errores."
                 } catch {
                     Write-TapeOSLog ("ERROR al finalizar pipeline: " + $_.Exception.ToString())
                 } finally {
-                    $pipelinePS.Dispose(); $pipelineRunspace.Dispose()
+                    $script:pipelinePS.Dispose(); $script:pipelineRunspace.Dispose()
+                    $lblPhase.Text = '✅ Kompletao'
+                    $pbStep5.Value = 100
+                    $lblEta5.Text = 'Kompletao'
                     $btnBack.Enabled = $true
                     $btnNext.Visible = $true
                 }
             }
         })
-        $watchTimer.Start()
+        $script:watchTimer.Start()
     } catch {
         Write-TapeOSLog ("ERROR en boton Crear: " + $_)
         try { [System.Windows.Forms.MessageBox]::Show("Errôh inepperao al iniçiâh er proçeço:`r`n$($_.Exception.Message)", "TapeOS", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error) | Out-Null } catch { }

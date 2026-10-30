@@ -117,7 +117,7 @@ if (Test-Path $kernelFile) {
     Write-Host "[TapeOS] AVISO: dist\tapeos-vmlinuz no existe; el bundle se crea sin kernel de PC."
 }
 
-# Scripts de Brunch+TapeOS para la instalacion via WSL
+# Scripts del framework TapeOS para la instalacion via WSL
 $brunchScriptSrc = Join-Path (Split-Path -Parent $PSScriptRoot) "core\framework"
 if (Test-Path (Join-Path $brunchScriptSrc "install-framework-usb.sh")) {
     [void]$sb.AppendLine('')

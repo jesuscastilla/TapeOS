@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Gestor de Configuraciones de Arranque para TapeOS
 .DESCRIPTION

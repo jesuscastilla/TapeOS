@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Instalador del motor de compatibilidad TapeOS a traves de WSL para el asistente Windows.
 .DESCRIPTION
@@ -27,8 +27,10 @@ function Invoke-TapeOSFrameworkInstall {
     param(
         [Parameter(Mandatory=$true)][string]$ImageFilePath,   # .bin del recovery (ruta Windows)
         [Parameter(Mandatory=$true)][int]$DiskNumber,
-        [Parameter(Mandatory=$true)][string]$BrunchScriptDir, # carpeta core/brunch (Windows)
-        [Parameter(Mandatory=$true)][string]$BrunchAssetsDir, # carpeta con rootc.img, efi_legacy.img, tapeos-tools, AuroraStore.apk
+        [Alias('BrunchScriptDir')]
+        [Parameter(Mandatory=$true)][string]$FrameworkScriptDir, # carpeta core/framework (Windows)
+        [Alias('BrunchAssetsDir')]
+        [Parameter(Mandatory=$true)][string]$FrameworkAssetsDir, # carpeta con rootc.img, efi_legacy.img, tapeos-tools, AuroraStore.apk
         [string]$Options = "enable_updates"  # opciones de framework (parches automaticos segun hardware)
     )
 
@@ -46,8 +48,8 @@ function Invoke-TapeOSFrameworkInstall {
     Start-Sleep -Milliseconds 500
 
     $wslBin = ConvertTo-TapeOSWslPath $ImageFilePath
-    $wslScripts = ConvertTo-TapeOSWslPath $BrunchScriptDir
-    $wslAssets = ConvertTo-TapeOSWslPath $BrunchAssetsDir
+    $wslScripts = ConvertTo-TapeOSWslPath $FrameworkScriptDir
+    $wslAssets = ConvertTo-TapeOSWslPath $FrameworkAssetsDir
     $dev = "\\.\PhysicalDrive$DiskNumber"
 
     & wsl.exe --mount $dev --bare 2>$null | Out-Null

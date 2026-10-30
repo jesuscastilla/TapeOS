@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Catalogo de imagenes TapeOS servidas por HTTP (NAS propio, URL configurable).
 .DESCRIPTION
