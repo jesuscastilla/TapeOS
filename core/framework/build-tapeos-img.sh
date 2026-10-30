@@ -11,7 +11,7 @@ OUT_IMG="$2"
 SIZE_GB="${3:-16}"
 export TAPEOOS_OPTIONS="${4:-enable_updates}"
 DIR="$(cd "$(dirname "$0")" && pwd)"
-BR="${TAPEOOS_BRUNCH_DIR:-$DIR/../../dist/brunch}"
+BR="${TAPEOOS_FRAMEWORK_DIR:-$DIR/../../dist/framework}"
 
 [ -f "$SRC_IMG" ] || { echo "Falta el recovery: $SRC_IMG"; exit 1; }
 [ -n "$OUT_IMG" ] || { echo "Uso: build-tapeos-img.sh <recovery.bin> <salida.img> [GB]"; exit 1; }
@@ -22,10 +22,10 @@ rm -f "$WORK_IMG"
 truncate -s "${SIZE_GB}G" "$WORK_IMG"
 
 echo "[TapeOS] 2/4 Particionando (layout Brunch)..."
-bash "$DIR/brunch-partition.sh" "$WORK_IMG"
+bash "$DIR/framework-partition.sh" "$WORK_IMG"
 
 echo "[TapeOS] 3/4 Copiando particiones (rapido, offsets en bytes)..."
-bash "$DIR/write-brunch-fast.sh" "$SRC_IMG" "$WORK_IMG"
+bash "$DIR/write-framework-fast.sh" "$SRC_IMG" "$WORK_IMG"
 
 echo "[TapeOS] 4/4 Aplicando la capa TapeOS (parches, Aurora, GRUB)..."
 LOOP=$(losetup --show -fP "$WORK_IMG")

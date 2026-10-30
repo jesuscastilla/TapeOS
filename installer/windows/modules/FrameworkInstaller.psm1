@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Instalador Brunch + capa TapeOS a traves de WSL para el asistente Windows.
+    Instalador del motor de compatibilidad TapeOS a traves de WSL para el asistente Windows.
 .DESCRIPTION
     Detecta WSL, expone el disco destino con 'wsl --mount --bare' y ejecuta
-        $cmd = "bash $wslScripts/install-brunch-usb.sh $wslBin $devName $wslAssets ""$Options"""
+        $cmd = "bash $wslScripts/install-framework-usb.sh $wslBin $devName $wslAssets ""$Options"""
     capa TapeOS: parches, Aurora Store, GRUB sin menu de configuracion).
 #>
 
@@ -22,7 +22,7 @@ function ConvertTo-TapeOSWslPath {
     return "/mnt/$drive$rest"
 }
 
-function Invoke-TapeOSBrunchInstall {
+function Invoke-TapeOSFrameworkInstall {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)][string]$ImageFilePath,   # .bin del recovery (ruta Windows)
@@ -32,7 +32,7 @@ function Invoke-TapeOSBrunchInstall {
         [string]$Options = "enable_updates"  # opciones de framework (parches automaticos segun hardware)
     )
 
-    if (-not (Test-TapeOSWsl)) { throw "WSL no esta disponible: no se puede instalar Brunch+TapeOS." }
+    if (-not (Test-TapeOSWsl)) { throw "WSL no esta disponible: no se puede instalar TapeOS." }
 
     # Soltar volumenes del disco para que WSL pueda montarlo en exclusiva
     $parts = Get-Partition -DiskNumber $DiskNumber -ErrorAction SilentlyContinue
@@ -64,16 +64,16 @@ function Invoke-TapeOSBrunchInstall {
         }
         if (-not $devName) { throw "No se pudo localizar el disco $DiskNumber dentro de WSL." }
 
-        Write-Host "[TapeOS Brunch] Disco WSL: $devName ($winSizeBytes bytes)" -ForegroundColor Cyan
+        Write-Host "[TapeOS] Disco WSL: $devName ($winSizeBytes bytes)" -ForegroundColor Cyan
 
-        Write-Host "[TapeOS Brunch] Ejecutando: $cmd" -ForegroundColor Cyan
+        Write-Host "[TapeOS] Ejecutando: $cmd" -ForegroundColor Cyan
         & wsl.exe -u root -e bash -c $cmd
-        if ($LASTEXITCODE -ne 0) { throw "La instalacion Brunch+TapeOS fallo (exit $LASTEXITCODE)." }
-        Write-Host "[TapeOS Brunch] Instalacion completada en $devName." -ForegroundColor Green
+        if ($LASTEXITCODE -ne 0) { throw "La instalacion de TapeOS fallo (exit $LASTEXITCODE)." }
+        Write-Host "[TapeOS] Instalacion completada en $devName." -ForegroundColor Green
     } finally {
         & wsl.exe --unmount $dev 2>$null | Out-Null
     }
     return $true
 }
 
-Export-ModuleMember -Function Test-TapeOSWsl, Invoke-TapeOSBrunchInstall
+Export-ModuleMember -Function Test-TapeOSWsl, Invoke-TapeOSFrameworkInstall

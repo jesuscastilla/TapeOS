@@ -910,7 +910,7 @@ Import-Module (Join-Path $ModuleDir "RecoveryDownloader.psm1") -Force
 Import-Module (Join-Path $ModuleDir "ImagePatcher.psm1") -Force
 Import-Module (Join-Path $ModuleDir "UsbFlasher.psm1") -Force
 Import-Module (Join-Path $ModuleDir "BootManager.psm1") -Force
-Import-Module (Join-Path $ModuleDir "BrunchInstaller.psm1") -Force
+Import-Module (Join-Path $ModuleDir "FrameworkInstaller.psm1") -Force
 
 try {
     Write-PipelineLog "Pipeline (runspace) iniciado"
@@ -991,13 +991,13 @@ try {
         })
     } else {
         $fwMsg = ""
-        $brunchAssetsDir = ""
-        $brunchScriptDir = ""
-        foreach ($cand in @("G:\TapeOS\dist\brunch", "C:\TapeOS\brunch", (Join-Path $ModuleDir "..\assets\brunch-assets"))) {
-            if (Test-Path -LiteralPath (Join-Path $cand "rootc.img")) { $brunchAssetsDir = $cand; break }
+        $frameworkAssetsDir = ""
+        $frameworkScriptDir = ""
+        foreach ($cand in @("G:\TapeOS\dist\brunch", "C:\TapeOS\brunch", (Join-Path $ModuleDir "..\assets\framework-assets"))) {
+            if (Test-Path -LiteralPath (Join-Path $cand "rootc.img")) { $frameworkAssetsDir = $cand; break }
         }
-        foreach ($cand in @("G:\TapeOS\core\brunch", (Join-Path $ModuleDir "..\assets\brunch-scripts"))) {
-            if (Test-Path -LiteralPath (Join-Path $cand "install-brunch-usb.sh")) { $brunchScriptDir = $cand; break }
+        foreach ($cand in @("G:\TapeOS\core\framework", (Join-Path $ModuleDir "..\assets\framework-scripts"))) {
+            if (Test-Path -LiteralPath (Join-Path $cand "install-framework-usb.sh")) { $frameworkScriptDir = $cand; break }
         }
         # Opciones de framework para esta maquina (parches automaticos segun hardware)
         $brunchOptions = (($HwReport.FrameworkPatches | ForEach-Object { $_.Option } | Where-Object { $_ }) -join ",")
@@ -1011,7 +1011,7 @@ try {
             $c = Get-ChildItem -Path (Join-Path $imgDir ("TapeOS-$Codename-*.img")) -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
             if ($c) { $tapeosImg = $c; break }
         }
-        $usedBrunch = $false
+        $usedFramework = $false
         if ($tapeosImg) {
             try {
                 $Form.Invoke([Action]{ $LblPhase.Text = '💾 Grabando imagen TapeOS (Brunch + parches)...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
@@ -1027,23 +1027,23 @@ try {
                             $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = $etaStr })
                         } catch { Write-PipelineLog ("ERROR callback imagen: " + $_.Exception.ToString()) }
                     } | Out-Null
-                $usedBrunch = $true
+                $usedFramework = $true
                 $fwMsg = "`r`nImagen completa TapeOS (Brunch + parches) grabada: menu normal/verbose/seguro/instalar."
                 $Form.Invoke([Action]{ $LogBox.AppendText("[Imagen] $($tapeosImg.Name) grabada en er pendraîh.`r`n") })
             } catch {
                 Write-PipelineLog ("Grabacion de imagen TapeOS fallo: " + $_.Exception.Message)
-                $usedBrunch = $false
+                $usedFramework = $false
             }
         }
-        if ($brunchAssetsDir -and $brunchScriptDir -and (Test-TapeOSWsl)) {
+        if ($frameworkAssetsDir -and $frameworkScriptDir -and (Test-TapeOSWsl)) {
             try {
                 $Form.Invoke([Action]{ $LblPhase.Text = 'Îttalando Brunch + TapeOS (WSL)...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: ~5 min' })
-                Invoke-TapeOSBrunchInstall -ImageFilePath $patched.PatchedImagePath -DiskNumber $TargetUsb.DiskNumber -BrunchScriptDir $brunchScriptDir -BrunchAssetsDir $brunchAssetsDir -Options $brunchOptions | Out-Null
-                $usedBrunch = $true
-                $fwMsg = "`r`nBrunch + TapeOS instalados: menu de 6 entradas, parches automaticos segun el hardware y Aurora Store disponible."
-                $Form.Invoke([Action]{ $LogBox.AppendText("[Brunch] Îttalaçiôn Brunch + TapeOS kompletá.`r`n") })
+                Invoke-TapeOSFrameworkInstall -ImageFilePath $patched.PatchedImagePath -DiskNumber $TargetUsb.DiskNumber -BrunchScriptDir $frameworkScriptDir -BrunchAssetsDir $frameworkAssetsDir -Options $brunchOptions | Out-Null
+                $usedFramework = $true
+                $fwMsg = "`r`nTapeOS instalado: menu de 6 entradas, parches automaticos segun el hardware y Aurora Store disponible."
+                $Form.Invoke([Action]{ $LogBox.AppendText("[TapeOS] Îttalaçiôn kompletá.`r`n") })
             } catch {
-                Write-PipelineLog ("Brunch+TapeOS fallo; se usa la grabacion clasica: " + $_.Exception.Message)
+                Write-PipelineLog ("Instalacion TapeOS fallo; se usa la grabacion clasica: " + $_.Exception.Message)
                 # Opciones de framework para esta maquina (parches automaticos segun hardware)
         $brunchOptions = (($HwReport.FrameworkPatches | ForEach-Object { $_.Option } | Where-Object { $_ }) -join ",")
         if (-not $EnableGoogleApps) { $brunchOptions = if ($brunchOptions) { $brunchOptions + ",no_google_play" } else { "no_google_play" } }
@@ -1056,7 +1056,7 @@ try {
             $c = Get-ChildItem -Path (Join-Path $imgDir ("TapeOS-$Codename-*.img")) -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
             if ($c) { $tapeosImg = $c; break }
         }
-        $usedBrunch = $false
+        $usedFramework = $false
         if ($tapeosImg) {
             try {
                 $Form.Invoke([Action]{ $LblPhase.Text = '💾 Grabando imagen TapeOS (Brunch + parches)...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
@@ -1072,17 +1072,17 @@ try {
                             $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = $etaStr })
                         } catch { Write-PipelineLog ("ERROR callback imagen: " + $_.Exception.ToString()) }
                     } | Out-Null
-                $usedBrunch = $true
+                $usedFramework = $true
                 $fwMsg = "`r`nImagen completa TapeOS (Brunch + parches) grabada: menu normal/verbose/seguro/instalar."
                 $Form.Invoke([Action]{ $LogBox.AppendText("[Imagen] $($tapeosImg.Name) grabada en er pendraîh.`r`n") })
             } catch {
                 Write-PipelineLog ("Grabacion de imagen TapeOS fallo: " + $_.Exception.Message)
-                $usedBrunch = $false
+                $usedFramework = $false
             }
         }
             }
         }
-        if (-not $usedBrunch) {
+        if (-not $usedFramework) {
         $Form.Invoke([Action]{ $LblPhase.Text = '💾 Grabaçiôn en er pendraîh USB'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
         Start-TapeOSUsbFlash `
             -ImageFilePath $patched.PatchedImagePath `

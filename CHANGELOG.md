@@ -2,6 +2,13 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.40] — 30-10-2026
+
+### Nobedáêh
+- **REGLAS.md**: reglas permanentes del proyecto (identidad, dos versiones, instalacion sin WSL en destino, BIOS, Crostini, calidad).
+- **Rebranding total**: `core/brunch` -> `core/framework`, `BrunchInstaller` -> `FrameworkInstaller` y eliminadas las referencias al framework base del instalador, el sistema y el arranque (GRUB, initramfs con identidad TapeOS, sin theme del framework base). Los creditos permanecen solo en el README (GPL).
+- **TapeOS Free** (plan): base openFyde/FydeOS con cuenta local sin Google, Crostini, Android + Aurora y Chromium.
+
 ## [v1.0.0-alpha.39] — 30-10-2026
 
 ### Nobedáêh

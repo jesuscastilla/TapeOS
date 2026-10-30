@@ -3,7 +3,7 @@
 # La tabla GPT debe existir ya en el destino (la crea chromeos-install.sh).
 set -e
 SRC="$1"; DST="$2"
-BRDIR="${TAPEOOS_BRUNCH_DIR:-$(cd "$(dirname "$0")/../.." && pwd)/dist/brunch}"
+BRDIR="${TAPEOOS_FRAMEWORK_DIR:-$(cd "$(dirname "$0")/../.." && pwd)/dist/framework}"
 
 fast_dd() {
     local img="$1" ob="$2" db="$3" bytes="$4" rem os ds sc
