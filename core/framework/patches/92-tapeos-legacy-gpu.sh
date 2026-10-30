@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # TapeOS 92: GPUs Intel antiguas (Gen 2-9) - opcion "legacy_gpu"
 lg=0
 for i in $(echo "$1" | sed 's/,/ /g'); do [ "$i" = "legacy_gpu" ] && lg=1; done

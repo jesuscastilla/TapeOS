@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # ==============================================================================
 # install-framework-usb.sh - instala TapeOS en un disco (via WSL --bare)
 # Uso: sudo bash install-framework-usb.sh <recovery.bin> /dev/sdX

@@ -1,4 +1,4 @@
-# REGLAS.md - Reglas permanentes del proyecto TapeOS
+﻿# REGLAS.md - Reglas permanentes del proyecto TapeOS
 
 ## Identidad
 - TapeOS es una EVOLUCION PROPIA del framework de compatibilidad. NO se menciona el

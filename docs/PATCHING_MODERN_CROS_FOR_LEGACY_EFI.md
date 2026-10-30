@@ -1,10 +1,10 @@
-# Arkîtêttûra de Parcheh: ChromeOS Âttualiçao en Ekîpô EFI Antiguô — TapeOS
+﻿# Arkîtêttûra de Parcheh: ChromeOS Âttualiçao en Ekîpô EFI Antiguô — TapeOS
 
 Êtte dokumento detaya la inheniería y lô mekanîmmô de parcheo ke utiliça **TapeOS** pa permetîh ke una **berçiôn moderna y âttualiçá de ChromeOS** (v120–v134+) funçione de forma fluía y êttable en **ordenadorêh antiguô kon firmware EFI**.
 
 ---
 
-## 🎯 Er Problema kon ChromeOS Ofiçiâh en Hardware Antiguo
+## Er Problema kon ChromeOS Ofiçiâh en Hardware Antiguo
 
 A medía ke Google âttualiça ChromeOS:
 1. **Fîn de çoporte (AUE)**: Google retira de çoporte lô Chromebook antiguô baçáô en Intel Core de 2ª a 8ª heneraçiôn (Sandy Bridge, Ivy Bridge, Haswell, Broadwell, Skylake, Apollo Lake).
@@ -20,53 +20,53 @@ A medía ke Google âttualiça ChromeOS:
 
 ---
 
-## 🧩 La Çoluçiôn TapeOS: Er Motôh de Parcheh en 5 Kapâ
+## La Çoluçiôn TapeOS: Er Motôh de Parcheh en 5 Kapâ
 
 TapeOS no utiliça una berçiôn bieha de ChromeOS dehâttualiçá; en çu lugâh, **toma la ûrtima berçiôn ofiçiâh de ChromeOS y la parchea en kâliente durante er arrankê** mediante çu partiçiôn `ROOTC` y çu `initramfs` întelihente.
 
 ```text
-┌────────────────────────────────────────────────────────────────────────┐
-│            1. ARRANKE EFI ÍBRIO (UEFI x64 / UEFI ia32)                │
-│ • Detêtta la arkîtêttûra der firmware EFI.                            │
-│ • Karga bootx64.efi u bootia32.efi kon çoporte pa EFI stub mîttto.    │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                     2. KERNEL MULTI-PERFÎH TAPEOS                      │
-│ • Parcheao kon kompatibilidá pa GPU retro (Intel i915 / AMD).          │
-│ • Flag cmdline automátikâ: i915.enable_guc=0, i915.enable_psr=0,       │
-│   cros_legacy, efi=noruntime (çi çe detêtta firmware EFI bugueao).     │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                 3. INITRAMFS & EMULAÇIÔN DE ÇEGURIDÁ                  │
-│ • Arranka swtpm (TPM 2.0 emulao po çoftware) antê de cryptohomed.     │
-│ • Permite iniçiâh çeçiôn kon kuenta de Google y çifrao kompleto.       │
-│ • Aplika parcheh ar RootFS ofiçiâh de ChromeOS mediante overlayfs.     │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│               4. ADAPTAÔH DE GRÁFIKÔ PA FREON / MESA                   │
-│ • Îtterçêtta yamâh de minigbm pa Intel Hên 2 a 7.5.                    │
-│ • Redirihe a Mesa crocus ôttimiçao (INTEL_DEBUG=noccs) u fallback      │
-│   çoftware rahteriçer (llvmpipe) ebitando la pantaya en negro.         │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│             5. HÊTTIÔN EFIÇIENTE DE REKÛRÇÔ & PLAY ÇTORE              │
-│ • Pa CPU antiguâ: açînaçiôn preferente de rekûperaçiôn ARC++ (rammus)  │
-│ • Konfiguraçiôn agreçiba de zram (150% de RAM) y swappine pa           │
-│   mantenêh la fluîêh en ekîpô kon 2 GB / 4 GB de RAM.                  │
-└────────────────────────────────────────────────────────────────────────┘
+
+            1. ARRANKE EFI ÍBRIO (UEFI x64 / UEFI ia32)
+ • Detêtta la arkîtêttûra der firmware EFI.
+ • Karga bootx64.efi u bootia32.efi kon çoporte pa EFI stub mîttto.
+
+
+
+
+                     2. KERNEL MULTI-PERFÎH TAPEOS
+ • Parcheao kon kompatibilidá pa GPU retro (Intel i915 / AMD).
+ • Flag cmdline automátikâ: i915.enable_guc=0, i915.enable_psr=0,
+   cros_legacy, efi=noruntime (çi çe detêtta firmware EFI bugueao).
+
+
+
+
+                 3. INITRAMFS & EMULAÇIÔN DE ÇEGURIDÁ
+ • Arranka swtpm (TPM 2.0 emulao po çoftware) antê de cryptohomed.
+ • Permite iniçiâh çeçiôn kon kuenta de Google y çifrao kompleto.
+ • Aplika parcheh ar RootFS ofiçiâh de ChromeOS mediante overlayfs.
+
+
+
+
+               4. ADAPTAÔH DE GRÁFIKÔ PA FREON / MESA
+ • Îtterçêtta yamâh de minigbm pa Intel Hên 2 a 7.5.
+ • Redirihe a Mesa crocus ôttimiçao (INTEL_DEBUG=noccs) u fallback
+   çoftware rahteriçer (llvmpipe) ebitando la pantaya en negro.
+
+
+
+
+             5. HÊTTIÔN EFIÇIENTE DE REKÛRÇÔ & PLAY ÇTORE
+ • Pa CPU antiguâ: açînaçiôn preferente de rekûperaçiôn ARC++ (rammus)
+ • Konfiguraçiôn agreçiba de zram (150% de RAM) y swappine pa
+   mantenêh la fluîêh en ekîpô kon 2 GB / 4 GB de RAM.
+
 ```
 
 ---
 
-## 🛠️ Parcheh Êppeçífikô Integráô en TapeOS
+## Parcheh Êppeçífikô Integráô en TapeOS
 
 ### 1. Parche Gráfiko pa Freon (Intel HD 2000 / 3000 / 4000 / 5000)
 - **Fíxero**: `core/patches/10-legacy_gpu_freon.sh`

@@ -139,6 +139,16 @@ if (Test-Path $cfgFile) {
     [void]$sb.AppendLine("[System.IO.File]::WriteAllBytes((Join-Path `$assetsDir 'tapeos-config.json'), [Convert]::FromBase64String('$cfgB64'))")
     Write-Host "[TapeOS] Config de URL de imagenes incluida."
 }
+
+# Icono de la ventana (tapeos.ico)
+if (Test-Path $iconPath) {
+    $icoB64 = Get-Base64 -Path $iconPath
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('$assetsDir = Join-Path $appDir ''assets''')
+    [void]$sb.AppendLine('New-Item -ItemType Directory -Force -Path $assetsDir | Out-Null')
+    [void]$sb.AppendLine("[System.IO.File]::WriteAllBytes((Join-Path `$assetsDir 'tapeos.ico'), [Convert]::FromBase64String('$icoB64'))")
+    Write-Host "[TapeOS] Icono de ventana incluido en el bundle."
+}
 }
 
 [void]$sb.AppendLine('& $mainPath')

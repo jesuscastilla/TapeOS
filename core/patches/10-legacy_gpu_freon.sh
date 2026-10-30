@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 TAPEOOS_ROOT=${TAPEOOS_ROOT:-/roota}
 # ==============================================================================
 # TapeOS Patch: 10-legacy_gpu_freon.sh

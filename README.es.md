@@ -1,8 +1,8 @@
-<div align="center">
+﻿<div align="center">
 
 <img src="tools/assets/diplotech-logo.png" alt="DiploTech" width="180" />
 
-# 🟩⬜🟩 TapeOS
+# TapeOS
 ### Sistema operativo basado en ChromiumOS, con identidad andaluz y opción de instalación sin servicios de terceros (Google).
 **Detecta tu hardware, descarga la última versión, aplica parches retro y la graba directamente en tu pendrive.**
 
@@ -27,7 +27,7 @@
 
 ---
 
-## 🏴🏳️ Un Sistema Operativo Propio, Creado en Andalucía
+## Un Sistema Operativo Propio, Creado en Andalucía
 
 **TapeOS** es un **sistema operativo propio** nacido en Andalucía, publicado como **software libre** (GPLv3). Se basa en la tecnología de **ChromeOS** y **ChromiumOS**, con una diferencia fundamental: la versión **sin Google Play es 100% libre** (sin servicios de Google), mientras que la versión completa permite instalar las **Google Apps** si el usuario lo elige.
 
@@ -35,7 +35,7 @@ Todos los componentes propios de TapeOS (instalador, parches, initramfs y herram
 
 ---
 
-## 📖 Visión General
+## Visión General
 
 **TapeOS** es un framework propio de arranque concebido para superar las limitaciones históricas de instalación y compatibilidad de ChromeOS en PCs.
 
@@ -45,25 +45,25 @@ Permite instalar una **versión oficial y completamente actualizada de ChromeOS*
 En las herramientas tradicionales, el usuario debía instalar WSL2, manejar manualmente comandos de consola Linux (`pv`, `cgpt`, `tar`, `unzip`), buscar y descargar a mano imágenes binarias gigantescas de sitios web externos, configurar cargadores de terceros y sufrir cuelgues o pantallas en negro en PCs anteriores a 2018.
 
 **TapeOS automatiza el 100% de este proceso de principio a fin desde Windows:**
-1. 🔍 **Escanea tu hardware**: CPU, GPU, modo de firmware (UEFI x64 o UEFI 32-bit `ia32`) y BitLocker.
-2. 🌐 **Elige la imagen ideal**: Consulta la API oficial de Google (Chromium Dash) y selecciona la versión más moderna y estable para tu arquitectura.
-3. ⬇️ **Descarga automática**: Descarga la imagen oficial de Google directamente con barra de progreso.
-4. 🩹 **Aplica los parches de compatibilidad**: Inyecta cargadores EFI retro, emulación TPM 2.0 por software (`swtpm`), parches de GPU para Freon/Mesa y audio ALSA UCM.
-5. 💾 **Graba directo en tu Pendrive USB**: Flashea el pendrive sector a sector con detección de seguridad (protegiendo discos internos y unidades del sistema).
+1. **Escanea tu hardware**: CPU, GPU, modo de firmware (UEFI x64 o UEFI 32-bit `ia32`) y BitLocker.
+2. **Elige la imagen ideal**: Consulta la API oficial de Google (Chromium Dash) y selecciona la versión más moderna y estable para tu arquitectura.
+3. **Descarga automática**: Descarga la imagen oficial de Google directamente con barra de progreso.
+4. **Aplica los parches de compatibilidad**: Inyecta cargadores EFI retro, emulación TPM 2.0 por software (`swtpm`), parches de GPU para Freon/Mesa y audio ALSA UCM.
+5. **Graba directo en tu Pendrive USB**: Flashea el pendrive sector a sector con detección de seguridad (protegiendo discos internos y unidades del sistema).
 
 ---
 
-## ⚡ Pipeline Automatizado en 1 Clic
+## Pipeline Automatizado en 1 Clic
 
 ```text
-  [ 1. Detección ] ──► [ 2. Selección ] ──► [ 3. Descarga ] ──► [ 4. Parcheo ] ──► [ 5. Grabación ]
+  [ 1. Detección ] [ 2. Selección ] [ 3. Descarga ] [ 4. Parcheo ] [ 5. Grabación ]
     CPU / GPU / EFI      API Google CDN       Progreso en vivo     Legacy EFI/TPM      Pendrive USB listo
     (Intel/AMD/ia32)     (Última versión)     (dl.google.com)       (Freon / Mesa)      (Sector a sector)
 ```
 
 ---
 
-## 🏛️ ChromeOS Actualizado en Equipos Antiguos
+## ChromeOS Actualizado en Equipos Antiguos
 
 Muchos ordenadores fabricados entre 2011 y 2018 cuentan con firmware **EFI** pero quedan fuera de soporte por los siguientes motivos que **TapeOS resuelve**:
 
@@ -76,23 +76,23 @@ Muchos ordenadores fabricados entre 2011 y 2018 cuentan con firmware **EFI** per
 | **Lentitud o congelamiento (2-4 GB RAM)** | El subsistema ARCVM (Android en VM) devora la memoria RAM. | Asignación preferente de recovery ARC++ (`rammus`) y compresión `zram` al 150%. |
 ---
 
-## 🪟 Instalador Interactivo para Windows
+## Instalador Interactivo para Windows
 
 El instalador se encuentra en `installer/windows/` y puede ejecutarse mediante interfaz gráfica o consola:
 
 ```text
 installer/windows/
-├── Run-Installer.cmd            # Lanzador rápido con elevación automática de permisos
-├── TapeOS-Installer.ps1         # Interfaz Gráfica interactiva completa (GUI Windows Forms)
-├── TapeOS-CLI.ps1               # Asistente interactivo por consola (TUI)
-└── modules/
-    ├── HardwareDetector.psm1    # Detección de CPU, GPU, UEFI x64 / ia32 y BitLocker
-    ├── RecoveryDownloader.psm1  # Cliente Chromium Dash API y descargador oficial de Google
-    ├── ImagePatcher.psm1        # Motor de extracción y parcheo de imágenes ChromeOS
-    ├── UsbFlasher.psm1          # Grabador directo a pendrives USB con protección de discos
-    ├── RecoveryCatalog.psm1     # Base de datos de compatibilidad y perfiles de hardware
-    ├── DiskManager.psm1         # Utilidades de disco y descompresión
-    └── BootManager.psm1         # Generador de configuraciones de arranque y GRUB
+ Run-Installer.cmd            # Lanzador rápido con elevación automática de permisos
+ TapeOS-Installer.ps1         # Interfaz Gráfica interactiva completa (GUI Windows Forms)
+ TapeOS-CLI.ps1               # Asistente interactivo por consola (TUI)
+ modules/
+ HardwareDetector.psm1    # Detección de CPU, GPU, UEFI x64 / ia32 y BitLocker
+ RecoveryDownloader.psm1  # Cliente Chromium Dash API y descargador oficial de Google
+ ImagePatcher.psm1        # Motor de extracción y parcheo de imágenes ChromeOS
+ UsbFlasher.psm1          # Grabador directo a pendrives USB con protección de discos
+ RecoveryCatalog.psm1     # Base de datos de compatibilidad y perfiles de hardware
+ DiskManager.psm1         # Utilidades de disco y descompresión
+ BootManager.psm1         # Generador de configuraciones de arranque y GRUB
 ```
 
 ### Instrucciones de uso rápido:
@@ -101,12 +101,12 @@ installer/windows/
 3. El instalador detectará tu PC (CPU, GPU, WiFi, Bluetooth, audio y táctil) y seleccionará el recovery y los parches de hardware adecuados.
 4. Elige si quieres **Google Play (Store + Android)** o **sin Google Play con apps APK (Aurora Store)**.
 5. Elige el modo: **Live-USB** (grabar en pendrive) o **Instalador** (crear el medio de instalación `.img` sin grabar).
-6. Haz clic en **`⚡ Descargar, Parchear y Crear (1-Clic)`**.
+6. Haz clic en **` Descargar, Parchear y Crear (1-Clic)`**.
 7. ¡Listo! Al terminar, reinicia tu PC y arranca desde el pendrive (tecla F12, F11 o Esc según tu placa base).
 
 ---
 
-## 📊 Matriz de Codenames Oficiales Soportados
+## Matriz de Codenames Oficiales Soportados
 
 | Generación de Procesador | Codename Oficial | Milestone Google | Kernel TapeOS | Tipo de Equipo |
 |---|---|---|---|---|
@@ -121,7 +121,7 @@ installer/windows/
 
 ---
 
-## 🛠️ Desarrollo en el Repositorio
+## Desarrollo en el Repositorio
 
 Si vas a trabajar en este proyecto con **VS Code** o cualquier IDE:
 
@@ -132,7 +132,7 @@ Si vas a trabajar en este proyecto con **VS Code** o cualquier IDE:
 
 ---
 
-## 🙏 Orígenes y Créditos
+## Orígenes y Créditos
 
 TapeOS nace del proyecto **[Brunch](https://github.com/sebanc/brunch)** de **Sébastien Ancora (Sebanc)**, a quien damos los créditos por su trabajo pionero llevando ChromeOS a PCs x86_64. Nuestro framework usa su arquitectura de particiones (ROOTC), el initramfs con `swtpm` y su esquema de opciones, actualizado y extendido.
 
@@ -147,7 +147,7 @@ TapeOS nace del proyecto **[Brunch](https://github.com/sebanc/brunch)** de **Sé
 
 ---
 
-## ✅ TODO / Próximos Pasos
+## Si TODO / Próximos Pasos
 
 - [ ] **Más identidad andaluza en el sistema**: bandera, pistas y herramientas de bienvenida; sonidos, fondo de pantalla y tema andaluz en ChromeOS; celebraciones (Día de Andalucía, Ferias) y guiños a la cultura (tapas, flamenco, cai).
 - [ ] **Documentación de actualizaciones**: añadir un documento (`docs/UPDATES.md`) con todas las posibilidades de actualización (canal stable/beta/dev, AUE, kernel legacy vs moderno, parches).
@@ -157,6 +157,6 @@ TapeOS nace del proyecto **[Brunch](https://github.com/sebanc/brunch)** de **Sé
 
 ---
 
-## 📄 Licencia
+## Licencia
 
 TapeOS se distribuye bajo la licencia **GNU GPLv3**. Componentes derivados de ChromiumOS o del kernel de Linux mantienen sus licencias originales respectivas (BSD / GPLv2).

@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # TapeOS 91: modo sin Google Play + Aurora Store - opcion "no_google_play"
 ngp=0
 for i in $(echo "$1" | sed 's/,/ /g'); do [ "$i" = "no_google_play" ] && ngp=1; done

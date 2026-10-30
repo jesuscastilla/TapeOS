@@ -165,6 +165,23 @@ function Get-TapeOSHardwareReport {
         $secureBootEnabled = $false
     }
 
+    # 3b. TPM de hardware (si hay TPM 2.0 real, el parche swtpm no hace falta)
+    $tpmPresent = $false
+    try {
+        $tpm = Get-CimInstance -Namespace 'root\cimv2\Security\MicrosoftTpm' -ClassName Win32_Tpm -ErrorAction SilentlyContinue
+        if ($tpm -and ($tpm.IsEnabled_InitialValue -eq $true -or $tpm.SpecVersion -match '2')) { $tpmPresent = $true }
+    } catch { $tpmPresent = $false }
+
+    # 3c. Esquema de particion del disco del sistema (GPT o MBR)
+    $diskLayout = 'Desconocido'
+    try {
+        $sysLetter = $env:SystemDrive.TrimEnd(':\')
+        if ($sysLetter) {
+            $sysDiskNum = (Get-Partition -DriveLetter $sysLetter -ErrorAction Stop).DiskNumber
+            $diskLayout = (Get-Disk -Number $sysDiskNum -ErrorAction Stop).PartitionStyle
+        }
+    } catch { $diskLayout = 'Desconocido' }
+
     # 4. Estado de BitLocker
     $bitLockerActive = $false
     try {
@@ -320,6 +337,8 @@ function Get-TapeOSHardwareReport {
             SecureBoot = $secureBootEnabled
             IsLegacyBIOS = ($firmwareType -eq "BIOS_LEGACY")
             IsIA32UEFI = ($firmwareType -eq "UEFI_IA32")
+            TpmPresent = $tpmPresent
+            DiskLayout = $diskLayout
         }
         Security = [PSCustomObject]@{
             BitLockerActive = $bitLockerActive

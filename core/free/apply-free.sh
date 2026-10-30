@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # ==============================================================================
 # apply-free.sh - adapta una imagen FydeOS/openFyde (ChromiumOS) a TapeOS Free.
 #   Monta ROOT-A y ESP por OFFSET explicito (evita los loops -P stale de WSL).

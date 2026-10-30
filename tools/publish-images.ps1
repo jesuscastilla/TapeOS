@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Publica las imagenes TapeOS (.img.gz) y el catalogo images.json en el NAS.
 .DESCRIPTION

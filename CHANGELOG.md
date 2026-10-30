@@ -2,6 +2,15 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.52] — 30-10-2026
+
+### Cambios
+- **Parches automaticos segun el equipo**: el instalador detecta firmware (UEFI X64/IA32/BIOS), esquema de disco (GPT/MBR) y TPM. swtpm solo se aplica sin TPM; IA32 solo en tablets con UEFI 32 bits; legacy_gpu solo con kernel/GPU legacy. Eliminada la opcion manual de Modo BIOS.
+- **Deteccion de GPT/MBR y TPM**: nuevos campos en el informe de hardware (`DiskLayout`, `TpmPresent`) mostrados en Detección y Resumen con la linea de arranque automático.
+- **Ventana**: titulo `Instalador de TapeOS` e icono propio (tapeos.ico embebido en el EXE y aplicado a la ventana).
+- **Mas aire entre el titulo del paso y los detalles** (margen ampliado en todos los pasos).
+- **Emojis eliminados de TODO el proyecto** (instalador, modulos, READMEs, docs, plantillas y changelog).
+
 ## [v1.0.0-alpha.51] — 30-10-2026
 
 ### Cambios
@@ -18,7 +27,7 @@ Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte
 ## [v1.0.0-alpha.49] — 30-10-2026
 
 ### Correcciones
-- **La GUI ya termina**: el timer que vigilaba el pipeline era local del handler (PowerShell lo recogia y el Tick nunca corria). Ahora vive en el scope del script; al acabar: fase `✅ Kompletao`, barra 100%, ETA `Kompletao`, boton Siguiente visible y `Pipeline completado sin errores.` en el log.
+- **La GUI ya termina**: el timer que vigilaba el pipeline era local del handler (PowerShell lo recogia y el Tick nunca corria). Ahora vive en el scope del script; al acabar: fase `Si Kompletao`, barra 100%, ETA `Kompletao`, boton Siguiente visible y `Pipeline completado sin errores.` en el log.
 - **Rama Live-USB reescrita**: habia un bloque duplicado anidado en el catch de la rama WSL; el MessageBox de exito solo salia en el flujo clasico. Ahora hay cierre unico (imagen/WSL/clasico) con MessageBox `Grabaçiôn Kompletá`.
 - **Timers del paso 2** (consulta de version): mismo arreglo de scope (`$script:qTimer`, etc.).
 - **Acentos**: BOM UTF-8 en los 5 modulos que no lo tenian (se acabaron los `Ã¢` en el panel de log).

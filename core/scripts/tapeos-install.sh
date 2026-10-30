@@ -1,4 +1,4 @@
-#!/bin/busybox sh
+﻿#!/bin/busybox sh
 # ==============================================================================
 # TapeOS - Instalador a disco duro (se ejecuta dentro del initramfs)
 #

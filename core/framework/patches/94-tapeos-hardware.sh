@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # TapeOS 94: parches de hardware adicionales (WiFi/Bluetooth/audio/tactil)
 # Opciones: iwlwifi_backport, essx8336, legacy_audio_ucm, ipts_touchscreen,
 #           ithc_touchscreen, goodix, macbook_trackpad

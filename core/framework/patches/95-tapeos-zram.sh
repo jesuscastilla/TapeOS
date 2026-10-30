@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # TapeOS 95: memoria - zram al 150% de la RAM (se aplica siempre)
 R="${TAPEOOS_ROOT:-/roota}"
 mkdir -p "$R/etc/init" "$R/usr/local/sbin"

@@ -1,8 +1,8 @@
-<div align="center">
+﻿<div align="center">
 
 <img src="tools/assets/diplotech-logo.png" alt="DiploTech" width="180" />
 
-# 🟩⬜🟩 TapeOS
+# TapeOS
 ### Çîttema operatibo baçao en XromiumÔ, con identidá andalûh y ôççión de îttalaçión çin çerbiçiô de terçerô.(Ediçiôn Moderna & Legacy EFI)
 **Detêtta tu hardware, dehkarga la ûrtima berçiôn ofiçiâh de ChromeOS, aplika parcheh retro y la graba dirêttamente en tu pendraîh.**
 
@@ -27,7 +27,7 @@
 
 ---
 
-## 🏴🏳️ Un Çîttema Operatibo Propio, Kreao en Andalûçia
+## Un Çîttema Operatibo Propio, Kreao en Andalûçia
 
 **TapeOS** êh un **çîttema operatibo propio** naçío en Andalûçia, publikao komo **çoftware libre** (GPLv3). Çe baça en la teknolohía de **ChromeOS** y **ChromiumOS**, kon una diferençia fundamentâh: la berçiôn **çîn Googlêh Play êh 100% libre** (çîn çerbiçiô de Google), mientrâ ke la berçiôn kompleta permite îttalâh lâ **Googlêh Play** çi er uçuario lo elihe.
 
@@ -35,7 +35,7 @@ Tô lô komponentêh propiô de TapeOS (îttaladôh, parcheh, initramfs y errami
 
 ---
 
-## 📖 Biçiôn Henerâh
+## Biçiôn Henerâh
 
 **TapeOS** êh un framework propio de arrankê konçebío pa çûperâh lâ limitaçionêh îttórikâ de îttalaçiôn y kompatibilidá de ChromeOS en PC.
 
@@ -45,25 +45,25 @@ Permite îttalâh una **berçiôn ofiçiâh y kompletamente âttualiçá de Chro
 En lâ erramientâ tradiçionalêh, er uçuario debía îttalâh WSL2, manehâh manûmente komandô de konçola Linux (`pv`, `cgpt`, `tar`, `unzip`), bûhkâh y dehkargâh a mano imâhenêh binariâ hîgantêh de çitiô wê êtternô, konfigurâh kargadorêh de terçerô y çufrîh kuelgêh u pantayâ en negro en PC anteriôh a 2018.
 
 **TapeOS âttomatiça er 100% de êtte proçeço de prinçipio a fîn dêhde Windows:**
-1. 🔍 **Ehkanea tu hardware**: CPU, GPU, modo de firmware (UEFI x64 u UEFI 32-bit `ia32`) y BitLocker.
-2. 🌐 **Elihe la imâhen ideâh**: Konhûtta la API ofiçiâh de Google (Chromium Dash) y çelehçiona la berçiôn mâh moderna y êttable pa tu arkîtêttûra.
-3. ⬇️ **Dehkarga automátika**: Dehkarga la imâhen ofiçiâh de Google dirêttamente kon barra de progreço.
-4. 🩹 **Aplika lô parcheh de kompatibilidá**: Îyêtta kargadorêh EFI retro, emulaçiôn TPM 2.0 po çoftware (`swtpm`), parcheh de GPU pa Freon/Mesa y audio ALSA UCM.
-5. 💾 **Graba dirêtto en tu Pendraîh USB**: Flâhea er pendraîh çêttôh a çêttôh kon detêççiôn de çeguridá (protehiendo dîkkô îttênô y unidáêh der çîttema).
+1. **Ehkanea tu hardware**: CPU, GPU, modo de firmware (UEFI x64 u UEFI 32-bit `ia32`) y BitLocker.
+2. **Elihe la imâhen ideâh**: Konhûtta la API ofiçiâh de Google (Chromium Dash) y çelehçiona la berçiôn mâh moderna y êttable pa tu arkîtêttûra.
+3. **Dehkarga automátika**: Dehkarga la imâhen ofiçiâh de Google dirêttamente kon barra de progreço.
+4. **Aplika lô parcheh de kompatibilidá**: Îyêtta kargadorêh EFI retro, emulaçiôn TPM 2.0 po çoftware (`swtpm`), parcheh de GPU pa Freon/Mesa y audio ALSA UCM.
+5. **Graba dirêtto en tu Pendraîh USB**: Flâhea er pendraîh çêttôh a çêttôh kon detêççiôn de çeguridá (protehiendo dîkkô îttênô y unidáêh der çîttema).
 
 ---
 
-## ⚡ Pipeline Automatizado en 1 Clic
+## Pipeline Automatizado en 1 Clic
 
 ```text
-  [ 1. Detección ] ──► [ 2. Selección ] ──► [ 3. Descarga ] ──► [ 4. Parcheo ] ──► [ 5. Grabación ]
+  [ 1. Detección ] [ 2. Selección ] [ 3. Descarga ] [ 4. Parcheo ] [ 5. Grabación ]
    CPU / GPU / EFI      API Google CDN       Progreso en vivo     Legacy EFI/TPM      Pendrive USB listo
    (Intel/AMD/ia32)     (Última versión)     (dl.google.com)       (Freon / Mesa)      (Sector a sector)
 ```
 
 ---
 
-## 🏛️ ChromeOS Âttualiçao en Ekîpô Antiguô
+## ChromeOS Âttualiçao en Ekîpô Antiguô
 
 Muchos ordenadores fabricados entre 2011 y 2018 cuentan con firmware **EFI** pero quedan fuera de soporte por los siguientes motivos que **TapeOS resuelve**:
 
@@ -78,23 +78,23 @@ Muchos ordenadores fabricados entre 2011 y 2018 cuentan con firmware **EFI** per
 
 ---
 
-## 🪟 Îttaladôh Întêratibo pa Windows
+## Îttaladôh Întêratibo pa Windows
 
 Er îttaladôh çe enkuentra en `installer/windows/` y puee ehekutâhçe mediante interfaç gráfika u konçola:
 
 ```text
 installer/windows/
-├── Run-Installer.cmd            # Lançadôh rápido kon elebaçiôn automátika de permiçô
-├── TapeOS-Installer.ps1         # Interfaç Gráfika întêratiba kompleta (GUI Windows Forms)
-├── TapeOS-CLI.ps1               # Açîtente întêratibo po konçola (TUI)
-└── modules/
-    ├── HardwareDetector.psm1    # Detêççiôn de CPU, GPU, UEFI x64 / ia32 y BitLocker
-    ├── RecoveryDownloader.psm1  # Kliente Chromium Dash API y dehkargadôh ofiçiâh de Google
-    ├── ImagePatcher.psm1        # Motôh de êttraççiôn y parcheo de imâhenêh ChromeOS
-    ├── UsbFlasher.psm1          # Grabâh dirêtto a pendraîh USB kon proteççiôn de dîkkô
-    ├── RecoveryCatalog.psm1     # Baçe de datô de kompatibilidá y perfîh de hardware
-    ├── DiskManager.psm1         # Utiliáêh de dîkko y dehkompreçiôn
-    └── BootManager.psm1         # Heneradôh de konfiguraçionêh de arrankê y GRUB
+ Run-Installer.cmd            # Lançadôh rápido kon elebaçiôn automátika de permiçô
+ TapeOS-Installer.ps1         # Interfaç Gráfika întêratiba kompleta (GUI Windows Forms)
+ TapeOS-CLI.ps1               # Açîtente întêratibo po konçola (TUI)
+ modules/
+ HardwareDetector.psm1    # Detêççiôn de CPU, GPU, UEFI x64 / ia32 y BitLocker
+ RecoveryDownloader.psm1  # Kliente Chromium Dash API y dehkargadôh ofiçiâh de Google
+ ImagePatcher.psm1        # Motôh de êttraççiôn y parcheo de imâhenêh ChromeOS
+ UsbFlasher.psm1          # Grabâh dirêtto a pendraîh USB kon proteççiôn de dîkkô
+ RecoveryCatalog.psm1     # Baçe de datô de kompatibilidá y perfîh de hardware
+ DiskManager.psm1         # Utiliáêh de dîkko y dehkompreçiôn
+ BootManager.psm1         # Heneradôh de konfiguraçionêh de arrankê y GRUB
 ```
 
 ### Îttrûççionêh de uço rápido:
@@ -103,12 +103,12 @@ installer/windows/
 3. Er îttaladôh detêttará tu PC (CPU, GPU, WiFi, Bluetooth, audio y tâttîh) y çelehçionará er rekûperaçiôn y lô parcheh de hardware adekuáô.
 4. Elihe çi kierêh **Googlêh Play (Çtore + Android)** u **çîn Googlêh Play kon apph APK (Aurora Çtore)**.
 5. Elihe er modo: **Live-USB** (grabâh en pendraîh) u **Îttaladôh** (kreâh er medio de îttalaçiôn `.img` çîn grabâh).
-6. Âtte klik en **`⚡ Dehkargâh, Parcheâh y Kreâh (1-Klik)`**.
+6. Âtte klik en **` Dehkargâh, Parcheâh y Kreâh (1-Klik)`**.
 7. ¡Lîtta! Ar terminâh, reiníçia tu PC y arranka dêhde er pendraîh (têkla F12, F11 u Eç çegún tu plaka baçe).
 
 ---
 
-## 📊 Matrî de Codenamê Ofiçiâlê Çoportáô
+## Matrî de Codenamê Ofiçiâlê Çoportáô
 
 | Heneraçiôn de Proçeçadôh | Codename Ofiçiâh | Milestone Google | Kernel TapeOS | Tipo de Ekîpo |
 |---|---|---|---|---|
@@ -123,7 +123,7 @@ installer/windows/
 
 ---
 
-## 🛠️ Deçarroyo en er Repoçitorio
+## Deçarroyo en er Repoçitorio
 
 Çi bâ a trabahâh en êtte proyêtto kon **VS Code** u kualkiêh IDE:
 
@@ -135,7 +135,7 @@ installer/windows/
 
 ---
 
-## 🙏 Orígenêh y Kréditô
+## Orígenêh y Kréditô
 
 TapeOS naçe der proyêtto **[Brunch](https://github.com/sebanc/brunch)** de **Sébastien Ancora (Sebanc)**, a kién damô lô kréditô po çu trabaho pionero en yebâh ChromeOS a PC x86_64. Nûêttro framework uça çu arkîtêttûra de partiçionêh (ROOTC), er initramfs kon `swtpm` y çu êkkema de ôççionêh, âttualiá y êttendío.
 
@@ -150,7 +150,7 @@ TapeOS naçe der proyêtto **[Brunch](https://github.com/sebanc/brunch)** de **S
 
 ---
 
-## ✅ TODO / Próççimô Paçô
+## Si TODO / Próççimô Paçô
 
 - [ ] **Mâh identidá andalûça en er çîttema**: bandera, pîttâ y erramientâ de bîenbenía; çonidô, fondo de pantaya y tema andalûh en ChromeOS; çelebraçionêh (Día de Andalûçia, Feriâ) y guiñô a la kûttûra (tapâh, flamenko, kaí).
 - [ ] **Dokumentaçiôn de âttualiçaçionêh**: añadîh un dokumento (`docs/UPDATES.md`) kon tô lâ poçibilidáêh de âttualiçaçiôn (kanal êttable/beta/dev, AUE, kernel legacy vs moderno, parcheh).
@@ -160,6 +160,6 @@ TapeOS naçe der proyêtto **[Brunch](https://github.com/sebanc/brunch)** de **S
 
 ---
 
-## 📄 Liçençia
+## Liçençia
 
 TapeOS çe dîttribuye baho la liçençia **GNU GPLv3**. Komponentêh deribáô de ChromiumOS u der kernel de Linux mantienen çû liçençiâ orihinâlêh rêppêttibâ (BSD / GPLv2).

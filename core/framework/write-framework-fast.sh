@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # write-brunch-fast.sh <src.bin> <dst> - copia rapida de particiones Brunch
 # La tabla GPT debe existir ya en el destino (la crea chromeos-install.sh).
 set -e

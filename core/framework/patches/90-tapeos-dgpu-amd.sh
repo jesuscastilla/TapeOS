@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # TapeOS 90: GPUs dedicadas AMD (amdgpu) - opcion "dgpu"
 # ChromeOS Flex usa amdgpu, asi que forzamos el mismo camino en Brunch.
 dgpu=0

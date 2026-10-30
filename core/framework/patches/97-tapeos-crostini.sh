@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # TapeOS 97: terminal Linux (Crostini) y Centro de software desde el primer arranque.
 # Se aplica SIEMPRE (no requiere opcion). En la version Free instala ademas Chromium
 # dentro del contenedor (se detecta por la opcion no_google_play en options=).

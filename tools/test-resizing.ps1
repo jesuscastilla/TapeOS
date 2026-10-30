@@ -1,4 +1,4 @@
-# TapeOS - Test de redimensionamiento de la GUI
+﻿# TapeOS - Test de redimensionamiento de la GUI
 $ErrorActionPreference = 'Stop'
 
 $wiz = Get-Content 'G:\TapeOS\installer\windows\TapeOS-Installer.ps1'

@@ -1,4 +1,4 @@
-#!/bin/busybox sh
+﻿#!/bin/busybox sh
 # ==============================================================================
 # TapeOS - Instalador a disco duro (framework Brunch/TapeOS)
 #   1. Vuelca el USB completo al disco destino (dd).

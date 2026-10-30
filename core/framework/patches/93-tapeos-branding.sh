@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # TapeOS 93: identidad TapeOS (se aplica siempre)
 R="${TAPEOOS_ROOT:-/roota}"
 if [ -f "$R/etc/lsb-release" ]; then

@@ -1,10 +1,10 @@
-# Guía de Îttalaçiôn en Windows — TapeOS
+﻿# Guía de Îttalaçiôn en Windows — TapeOS
 
 Êtta guía dêkribe kómo îttalâh **TapeOS** dirêttamente dêhde Windows utiliçando er îttaladôh gráfiko întêratibo u la línea de komandô, çîn neçeçidá de konfigurâh manûmente WSL2 ni rekûrrîh a erramientâ komplehâ.
 
 ---
 
-## 🚀 Rekîçitô Prebiô
+## Rekîçitô Prebiô
 
 1. **Ekîpo kon Windows 10 u 11** (64 bit).
 2. **Êppaçio en dîkko**: Mínimo 16 GB librê (çe rekomiendan 32 GB u mâh).
@@ -15,7 +15,7 @@
 
 ---
 
-## ⚡ Método 0: Ehekutable (EXE) autokontenío
+## Método 0: Ehekutable (EXE) autokontenío
 
 La forma mâh çençiya pa er uçuario finâh:
 
@@ -25,7 +25,7 @@ La forma mâh çençiya pa er uçuario finâh:
 
 ---
 
-## 🛠️ Método 1: Îttaladôh Gráfiko Întêratibo (GUI)
+## Método 1: Îttaladôh Gráfiko Întêratibo (GUI)
 
 Er método rekomendao pa la mayoría de uçuariô:
 
@@ -47,7 +47,7 @@ Er método rekomendao pa la mayoría de uçuariô:
 
 ---
 
-## 💻 Método 2: Açîtente Întêratibo po Konçola (CLI)
+## Método 2: Açîtente Întêratibo po Konçola (CLI)
 
 Pa entornô âttomatiçáô u adminîttraçiôn remota:
 
@@ -60,7 +60,7 @@ Pa entornô âttomatiçáô u adminîttraçiôn remota:
 
 ---
 
-## 🛡️ Secure Boot (Arrankê Çeguro)
+## Secure Boot (Arrankê Çeguro)
 
 Çi tu ekîpo tiene **Secure Boot attibao**, en er primêh arrankê podría apareçêh una pantaya açûh indikando `Verification failed: Access Denied`.
 
@@ -72,7 +72,7 @@ Pa otoriçâh la yabe de TapeOS:
 
 ---
 
-## 🔧 Çoluçiôn de Problemâ Komunêh
+## Çoluçiôn de Problemâ Komunêh
 
 - **Er ekîpo çe keda en er logo de ChromeOS**:
   - TapeOS detêtta y parchea automátikamente lâ GPU dediká (ôççiôn `dgpu`: NVIDIA çûppendía renderiçando kon la iGPU; AMD kon `amdgpu`). Çi aun açí no arranka, entra en er menú de konfiguraçiôn der arrankê (*Settings*) y dehattiba la GPU dediká pa uçâh lô gráfikô integráô.

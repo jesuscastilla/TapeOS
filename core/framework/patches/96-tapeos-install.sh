@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # TapeOS 96: instalador a disco duro - opcion "install_tapeos"
 # Vuelca el USB completo al disco elegido, arregla la GPT y expande ROOT-A.
 ins=0

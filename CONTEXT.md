@@ -71,38 +71,38 @@
 
 ```text
 TapeOS/
-├── .github/                 # Workflows de CI/CD (GitHub Actions) y plantillas
-├── .vscode/                 # Tareas automatizadas para IDE (VS Code)
-├── installer/
-│   └── windows/             # Suite de instalación nativa de Windows (GUI + CLI)
-│       ├── Run-Installer.cmd
-│       ├── TapeOS-Installer.ps1
-│       ├── TapeOS-CLI.ps1
-│       └── modules/
-│           ├── HardwareDetector.psm1
-│           ├── RecoveryDownloader.psm1
-│           ├── ImagePatcher.psm1
-│           ├── UsbFlasher.psm1
-│           ├── RecoveryCatalog.psm1
-│           ├── DiskManager.psm1
-│           └── BootManager.psm1
-├── core/
-│   ├── scripts/             # Scripts centrales (tapeos-install.sh, tapeos-setup)
-│   ├── patches/             # Parches para GPU antigua, Wi-Fi, audio ALSA UCM
-│   └── initramfs/           # Inicializador de arranque y swtpm
-├── tools/
-│   └── fetch_recovery.py    # Cliente CLI en Python para consulta de imágenes oficiales
-├── docs/
-│   ├── WINDOWS_INSTALL_GUIDE.md
-│   ├── LEGACY_HARDWARE_MATRIX.md
-│   ├── PATCHING_MODERN_CROS_FOR_LEGACY_EFI.md
-│   └── ARCHITECTURE.md
-├── upstream_sources/         # Referencia upstream descargada para consulta técnica (ignorada)
-├── CHANGELOG.md
-├── CONTEXT.md
-├── CONTRIBUTING.md
-├── LICENSE
-└── README.md
+ .github/                 # Workflows de CI/CD (GitHub Actions) y plantillas
+ .vscode/                 # Tareas automatizadas para IDE (VS Code)
+ installer/
+ windows/             # Suite de instalación nativa de Windows (GUI + CLI)
+ Run-Installer.cmd
+ TapeOS-Installer.ps1
+ TapeOS-CLI.ps1
+ modules/
+ HardwareDetector.psm1
+ RecoveryDownloader.psm1
+ ImagePatcher.psm1
+ UsbFlasher.psm1
+ RecoveryCatalog.psm1
+ DiskManager.psm1
+ BootManager.psm1
+ core/
+ scripts/             # Scripts centrales (tapeos-install.sh, tapeos-setup)
+ patches/             # Parches para GPU antigua, Wi-Fi, audio ALSA UCM
+ initramfs/           # Inicializador de arranque y swtpm
+ tools/
+ fetch_recovery.py    # Cliente CLI en Python para consulta de imágenes oficiales
+ docs/
+ WINDOWS_INSTALL_GUIDE.md
+ LEGACY_HARDWARE_MATRIX.md
+ PATCHING_MODERN_CROS_FOR_LEGACY_EFI.md
+ ARCHITECTURE.md
+ upstream_sources/         # Referencia upstream descargada para consulta técnica (ignorada)
+ CHANGELOG.md
+ CONTEXT.md
+ CONTRIBUTING.md
+ LICENSE
+ README.md
 ```
 
 ---

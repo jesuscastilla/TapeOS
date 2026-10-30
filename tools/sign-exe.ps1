@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
     Firma con Authenticode un EXE de TapeOS usando un certificado de firma de codigo.

@@ -110,7 +110,7 @@ try {
 # Formulario principal (redimençionable y repponçibo)
 # =============================================================================
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "TapeOS Installer — Açîtente por Paçô"
+$form.Text = "Instalador de TapeOS"
 $form.ClientSize = New-Object System.Drawing.Size(1000, 715)
 $form.MinimumSize = New-Object System.Drawing.Size(920, 600)
 $form.StartPosition = "CenterScreen"
@@ -119,6 +119,17 @@ $form.MaximizeBox = $true
 $form.MinimizeBox = $true
 $form.BackColor = [System.Drawing.Color]::FromArgb(243, 246, 244)
 $form.AutoScaleMode = [System.Windows.Forms.AutoScaleMode]::None
+
+# Icono de la ventana (tapeos.ico)
+$iconCandidates = @(
+    (Join-Path $PSScriptRoot "assets\tapeos.ico"),
+    (Join-Path $PSScriptRoot "..\..\tools\assets\tapeos.ico")
+)
+foreach ($ic in $iconCandidates) {
+    if (Test-Path -LiteralPath $ic) {
+        try { $form.Icon = New-Object System.Drawing.Icon($ic); break } catch { }
+    }
+}
 
 # Cabecera
 $headerPanel = New-Object System.Windows.Forms.Panel
@@ -314,7 +325,7 @@ $lblHwInfo = New-Object System.Windows.Forms.Label
 $lblHwInfo.Text = "Deteôtando el hardware..."
 $lblHwInfo.Font = New-Object System.Drawing.Font("Segoe UI", 10)
 $lblHwInfo.ForeColor = [System.Drawing.Color]::FromArgb(51, 65, 58)
-$lblHwInfo.Location = New-Object System.Drawing.Point(24, 54)
+$lblHwInfo.Location = New-Object System.Drawing.Point(24, 72)
 $lblHwInfo.Size = New-Object System.Drawing.Size(902, 160)
 $lblHwInfo.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl1.Controls.Add($lblHwInfo)
@@ -324,7 +335,7 @@ $lblRecInfo = New-Object System.Windows.Forms.Label
 $lblRecInfo.Text = "..."
 $lblRecInfo.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
 $lblRecInfo.ForeColor = [System.Drawing.Color]::FromArgb(0, 110, 50)
-$lblRecInfo.Location = New-Object System.Drawing.Point(24, 226)
+$lblRecInfo.Location = New-Object System.Drawing.Point(24, 244)
 $lblRecInfo.Size = New-Object System.Drawing.Size(902, 40)
 $lblRecInfo.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl1.Controls.Add($lblRecInfo)
@@ -367,7 +378,7 @@ $radioLibre = New-Object System.Windows.Forms.RadioButton
 $radioLibre.Text = "Çoftware Libre — çîn Googlêh Play (rekomendao)"
 $radioLibre.Font = New-Object System.Drawing.Font("Segoe UI", 10)
 $radioLibre.ForeColor = [System.Drawing.Color]::FromArgb(35, 48, 40)
-$radioLibre.Location = New-Object System.Drawing.Point(24, 58)
+$radioLibre.Location = New-Object System.Drawing.Point(24, 76)
 $radioLibre.AutoSize = $true
 $radioLibre.Checked = $true
 $pnl3.Controls.Add($radioLibre)
@@ -376,7 +387,7 @@ $radioGoogleApps = New-Object System.Windows.Forms.RadioButton
 $radioGoogleApps.Text = "Kon Googlêh Play — Android kompleto"
 $radioGoogleApps.Font = New-Object System.Drawing.Font("Segoe UI", 10)
 $radioGoogleApps.ForeColor = [System.Drawing.Color]::FromArgb(35, 48, 40)
-$radioGoogleApps.Location = New-Object System.Drawing.Point(24, 96)
+$radioGoogleApps.Location = New-Object System.Drawing.Point(24, 114)
 $radioGoogleApps.AutoSize = $true
 $radioGoogleApps.Checked = $false
 $pnl3.Controls.Add($radioGoogleApps)
@@ -385,7 +396,7 @@ $lblAppsExplain = New-Object System.Windows.Forms.Label
 $lblAppsExplain.Text = "..."
 $lblAppsExplain.Font = New-Object System.Drawing.Font("Segoe UI", 10)
 $lblAppsExplain.ForeColor = [System.Drawing.Color]::FromArgb(51, 65, 58)
-$lblAppsExplain.Location = New-Object System.Drawing.Point(24, 144)
+$lblAppsExplain.Location = New-Object System.Drawing.Point(24, 162)
 $lblAppsExplain.Size = New-Object System.Drawing.Size(902, 210)
 $lblAppsExplain.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl3.Controls.Add($lblAppsExplain)
@@ -436,13 +447,13 @@ $radioUsb = New-Object System.Windows.Forms.RadioButton
 $radioUsb.Text = "Live-USB — Grabâh en un pendraîh USB y arrankâh dêhde él"
 $radioUsb.Font = New-Object System.Drawing.Font("Segoe UI", 10)
 $radioUsb.ForeColor = [System.Drawing.Color]::FromArgb(35, 48, 40)
-$radioUsb.Location = New-Object System.Drawing.Point(24, 158)
+$radioUsb.Location = New-Object System.Drawing.Point(24, 176)
 $radioUsb.AutoSize = $true
 $radioUsb.Checked = $false
 $pnl4.Controls.Add($radioUsb)
 
 $cbUsbDrives = New-Object System.Windows.Forms.ComboBox
-$cbUsbDrives.Location = New-Object System.Drawing.Point(58, 200)
+$cbUsbDrives.Location = New-Object System.Drawing.Point(58, 218)
 $cbUsbDrives.Size = New-Object System.Drawing.Size(600, 28)
 $cbUsbDrives.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
 $cbUsbDrives.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
@@ -453,7 +464,7 @@ $pnl4.Controls.Add($cbUsbDrives)
 
 $btnRefreshUsb = New-Object System.Windows.Forms.Button
 $btnRefreshUsb.Text = "Refrehkâh"
-$btnRefreshUsb.Location = New-Object System.Drawing.Point(674, 198)
+$btnRefreshUsb.Location = New-Object System.Drawing.Point(674, 216)
 $btnRefreshUsb.Size = New-Object System.Drawing.Size(252, 32)
 $btnRefreshUsb.Enabled = $false
 $btnRefreshUsb.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Right
@@ -464,25 +475,10 @@ $lblUsbWarning = New-Object System.Windows.Forms.Label
 $lblUsbWarning.Text = "OHO: Er pendraîh çelehçionao çe formateará po kompleto pa îttalâh TapeOS."
 $lblUsbWarning.ForeColor = [System.Drawing.Color]::FromArgb(178, 59, 59)
 $lblUsbWarning.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
-$lblUsbWarning.Location = New-Object System.Drawing.Point(24, 248)
+$lblUsbWarning.Location = New-Object System.Drawing.Point(24, 266)
 $lblUsbWarning.Size = New-Object System.Drawing.Size(902, 24)
 $lblUsbWarning.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl4.Controls.Add($lblUsbWarning)
-# Opcion de firmware: BIOS Legacy (sin UEFI)
-$chkBiosMode = New-Object System.Windows.Forms.CheckBox
-$chkBiosMode.Text = "Modo BIÔ (çin UEFI)"
-$chkBiosMode.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
-$chkBiosMode.Location = New-Object System.Drawing.Point(24, 300)
-$chkBiosMode.AutoSize = $true
-$pnl4.Controls.Add($chkBiosMode)
-
-$lblBiosInfo = New-Object System.Windows.Forms.Label
-$lblBiosInfo.Text = "Pa ekîpô anteriôh a ~2012 çin UEFI: arrankâh por MBR en lûgâh de EFI. La imâhen de TapeOS êh îbriá (çirbe pa lô dô modô); márkalo çolo çi tu ekîpo arranka únikamente en BIÔ Legâyy."
-$lblBiosInfo.Font = New-Object System.Drawing.Font("Segoe UI", 8.5)
-$lblBiosInfo.ForeColor = [System.Drawing.Color]::FromArgb(107, 122, 114)
-$lblBiosInfo.Location = New-Object System.Drawing.Point(40, 326)
-$lblBiosInfo.Size = New-Object System.Drawing.Size(880, 44)
-$pnl4.Controls.Add($lblBiosInfo)
 
 $contentPanel.Controls.Add($pnl4)
 
@@ -505,7 +501,7 @@ $lblSummary = New-Object System.Windows.Forms.Label
 $lblSummary.Text = "..."
 $lblSummary.Font = New-Object System.Drawing.Font("Segoe UI", 10.5)
 $lblSummary.ForeColor = [System.Drawing.Color]::FromArgb(35, 48, 40)
-$lblSummary.Location = New-Object System.Drawing.Point(24, 54)
+$lblSummary.Location = New-Object System.Drawing.Point(24, 72)
 $lblSummary.Size = New-Object System.Drawing.Size(902, 230)
 $lblSummary.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl5.Controls.Add($lblSummary)
@@ -625,15 +621,19 @@ function Set-TapeOSStep {
     $btnNext.Visible = ($StepIndex -lt 3)
     if ($StepIndex -eq 3) {
         $sumMode = if ($radioImageOnly.Checked) { "Îttaladôh (.img) → $($txtImageDir.Text)"} else { "Live-USB → $(if ($cbUsbDrives.SelectedItem) { $cbUsbDrives.SelectedItem.ToString() } else { '(çelehçiona pendraîh)'})"}
+        $sumFw = if ($script:hwReport) {
+            if ($script:langEPA) { "• Arrankêh (automátiko): $($script:hwReport.Firmware.Type) | Dîkko: $($script:hwReport.Firmware.DiskLayout) | TPM: $(if ($script:hwReport.Firmware.TpmPresent) { 'Sí' } else { 'No (çe uçará swtpm)' })`n" }
+            else { "• Arranque (automático): $($script:hwReport.Firmware.Type) | Disco: $($script:hwReport.Firmware.DiskLayout) | TPM: $(if ($script:hwReport.Firmware.TpmPresent) { 'Sí' } else { 'No (se usará swtpm)' })`n" }
+        } else { '' }
         $lblSummary.Text = @"
 $(if ($script:langEPA) {
 "• Rekûperaçiôn (automátika): $($script:rec.RecoveryCodename.ToUpper()) $(if ($script:recoveryInfo) { "- Milestone $($script:recoveryInfo.Milestone)"} else { ''})
-• Aplikâçionêh: $(if ($radioLibre.Checked) { 'Çoftware Libre (APK + Aurora Çtore)'} else { 'Googlêh Play (Çtore + Android)'})
+$sumFw• Aplikâçionêh: $(if ($radioLibre.Checked) { 'Çoftware Libre (APK + Aurora Çtore)'} else { 'Googlêh Play (Çtore + Android)'})
 • Medio: $sumMode
 • Parcheh de hardware: $(if ($script:patchList) { $script:patchList } else { 'nîn guno'})"
 } else {
 "• Recovery (automático): $($script:rec.RecoveryCodename.ToUpper()) $(if ($script:recoveryInfo) { "- Milestone $($script:recoveryInfo.Milestone)"} else { ''})
-• Aplicaciones: $(if ($radioLibre.Checked) { 'Software Libre (APK + Aurora Store)'} else { 'Google Play (Store + Android)'})
+$sumFw• Aplicaciones: $(if ($radioLibre.Checked) { 'Software Libre (APK + Aurora Store)'} else { 'Google Play (Store + Android)'})
 • Medio: $sumMode
 • Parches de hardware: $(if ($script:patchList) { $script:patchList } else { 'ninguno'})"
 })
@@ -682,7 +682,7 @@ function Get-HwSummaryText {
         $patches = if ($script:patchList) { $script:patchList } else { 'nîn guno neçeçario'}
         return @"
 • CPU: $($script:hwReport.CPU.Name) ($($script:hwReport.CPU.Generation))
-• Firmware: $($script:hwReport.Firmware.Type)  |  Secure Boot: $sbon  |  BitLocker: $blon
+• Firmware: $($script:hwReport.Firmware.Type)  |  Dîkko: $($script:hwReport.Firmware.DiskLayout)  |  TPM: $(if ($script:hwReport.Firmware.TpmPresent) { 'Sí' } else { 'No (swtpm)' })  |  Secure Boot: $sbon  |  BitLocker: $blon
 • GPU: $gpuSummary
 • WiFi: $wifi   |   Bluetooth: $bt
 • Audio: $audio   |   Tâttîh: $touch
@@ -698,7 +698,7 @@ function Get-HwSummaryText {
         $patches = if ($script:patchList) { $script:patchList } else { 'ninguno necesario'}
         return @"
 • CPU: $($script:hwReport.CPU.Name) ($($script:hwReport.CPU.Generation))
-• Firmware: $($script:hwReport.Firmware.Type)  |  Secure Boot: $sbon  |  BitLocker: $blon
+• Firmware: $($script:hwReport.Firmware.Type)  |  Disco: $($script:hwReport.Firmware.DiskLayout)  |  TPM: $(if ($script:hwReport.Firmware.TpmPresent) { 'Sí' } else { 'No (swtpm)' })  |  Secure Boot: $sbon  |  BitLocker: $blon
 • GPU: $gpuSummary
 • WiFi: $wifi   |   Bluetooth: $bt
 • Audio: $audio   |   Táctil: $touch
@@ -742,8 +742,7 @@ function Set-TapeOSLanguage {
     $radioImageOnly.Text = if ($isEPA) { "Kreâh er medio de îttalaçiôn (.img) — guâddâlo en er dîkko"} else { "Crear el medio de instalación (.img) — guardarlo en el disco"}
     $btnBrowseDir.Text = if ($isEPA) { "Ehkaminâh..."} else { "Examinar..."}
     $lblUsbWarning.Text = if ($isEPA) { "OHO: Er pendraîh çelehçionao çe formateará po kompleto pa îttalâh TapeOS."} else { "ATENCIÓN: El pendrive seleccionado se formateará por completo para instalar TapeOS."}
-    $chkBiosMode.Text = if ($isEPA) { "Modo BIÔ (çin UEFI)"} else { "Modo BIOS (sin UEFI)"}
-    $lblBiosInfo.Text = if ($isEPA) { "Pa ekîpô anteriôh a ~2012 çin UEFI: arrankâh por MBR en lûgâh de EFI. La imâhen de TapeOS êh îbriá (çirbe pa lô dô modô); márkalo çolo çi tu ekîpo arranka únikamente en BIÔ Legâyy."} else { "Para equipos anteriores a ~2012 sin UEFI: arranque por MBR en lugar de EFI. La imagen de TapeOS es híbrida (sirve para ambos modos); márcalo solo si tu equipo arranca únicamente en BIOS Legacy."}
+
     $lblSumTitle.Text = if ($isEPA) { "Reçûmen de la îttalaçiôn"} else { "Resumen de la instalación"}
     $btnCreate.Text = if ($isEPA) { "Dehkargâh, Parcheâh y Kreâh (1-Klik)"} else { "Descargar, Parchear y Crear (1-Clic)"}
     $lblEta5.Text = if ($isEPA) { "Êttimao: --"} else { "Estimado: --"}
@@ -853,14 +852,15 @@ try {
     }
 
     # --- FASE 2: Parcheo ---
-    $Form.Invoke([Action]{ $LblPhase.Text = 'Parcheo TapeOS (Legacy EFI + swtpm + GPU)'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --'})
+    $Form.Invoke([Action]{ $LblPhase.Text = 'Parcheo TapeOS (automatico segun el hardware)'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --'})
     $ptSw = [System.Diagnostics.Stopwatch]::StartNew()
+    $needsLegacyGpu = (@($HwReport.FrameworkPatches | ForEach-Object { $_.Option }) -contains 'legacy_gpu') -or ($HwReport.Recommendations.Kernel -match 'legacy')
     $patched = Invoke-TapeOSImagePatch `
         -RecoveryZipPath $destZip `
         -OutputDir "C:\TapeOS\patched"`
         -EnableIA32 ($HwReport.Firmware.IsIA32UEFI) `
-        -EnableLegacyGPU $true `
-        -EnableSwtpm $true `
+        -EnableLegacyGPU $needsLegacyGpu `
+        -EnableSwtpm (-not $HwReport.Firmware.TpmPresent) `
         -EnableGoogleApps $EnableGoogleApps `
         -AdditionalFrameworkOptions @($HwReport.FrameworkPatches | ForEach-Object { $_.Option }) `
         -ProgressCallback {
@@ -1017,6 +1017,9 @@ try {
             if ($espInfo -and $espInfo.InitramfsInjected -and $espInfo.KernelInjected) { $fwMsg = "`r`nFramework TapeOS inyettao: arrankêh normal/verbose/çeguro y êntrá de îttalaçiôn a dîkko dûhô dipponiblêh en er menú GRUB."} else { $fwMsg = "`r`n AVISO: no çe enkontró er initramfs der framework (tapeos-initramfs.cpio.gz); er medio çolo arrankará er rekûperaçiôn ofiçiâh."}
         }
         # 3) Cierre comun: todas las rutas muestran el resultado final.
+        if ($HwReport.Firmware.IsLegacyBIOS) {
+            $fwMsg = "`r`nModo BIÔ detêttao: medio îbriáo (MBR + UEFI), er arrankêh por MBR çe akriba automátikamente." + $fwMsg
+        }
         $Form.Invoke([Action]{
             $ProgressBar.Value = 100
             $LblEta.Text = 'Kompletao'

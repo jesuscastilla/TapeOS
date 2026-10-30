@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # ==============================================================================
 # build-tapeos-img.sh - genera la imagen completa TapeOS (Brunch + capa TapeOS)
 # lista para grabar en CUALQUIER maquina sin WSL (Rufus, Win32DiskImager, TapeOS).

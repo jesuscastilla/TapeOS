@@ -1,10 +1,10 @@
-# Matrî de Kompatibilidá de Hardware (Legacy & Moderno) — TapeOS
+﻿# Matrî de Kompatibilidá de Hardware (Legacy & Moderno) — TapeOS
 
 TapeOS êttá diçeñao êppeçífikamente pa rehkâtâh y rebitâliçâh ekîpô antiguô (*legacy*), a la bêh ke ofreçe çoporte de banguardia pa arkîtêttûrâ modernâ.
 
 ---
 
-## 📊 Tabla Henerâh de Kompatibilidá
+## Tabla Henerâh de Kompatibilidá
 
 | Heneraçiôn / Família de CPU | Rekûperaçiôn Rekomendá | Kernel Rekomendao | Çûçîttema Android | Notâ de Kompatibilidá |
 |---|---|---|---|---|
@@ -21,7 +21,7 @@ TapeOS êttá diçeñao êppeçífikamente pa rehkâtâh y rebitâliçâh ekîp�
 
 ---
 
-## 🕹️ Çoporte Gráfiko Legacy
+## Çoporte Gráfiko Legacy
 
 - **Intel HD Graphics 2000 / 3000 / 4000**:
   - Abilitao mediante parcheh de kernel kon retrokompatibilidá pa `i915`.
@@ -33,7 +33,7 @@ TapeOS êttá diçeñao êppeçífikamente pa rehkâtâh y rebitâliçâh ekîp�
 
 ---
 
-## 📶 Konektibilidá y Audio en Dippoçitivô Antiguô
+## Konektibilidá y Audio en Dippoçitivô Antiguô
 
 - **Wi-Fi Broadcom**: Inkluçiôn de módulô kompiláô pa `bcmwl` y `brcmfmac` (BCM4313, BCM43142, BCM43228).
 - **Wi-Fi Realtek**: Kontroladorêh inkluíô pa çîppê USB y PCI-E konflîttibô (`rtl8723de`, `rtl8821ce`, `rtl8188eu`).

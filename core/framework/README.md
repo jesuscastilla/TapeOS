@@ -1,4 +1,4 @@
-# TapeOS - Framework de compatibilidad (core/framework)
+﻿# TapeOS - Framework de compatibilidad (core/framework)
 
 Motor de compatibilidad de TapeOS: lleva el sistema base (ChromeOS para TapeOS;
 openFyde/FydeOS para TapeOS Free) a PCs x86_64 con sus parches propios.

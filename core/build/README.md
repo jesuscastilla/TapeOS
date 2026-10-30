@@ -1,4 +1,4 @@
-# Konttruççiôn der Framework TapeOS — `core/build/`
+﻿# Konttruççiôn der Framework TapeOS — `core/build/`
 
 Êtte direttorio kontiene er **konttrûttôh der framework de arrankê** de TapeOS:
 er konhunto de kernêh, initramfs, partiçiôn ROOTC y yabê de firma ke çe
@@ -9,7 +9,7 @@ er konhunto de kernêh, initramfs, partiçiôn ROOTC y yabê de firma ke çe
 
 ---
 
-## 🧩 Ké konttruye
+## Ké konttruye
 
 | Komponente | Êkrip / direttorio | Dêkripçiôn |
 |---|---|---|
@@ -19,14 +19,14 @@ er konhunto de kernêh, initramfs, partiçiôn ROOTC y yabê de firma ke çe
 | Yabê | `out/framework/keys/` | Yabê vboot propiâ (firma der kernel) |
 | Pakete | `out/framework/tapeos_framework_*.tar.gz` | Too hunto pa înyêttâl-lo |
 
-## 🛠️ Rekîçitô (Debian/Ubuntu, çolo pa konttruîh — er uçuario finâh no lo neçeçita)
+## Rekîçitô (Debian/Ubuntu, çolo pa konttruîh — er uçuario finâh no lo neçeçita)
 
 ```bash
 sudo apt install build-essential cpio squashfs-tools grub-efi-amd64-bin \
                  vboot-utils libssl-dev bc flex bison dwarves git
 ```
 
-## 🚀 Kompilâh
+## Kompilâh
 
 ```bash
 sudo bash core/build/build-framework.sh --kernel 6.1 --version 0.1.0
@@ -34,7 +34,7 @@ sudo bash core/build/build-framework.sh --kernel 6.1 --version 0.1.0
 
 Ôççionêh: `--kernel` (6.6|6.1|5.15|5.10|5.4|4.19), `--version`, `--clean`.
 
-## 📀 Înyêttâh er framework (próççima çeçiôn)
+## Înyêttâh er framework (próççima çeçiôn)
 
 Kon er pakete henerao, `core/scripts/tapeos-install.sh` çe enkargará de:
 1. Anyadîh la partiçiôn **ROOTC** (1 GB) a la imâhen de rekûperaçiôn.

@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # ==============================================================================
 # apply-tapeos.sh - aplica la capa TapeOS sobre una instalacion del framework
 # Uso (en WSL/Linux, con el disco en --bare): sudo bash apply-tapeos.sh /dev/sdX

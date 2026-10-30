@@ -1,4 +1,4 @@
-name: 🐛 Reporte de Fallo / Bug Report
+﻿name: Reporte de Fallo / Bug Report
 description: Notifika un errôh u fallo en TapeOS u en er Îttaladôh Windows
 labels: ["bug"]
 body:

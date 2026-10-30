@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 # ==============================================================================
 # TapeOS Framework Builder: initramfs - core/build/build-initramfs.sh
 #

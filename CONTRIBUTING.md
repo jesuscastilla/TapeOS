@@ -1,10 +1,10 @@
-# Guía de Kontribuçiôn a TapeOS
+﻿# Guía de Kontribuçiôn a TapeOS
 
 ¡Agradeçemô tu intêh en kolaborâh kon **TapeOS**! Er ôhhetibo êh kreâh la plataforma mâh uniberçâh, aççeçible y fâçîh de uçâh pa ehekutâh TapeOS en kualkiêh ekîpo x86_64, dêhde dippoçitivô modernô de ûrtima heneraçiôn âtta ordenadorêh antiguô rehkâtáô der dehûço.
 
 ---
 
-## 🛠️ ¿Kómo kontribuîh?
+## ¿Kómo kontribuîh?
 
 1. **Reportâh errôh u çoliçitâh hardware**:
    - Uça lô formulariô de [Issues en GitHub](../../issues).
@@ -19,7 +19,7 @@
 
 ---
 
-## 📜 Fluho de Trabaho Git
+## Fluho de Trabaho Git
 
 1. Âtte un Fork der repoçitorio.
 2. Krea una rama dêkriptiba (`git checkout -b feature/çoporte-wifi-rtl8821ce`).

@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Validador del pipeline de instalacion (scripts embebidos en here-strings).
 .DESCRIPTION
