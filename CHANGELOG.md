@@ -2,6 +2,13 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.50] — 30-10-2026
+
+### Cambios
+- **Paso de Recovery eliminado del wizard**: el recovery se elige automaticamente segun el hardware detectado y ya no es una opcion editable. El asistente pasa de 6 a 5 pasos (Detección → Aplicaciones → Medio → Resumen → Ejecución).
+- La recomendacion automatica (codename + kernel) se muestra en el paso de Detección y en el resumen como informacion, no como opcion.
+- Eliminados el combo de recovery, el boton `Buscar Última Versión` y su timer/consulta (el pipeline usa siempre `Recommendations.RecoveryCodename`).
+
 ## [v1.0.0-alpha.49] — 30-10-2026
 
 ### Correcciones

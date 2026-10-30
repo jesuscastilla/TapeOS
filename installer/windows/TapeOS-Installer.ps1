@@ -236,9 +236,9 @@ $stepIndicator.BackColor = [System.Drawing.Color]::FromArgb(243, 246, 244)
 $form.Controls.Add($stepIndicator)
 
 $stepLabels = @()
-$stepNamesEPA = @("1. Detêççiôn", "2. Rekûperaçiôn", "3. Aplikâçionêh", "4. Medio", "5. Reçûmen", "6. Ehekuçiôn")
-$stepNamesES  = @("1. Detección", "2. Recovery", "3. Aplicaciones", "4. Medio", "5. Resumen", "6. Ejecución")
-for ($i = 0; $i -lt 6; $i++) {
+$stepNamesEPA = @("1. Detêççiôn", "2. Aplikâçionêh", "3. Medio", "4. Reçûmen", "5. Ehekuçiôn")
+$stepNamesES  = @("1. Detección", "2. Aplicaciones", "3. Medio", "4. Resumen", "5. Ejecución")
+for ($i = 0; $i -lt 5; $i++) {
     $sl = New-Object System.Windows.Forms.Label
     $sl.Text = $stepNamesEPA[$i]
     $sl.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
@@ -315,9 +315,19 @@ $lblHwInfo.Text = "Deteôtando el hardware..."
 $lblHwInfo.Font = New-Object System.Drawing.Font("Segoe UI", 10)
 $lblHwInfo.ForeColor = [System.Drawing.Color]::FromArgb(51, 65, 58)
 $lblHwInfo.Location = New-Object System.Drawing.Point(24, 54)
-$lblHwInfo.Size = New-Object System.Drawing.Size(902, 220)
+$lblHwInfo.Size = New-Object System.Drawing.Size(902, 160)
 $lblHwInfo.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl1.Controls.Add($lblHwInfo)
+
+# Recovery recomendado: se elige automaticamente segun el hardware detectado.
+$lblRecInfo = New-Object System.Windows.Forms.Label
+$lblRecInfo.Text = "..."
+$lblRecInfo.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+$lblRecInfo.ForeColor = [System.Drawing.Color]::FromArgb(0, 110, 50)
+$lblRecInfo.Location = New-Object System.Drawing.Point(24, 226)
+$lblRecInfo.Size = New-Object System.Drawing.Size(902, 40)
+$lblRecInfo.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
+$pnl1.Controls.Add($lblRecInfo)
 
 $pbStep1 = New-Object System.Windows.Forms.ProgressBar
 $pbStep1.Location = New-Object System.Drawing.Point(24, 286)
@@ -337,74 +347,6 @@ $pnl1.Controls.Add($lblEta1)
 
 $contentPanel.Controls.Add($pnl1)
 
-# --- PAÇO 2: Rekomendaçiôn de rekûperaçiôn ---
-$pnl2 = New-Object System.Windows.Forms.Panel
-$pnl2.Location = New-Object System.Drawing.Point(0, 0)
-$pnl2.Size = $contentPanel.Size
-$pnl2.Dock = [System.Windows.Forms.DockStyle]::Fill
-$pnl2.BackColor = [System.Drawing.Color]::White
-
-$lblRecTitle = New-Object System.Windows.Forms.Label
-$lblRecTitle.Text = "Rekomendaçiôn de rekûperaçiôn"
-$lblRecTitle.Font = New-Object System.Drawing.Font("Segoe UI", 15, [System.Drawing.FontStyle]::Bold)
-$lblRecTitle.ForeColor = [System.Drawing.Color]::FromArgb(23, 53, 43)
-$lblRecTitle.Location = New-Object System.Drawing.Point(24, 16)
-$lblRecTitle.AutoSize = $true
-$pnl2.Controls.Add($lblRecTitle)
-
-$lblRecInfo = New-Object System.Windows.Forms.Label
-$lblRecInfo.Text = "..."
-$lblRecInfo.Font = New-Object System.Drawing.Font("Segoe UI", 10)
-$lblRecInfo.ForeColor = [System.Drawing.Color]::FromArgb(51, 65, 58)
-$lblRecInfo.Location = New-Object System.Drawing.Point(24, 46)
-$lblRecInfo.Size = New-Object System.Drawing.Size(902, 40)
-$lblRecInfo.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
-$pnl2.Controls.Add($lblRecInfo)
-
-$cbRecovery = New-Object System.Windows.Forms.ComboBox
-$cbRecovery.Location = New-Object System.Drawing.Point(24, 96)
-$cbRecovery.Size = New-Object System.Drawing.Size(600, 28)
-$cbRecovery.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
-$cbRecovery.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
-$cbRecovery.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
-$cbRecovery.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
-$pnl2.Controls.Add($cbRecovery)
-
-$btnCheckOnline = New-Object System.Windows.Forms.Button
-$btnCheckOnline.Text = "🌐 Bûhkâh la Ûrtima Berçiôn"
-$btnCheckOnline.Location = New-Object System.Drawing.Point(644, 94)
-$btnCheckOnline.Size = New-Object System.Drawing.Size(282, 32)
-$btnCheckOnline.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Right
-$pnl2.Controls.Add($btnCheckOnline)
-Set-TapeOSButtonStyle -Btn $btnCheckOnline -Kind 'secondary'
-
-$lblStatusUrl = New-Object System.Windows.Forms.Label
-$lblStatusUrl.Text = "Berçiôn ofiçiâh mâh reçiente: pulça 'Bûhkâh' pa konhûttâh er CDN de Google."
-$lblStatusUrl.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Italic)
-$lblStatusUrl.ForeColor = [System.Drawing.Color]::FromArgb(107, 122, 114)
-$lblStatusUrl.Location = New-Object System.Drawing.Point(24, 138)
-$lblStatusUrl.Size = New-Object System.Drawing.Size(902, 46)
-$lblStatusUrl.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
-$pnl2.Controls.Add($lblStatusUrl)
-
-$pbStep2 = New-Object System.Windows.Forms.ProgressBar
-$pbStep2.Location = New-Object System.Drawing.Point(24, 196)
-$pbStep2.Size = New-Object System.Drawing.Size(902, 18)
-$pbStep2.Style = [System.Windows.Forms.ProgressBarStyle]::Marquee
-$pbStep2.Visible = $false
-$pbStep2.Anchor = [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
-$pnl2.Controls.Add($pbStep2)
-
-$lblEta2 = New-Object System.Windows.Forms.Label
-$lblEta2.Text = ""
-$lblEta2.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Italic)
-$lblEta2.ForeColor = [System.Drawing.Color]::FromArgb(107, 122, 114)
-$lblEta2.Location = New-Object System.Drawing.Point(24, 222)
-$lblEta2.AutoSize = $true
-$lblEta2.Anchor = [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left
-$pnl2.Controls.Add($lblEta2)
-
-$contentPanel.Controls.Add($pnl2)
 
 # --- PAÇO 3: Aplikâçionêh y çoftware ---
 $pnl3 = New-Object System.Windows.Forms.Panel
@@ -658,7 +600,7 @@ $btnNext.Anchor = [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windo
 Set-TapeOSButtonStyle -Btn $btnNext -Kind 'primary'
 $form.Controls.Add($btnNext)
 
-$stepPanels = @($pnl1, $pnl2, $pnl3, $pnl4, $pnl5, $pnl6)
+$stepPanels = @($pnl1, $pnl3, $pnl4, $pnl5, $pnl6)
 $script:currentStep = 0
 $script:langEPA = $true
 
@@ -679,18 +621,18 @@ function Set-TapeOSStep {
             $stepLabels[$i].Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
         }
     }
-    $btnBack.Enabled = ($StepIndex -gt 0 -and $StepIndex -lt 5)
-    $btnNext.Visible = ($StepIndex -lt 4)
-    if ($StepIndex -eq 4) {
+    $btnBack.Enabled = ($StepIndex -gt 0 -and $StepIndex -lt 4)
+    $btnNext.Visible = ($StepIndex -lt 3)
+    if ($StepIndex -eq 3) {
         $sumMode = if ($radioImageOnly.Checked) { "Îttaladôh (.img) → $($txtImageDir.Text)" } else { "Live-USB → $(if ($cbUsbDrives.SelectedItem) { $cbUsbDrives.SelectedItem.ToString() } else { '(çelehçiona pendraîh)' })" }
         $lblSummary.Text = @"
 $(if ($script:langEPA) {
-"• Rekûperaçiôn: $((($cbRecovery.SelectedItem.ToString()).Split(' ')[0]).ToUpper()) $(if ($script:recoveryInfo) { "- Milestone $($script:recoveryInfo.Milestone)" } else { '' })
+"• Rekûperaçiôn (automátika): $($script:rec.RecoveryCodename.ToUpper()) $(if ($script:recoveryInfo) { "- Milestone $($script:recoveryInfo.Milestone)" } else { '' })
 • Aplikâçionêh: $(if ($radioLibre.Checked) { 'Çoftware Libre (APK + Aurora Çtore)' } else { 'Googlêh Play (Çtore + Android)' })
 • Medio: $sumMode
 • Parcheh de hardware: $(if ($script:patchList) { $script:patchList } else { 'nîn guno' })"
 } else {
-"• Recovery: $((($cbRecovery.SelectedItem.ToString()).Split(' ')[0]).ToUpper()) $(if ($script:recoveryInfo) { "- Milestone $($script:recoveryInfo.Milestone)" } else { '' })
+"• Recovery (automático): $($script:rec.RecoveryCodename.ToUpper()) $(if ($script:recoveryInfo) { "- Milestone $($script:recoveryInfo.Milestone)" } else { '' })
 • Aplicaciones: $(if ($radioLibre.Checked) { 'Software Libre (APK + Aurora Store)' } else { 'Google Play (Store + Android)' })
 • Medio: $sumMode
 • Parches de hardware: $(if ($script:patchList) { $script:patchList } else { 'ninguno' })"
@@ -782,17 +724,14 @@ function Set-TapeOSLanguage {
     $script:langEPA = $isEPA
     $titleLabel.Text = if ($isEPA) { "TapeOS Îttaladôh Uniberçâh" } else { "TapeOS instalador universal" }
     $subtitleLabel.Text = if ($isEPA) { "Açîtente de îttalaçiôn · Andalûh" } else { "Asistente de instalación · Español" }
-    for ($i = 0; $i -lt 6; $i++) { $stepLabels[$i].Text = if ($isEPA) { $stepNamesEPA[$i] } else { $stepNamesES[$i] } }
+    for ($i = 0; $i -lt 5; $i++) { $stepLabels[$i].Text = if ($isEPA) { $stepNamesEPA[$i] } else { $stepNamesES[$i] } }
     $lblHwTitle.Text = if ($isEPA) { "Detêççiôn de hardware" } else { "Detección de hardware" }
     $lblHwInfo.Text = Get-HwSummaryText $isEPA
-    $lblRecTitle.Text = if ($isEPA) { "Rekomendaçiôneh" } else { "Recomendaciones" }
     if ($script:rec) {
-        $lblRecInfo.Text = if ($isEPA) { "Çegún tu hardware, la rekûperaçiôn rekomendá êh [$($script:rec.RecoveryCodename.ToUpper())] kon kernel [$($script:rec.Kernel)]." } else { "Según tu hardware, el recovery recomendado es [$($script:rec.RecoveryCodename.ToUpper())] con kernel [$($script:rec.Kernel)]." }
+        $lblRecInfo.Text = if ($isEPA) { "✅ Rekûperaçiôn çelehçioná automátikamente [$($script:rec.RecoveryCodename.ToUpper())] kon kernel [$($script:rec.Kernel)]." } else { "✅ Recovery seleccionado automáticamente [$($script:rec.RecoveryCodename.ToUpper())] con kernel [$($script:rec.Kernel)]." }
     } else {
         $lblRecInfo.Text = "..."
     }
-    $btnCheckOnline.Text = if ($isEPA) { "🌐 Bûhkâh la Ûrtima Berçiôn" } else { "🌐 Buscar Última Versión" }
-    $lblStatusUrl.Text = if ($isEPA) { "Berçiôn ofiçiâh mâh reçiente: pulça 'Bûhkâh' pa konhûttâh er CDN de Google." } else { "Versión oficial más reciente: pulsa 'Buscar' para consultar el CDN de Google." }
     $lblAppsTitle.Text = if ($isEPA) { "Aplikâçionêh y çoftware" } else { "Aplicaciones y software" }
     $radioLibre.Text = if ($isEPA) { "🔓 Çoftware Libre — çîn Googlêh Play (rekomendao)" } else { "🔓 Software Libre — sin Google Play (recomendado)" }
     $radioGoogleApps.Text = if ($isEPA) { "🛍️ Kon Googlêh Play — Android kompleto" } else { "🛍️ Con Google Play — Android completo" }
@@ -811,7 +750,7 @@ function Set-TapeOSLanguage {
     $btnBack.Text = if ($isEPA) { "‹ Anteriôh" } else { "‹ Anterior" }
     $btnNext.Text = if ($isEPA) { "Çiguiente ›" } else { "Siguiente ›" }
     $lblEta1.Text = if ($isEPA) { "Êttimao: 0 ç (kompletao)" } else { "Estimado: 0 s (completado)" }
-    if ($script:currentStep -eq 4) { Set-TapeOSStep 4 }
+    if ($script:currentStep -eq 3) { Set-TapeOSStep 3 }
 }
 
 # =============================================================================
@@ -826,7 +765,7 @@ $btnBack.Add_Click({
 })
 
 $btnNext.Add_Click({
-    if ($script:currentStep -lt 4) { Set-TapeOSStep ($script:currentStep + 1) }
+    if ($script:currentStep -lt 3) { Set-TapeOSStep ($script:currentStep + 1) }
 })
 
 $radioLibre.Add_Click({
@@ -857,61 +796,6 @@ $btnBrowseDir.Add_Click({
 })
 $btnRefreshUsb.Add_Click({ Refresh-UsbList })
 
-# Konhûtta a la API (paço 2) en runspace dedicá, kon barra y ETA
-$script:recoveryInfo = $null
-$btnCheckOnline.Add_Click({
-    $btnCheckOnline.Enabled = $false
-    $pbStep2.Visible = $true
-    $script:qSw = [System.Diagnostics.Stopwatch]::StartNew()
-    $lblEta2.Text = "Êttimao: ~5 ç"
-    $queryScript = {
-        param([string]$Codename, [string]$ModuleDir)
-        Import-Module (Join-Path $ModuleDir "RecoveryDownloader.psm1") -Force
-        Get-TapeOSLatestRecoveryInfo -BoardCodename $Codename
-    }
-    $script:qRs = [runspacefactory]::CreateRunspace(); $script:qRs.ApartmentState = "STA"; $script:qRs.Open()
-    $script:qPs = [powershell]::Create(); $script:qPs.Runspace = $script:qRs
-    $null = $script:qPs.AddScript($queryScript.ToString())
-    $null = $script:qPs.AddParameter("Codename", (($cbRecovery.SelectedItem.ToString()).Split(' ')[0]))
-    $null = $script:qPs.AddParameter("ModuleDir", $moduleDir)
-    $script:qAsync = $script:qPs.BeginInvoke()
-    $script:qTimedOut = $false
-    if ($script:qTimer) { $script:qTimer.Stop(); $script:qTimer.Dispose() }
-    $script:qTimer = New-Object System.Windows.Forms.Timer
-    $script:qTimer.Interval = 200
-    $script:qTimer.Add_Tick({
-        $el = $script:qSw.Elapsed.TotalSeconds
-        $lblEta2.Text = "Êttimao: " + (Format-ETA ([math]::Max(0.5, (5 - $el))))
-        if ($script:qAsync.IsCompleted -or $script:qTimedOut) {
-            $script:qTimer.Stop(); $script:qTimer.Dispose()
-            $pbStep2.Visible = $false
-            try {
-                $script:recoveryInfo = $script:qPs.EndInvoke($script:qAsync)
-                if (-not $script:qTimedOut) {
-                    $lblStatusUrl.Text = "✔ Berçiôn: Milestone $($script:recoveryInfo.Milestone) | Arxibo: $($script:recoveryInfo.FileName)"
-                    $lblEta2.Text = "Kompletao en $(Format-ETA $el)"
-                    $logBox.AppendText("[ChromiumDash] Berçiôn Milestone $($script:recoveryInfo.Milestone) enkontrá.`r`n")
-                }
-            } catch {
-                Write-TapeOSLog ("ERROR consulta API: " + $_.Exception.ToString())
-                if ($script:qTimedOut) {
-                    $lblStatusUrl.Text = if ($script:langEPA) { "❌ Tîmpo agotao (15 ç, ¿çîn internet?). Çe uçará la berçiôn êttable der katálogo lokâh." } else { "❌ Tiempo agotado (15 s, ¿sin internet?). Se usará la versión estable del catálogo local." }
-                } else {
-                    $lblStatusUrl.Text = "❌ No çe pudo konhûttâh la API: $($_.Exception.Message)"
-                }
-                $lblEta2.Text = ""
-            } finally {
-                $script:qPs.Dispose(); $script:qRs.Dispose()
-                $btnCheckOnline.Enabled = $true
-            }
-        } elseif ($el -gt 15) {
-            # Timeout: se cancela la consulta; el siguiente tick la recoge como completada con error
-            $script:qTimedOut = $true
-            try { $script:qPs.Stop() | Out-Null } catch { }
-        }
-    })
-    $script:qTimer.Start()
-})
 
 $pipelineScript = @'
 param(
@@ -1196,7 +1080,7 @@ $btnCreate.Add_Click({
         $null = $script:pipelinePS.AddParameter("ProgressBar", $pbStep5)
         $null = $script:pipelinePS.AddParameter("LblPhase", $lblPhase)
         $null = $script:pipelinePS.AddParameter("LblEta", $lblEta5)
-        $null = $script:pipelinePS.AddParameter("Codename", (($cbRecovery.SelectedItem.ToString()).Split(' ')[0]))
+        $null = $script:pipelinePS.AddParameter("Codename", $script:rec.RecoveryCodename)
         $null = $script:pipelinePS.AddParameter("EnableGoogleApps", $radioGoogleApps.Checked)
         $null = $script:pipelinePS.AddParameter("ImageOnlyMode", $imageOnlyMode)
         $null = $script:pipelinePS.AddParameter("ImageDestDir", $txtImageDir.Text)
@@ -1244,12 +1128,6 @@ function Initialize-TapeOSDetection {
         $script:hwReport = Get-TapeOSHardwareReport
         $script:catalog = Get-TapeOSCatalog
         $script:rec = $script:hwReport.Recommendations
-        $cbRecovery.Items.Clear()
-        foreach ($item in $script:catalog) { [void]$cbRecovery.Items.Add("$($item.Codename) — $($item.DisplayName)") }
-        $cbRecovery.SelectedIndex = 0
-        for ($i = 0; $i -lt $script:catalog.Count; $i++) {
-            if ($script:catalog[$i].Codename -eq $script:rec.RecoveryCodename) { $cbRecovery.SelectedIndex = $i; break }
-        }
         Refresh-UsbList
         $cbLang.SelectedIndex = 0
         Set-TapeOSLanguage -Lang $cbLang.SelectedItem.ToString()

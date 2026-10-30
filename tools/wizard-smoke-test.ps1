@@ -43,7 +43,7 @@ try {
     $lineas = @("TIME: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')", ("CLIENT: " + $cw + "x" + $ch), ("VERDICT: " + $veredicto))
     $lineas += $desb
     $lineas += ("DIAG-HWREPORT: " + $(if ($script:hwReport) { 'cargado' } else { 'null' }))
-    $lineas += ("DIAG-RECOVERY-ITEMS: " + $cbRecovery.Items.Count)
+    $lineas += ("DIAG-REC: " + $script:rec.RecoveryCodename)
     $lineas += ("DIAG-CHIP0-BACKCOLOR: " + $stepLabels[0].BackColor.ToString())
     $lineas += ("DIAG-HWINFO: " + ($lblHwInfo.Text -replace "`r`n", " | "))
     Set-Content -Path "$env:ProgramData\TapeOS\wizard-layout-check.log" -Encoding UTF8 -Force -Value $lineas
