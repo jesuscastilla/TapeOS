@@ -2,6 +2,12 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.46] — 30-10-2026
+
+### Korreççionêh
+- **Pipeline roto por dobles CR**: las reescrituras habian dejado `\r\r\n` en TapeOS-Installer.ps1 (1255 secuencias); los backticks de continuacion se cortaban y `Invoke-TapeOSImagePatch` se ejecutaba sin argumentos ("faltan los parametros obligatorios RecoveryZipPath OutputDir"). Archivo normalizado a CRLF simple y verificado byte a byte.
+- **Validador permanente**: `tools/validate-pipeline.ps1` (parse aislado del pipeline, dobles CR, argumentos de las llamadas clave y binding real de ImagePatch) integrado en el smoke test. Regla anadida a REGLAS.md.
+
 ## [v1.0.0-alpha.45] — 30-10-2026
 
 ### Nobedáêh

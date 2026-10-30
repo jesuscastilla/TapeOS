@@ -1,4 +1,4 @@
-# TapeOS - Prueba de humo del wizard (PS 5.1)
+﻿# TapeOS - Prueba de humo del wizard (PS 5.1)
 # Ejecuta el wizard completo con ShowDialog sustituido por Show() + validación
 # de límites del área cliente + captura PNG en dist\gui-snapshot.png y cierre.
 # Una trampa global captura cualquier excepción de arranque y la guarda en
@@ -80,3 +80,6 @@ if (Test-Path "$env:ProgramData\TapeOS\wizard-trap.log") { Get-Content "$env:Pro
 'layout-log existe: ' + (Test-Path "$env:ProgramData\TapeOS\wizard-layout-check.log")
 if (Test-Path "$env:ProgramData\TapeOS\wizard-layout-check.log") { Get-Content "$env:ProgramData\TapeOS\wizard-layout-check.log" -Encoding UTF8 }
 'snapshot existe: ' + (Test-Path 'G:\TapeOS\dist\gui-snapshot.png')
+
+# Validar el pipeline embebido (continuaciones, argumentos y binding)
+& (Join-Path (Split-Path -Parent $PSCommandPath) 'validate-pipeline.ps1')

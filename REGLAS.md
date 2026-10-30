@@ -35,3 +35,4 @@
 - Actualizar `CHANGELOG.md` y `CONTEXT.md`; versionar (alpha.NN) y publicar release.
 - Compatibilidad obligatoria con Windows PowerShell 5.1 (el EXE).
 - Scripts .sh en LF; archivos .ps1 con BOM UTF-8 (PowerShell 5.1 los lee como ANSI sin BOM).
+- Los .ps1 usan CRLF simple; NUNCA re-normalizar finales de linea sobre archivos ya CRLF (rompe las continuaciones con backtick). Ejecutar `tools/validate-pipeline.ps1` antes de cada release.
