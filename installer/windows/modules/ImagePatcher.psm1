@@ -1,6 +1,6 @@
 ﻿<#
 .SYNOPSIS
-    Módulo de Parcheo de Imágenes de ChromeOS para TapeOS
+    Módulo de Parcheo de Imágenes del Sistema para TapeOS
 .DESCRIPTION
     Descomprime la imagen oficial de recuperación y aplica los parches de TapeOS
     (cargadores EFI x64/ia32, emulación swtpm, perfiles gráficos retro y audio).
@@ -36,7 +36,7 @@ function Invoke-TapeOSImagePatch {
         New-Item -Path $OutputDir -ItemType Directory -Force | Out-Null
     }
 
-    if ($ProgressCallback) { & $ProgressCallback 10 "Ettrayendo la imâhen ofiçiâh de ChromeOS..."}
+    if ($ProgressCallback) { & $ProgressCallback 10 "Ettrayendo la imâhen ofiçiâh del çîttema..."}
     Write-Host "[TapeOS Patcher] Ettrayendo la imâhen de rekûperaçiôn..."-ForegroundColor Cyan
 
     $extractedBin = $null
@@ -105,7 +105,7 @@ function Invoke-TapeOSImagePatch {
     if ($EnableLegacyGPU) { $kernelOptions += "i915.enable_guc=0"; $kernelOptions += "i915.enable_psr=0"}
     if ($EnableIA32) { $kernelOptions += "efi=noruntime"}
     $optionsString = $kernelOptions -join " "
-    $normalMenuTitle = if ($EnableGoogleApps) { "TapeOS (ChromeOS Actualizado - Modo Normal)"} else { "TapeOS (ChromeOS - Sin Google Play / APK + Aurora)"}
+    $normalMenuTitle = if ($EnableGoogleApps) { "TapeOS (Modo Normal)"} else { "TapeOS (Sin Google Play / APK + Aurora)"}
 
         # Menu GRUB de TapeOS (normal/verbose/seguro/instalacion) generado por BootManager
     Import-Module (Join-Path $PSScriptRoot "BootManager.psm1") -Force

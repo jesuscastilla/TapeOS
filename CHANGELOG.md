@@ -2,6 +2,16 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.53] — 30-10-2026
+
+### Correcciones
+- **Barra de progreso visible otra vez**: el wizard saltaba al paso 5 (inexistente tras quitar el paso de Recovery) y ocultaba todos los paneles. Ahora salta al paso 4 y hay clamp de seguridad (un indice fuera de rango nunca vuelve a dejar la interfaz en blanco). El smoke test lo comprueba.
+- Aviso de pendrive ausente vuelve al paso Medio (indice 2).
+- **Boton Cerrar al terminar**: al finalizar la grabacion, el boton `Siguiente` pasa a `Cerrar` (cierra la ventana).
+
+### Cambios
+- **Sin referencias a ChromeOS** en textos visibles del instalador, menus GRUB, sistema Free (lsb-release: `TapeOS Free (sin Google, con Android)`) e initramfs. Se conservan solo las URLs/API oficiales de descarga y las claves `CHROMEOS_RELEASE_*` del formato del sistema.
+
 ## [v1.0.0-alpha.52] — 30-10-2026
 
 ### Cambios

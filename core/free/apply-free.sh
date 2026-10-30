@@ -1,6 +1,6 @@
 ﻿#!/bin/bash
 # ==============================================================================
-# apply-free.sh - adapta una imagen FydeOS/openFyde (ChromiumOS) a TapeOS Free.
+# apply-free.sh - adapta una imagen FydeOS/openFyde a TapeOS Free.
 #   Monta ROOT-A y ESP por OFFSET explicito (evita los loops -P stale de WSL).
 #   ROOT-A de FydeOS usa features ext4 nuevos: se lee en ro, se parchea el arbol
 #   y se recrea la particion con ext4 estandar.
@@ -44,7 +44,7 @@ done
 cp "$BR"/AuroraStore.apk /tmp/free-root/usr/local/share/tapeos/apps/ 2>/dev/null || true
 # 3) Rebranding FINAL (tras los parches, para que gane TapeOS Free)
 sed -i 's/^CHROMEOS_RELEASE_NAME=.*/CHROMEOS_RELEASE_NAME=TapeOS Free/' /tmp/free-root/etc/lsb-release
-sed -i 's/^CHROMEOS_RELEASE_DESCRIPTION=.*/CHROMEOS_RELEASE_DESCRIPTION=TapeOS Free (ChromiumOS sin Google, con Android)/' /tmp/free-root/etc/lsb-release
+sed -i 's/^CHROMEOS_RELEASE_DESCRIPTION=.*/CHROMEOS_RELEASE_DESCRIPTION=TapeOS Free (sin Google, con Android)/' /tmp/free-root/etc/lsb-release
 
 # 4) Recrear ROOT-A con ext4 estandar y volcar el arbol parcheado
 echo "[TapeOS Free] Recreando ROOT-A (ext4 estandar)..."

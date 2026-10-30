@@ -4,7 +4,7 @@
 .DESCRIPTION
     Genera el menu GRUB de TapeOS con dos kernels:
       - Kernel Linux de PC (/tapeos/vmlinuz): arranque real de TapeOS.
-      - Kernel del recovery de ChromeOS (/syslinux/vmlinuz.A): opcion legado.
+      - Kernel del recovery del sistema (/syslinux/vmlinuz.A): opcion legado.
     Incluye modo verbose, modo seguro, instalador a disco y recovery original.
     Inyecta el menu, el initramfs y el kernel en la ESP del pendrive.
 #>
@@ -18,7 +18,7 @@ function New-TapeOSGrubConfig {
         # Kernel Linux de PC para el framework TapeOS (entradas 1-4)
         [string]$TestKernelPath = "/tapeos/vmlinuz",
 
-        # Kernel del recovery de ChromeOS (entrada 5)
+        # Kernel del recovery del sistema (entrada 5)
         [string]$KernelPath = "/syslinux/vmlinuz.A",
 
         [string]$InitrdPath = "/tapeos/initramfs.img",
@@ -49,7 +49,7 @@ function New-TapeOSGrubConfig {
     if ($RootPartuuid) {
         $hashParam = if ($KernelHash) { "kern_b_hash=$KernelHash"} else { ""}
         $recoveryEntry = @"
-menuentry "6. Arrancar el recovery original de ChromeOS"--class os {
+menuentry "6. Arrancar el recuperador oficial"--class os {
     linux $KernelPath init=/sbin/init rootwait ro noresume loglevel=7 noinitrd console=tty0 ramoops.ecc=1 tpm_tis.force=0 intel_pmc_core.warn_on_s0ix_failures=1 xdomain=0 intel_iommu=on i915.modeset=1 cros_efi root=PARTUUID=$RootPartuuid $hashParam
 }
 
@@ -64,7 +64,7 @@ menuentry "6. Arrancar el recovery original de ChromeOS"--class os {
 #   1-4  usan el kernel Linux de PC (/tapeos/vmlinuz) + initramfs TapeOS
 #   2    verbose: muestra los mensajes del kernel (usa esta si hay negro)
 #   4    INSTALACION EN DISCO DURO (borra el disco destino)
-#   5-6  usan el kernel del recovery original de ChromeOS
+#   5-6  usan el kernel del recovery original del sistema
 #
 # Configuracion original del fabricante guardada como grub.cfg.bak
 # ===================================================================
@@ -115,7 +115,7 @@ menuentry "4. Instalar TapeOS en un disco duro"--class os {
     fi
 }
 
-menuentry "5. Arrancar TapeOS con el kernel del recovery de ChromeOS"--class os {
+menuentry "5. Arrancar TapeOS con el kernel del recuperador"--class os {
     if [ -f $KernelPath ] && [ -f $InitrdPath ]; then
         linux $KernelPath $base $verboseExtra
         initrd $InitrdPath

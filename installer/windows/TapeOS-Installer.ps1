@@ -598,10 +598,19 @@ $form.Controls.Add($btnNext)
 
 $stepPanels = @($pnl1, $pnl3, $pnl4, $pnl5, $pnl6)
 $script:currentStep = 0
+$script:pipelineDone = $false
 $script:langEPA = $true
 
 function Set-TapeOSStep {
     param([int]$StepIndex)
+    if ($StepIndex -lt 0 -or $StepIndex -ge $stepPanels.Count) {
+        Write-TapeOSLog ('Paso fuera de rango (' + $StepIndex + '); se usa el ultimo paso valido.')
+        $StepIndex = $stepPanels.Count - 1
+    }
+    if ($StepIndex -lt 0 -or $StepIndex -ge $stepPanels.Count) {
+        Write-TapeOSLog ('Paso fuera de rango (' + $StepIndex + '); se usa el ultimo paso valido.')
+        $StepIndex = $stepPanels.Count - 1
+    }
     $script:currentStep = $StepIndex
     for ($i = 0; $i -lt $stepPanels.Count; $i++) {
         $stepPanels[$i].Visible = ($i -eq $StepIndex)
@@ -713,8 +722,8 @@ function Get-AppsExplainText {
         if ($EPA) { return "TapeOS 100% libre: çîn nîn pun çerbiçio de Google.`r`nLâ aplikâçionêh Android çe îttalan mediante arxibô APK o la tienda Aurora (arrepôi êtico de Play).`r`nÎdeal pa privâçidá, reûtiliçaçiôn de ekîpô bîehô y comunidá de çoftware libre."}
         return "TapeOS 100% libre: sin ningún servicio de Google.`r`nLas aplicaciones Android se instalan mediante archivos APK o la tienda Aurora (sustituto ético de Play).`r`nIdeal para privacidad, reutilización de equipos antiguos y comunidad de software libre."
     } else {
-        if ($EPA) { return "Inkluye Play Çtore y lô çerbiçiô de Google.`r`nLa baçe der çîttema (ChromiumOS) çige çiendo libre, pero çe añaden komponentê propietariô de Google pa dâh çoportê kompleto a lâ aplikâçionêh Android."}
-        return "Incluye Play Store y los servicios de Google.`r`nLa base del sistema (ChromiumOS) sigue siendo libre, pero se añaden componentes propietarios de Google para dar soporte completo a las aplicaciones Android."
+        if ($EPA) { return "Inkluye Play Çtore y lô çerbiçiô de Google.`r`nLa baçe der çîttema çige çiendo libre, pero çe añaden komponentê propietariô de Google pa dâh çoportê kompleto a lâ aplikâçionêh Android."}
+        return "Incluye Play Store y los servicios de Google.`r`nLa base del sistema sigue siendo libre, pero se añaden componentes propietarios de Google para dar soporte completo a las aplicaciones Android."
     }
 }
 
@@ -747,7 +756,7 @@ function Set-TapeOSLanguage {
     $btnCreate.Text = if ($isEPA) { "Dehkargâh, Parcheâh y Kreâh (1-Klik)"} else { "Descargar, Parchear y Crear (1-Clic)"}
     $lblEta5.Text = if ($isEPA) { "Êttimao: --"} else { "Estimado: --"}
     $btnBack.Text = if ($isEPA) { "‹ Anteriôh"} else { "‹ Anterior"}
-    $btnNext.Text = if ($isEPA) { "Çiguiente ›"} else { "Siguiente ›"}
+    $btnNext.Text = if ($script:pipelineDone) { if ($isEPA) { "Çerrâh"} else { "Cerrar"} } elseif ($isEPA) { "Çiguiente ›"} else { "Siguiente ›"}
     $lblEta1.Text = if ($isEPA) { "Êttimao: 0 ç (kompletao)"} else { "Estimado: 0 s (completado)"}
     if ($script:currentStep -eq 3) { Set-TapeOSStep 3 }
 }
@@ -764,6 +773,8 @@ $btnBack.Add_Click({
 })
 
 $btnNext.Add_Click({
+    if ($script:pipelineDone) { $form.Close(); return }
+    if ($script:pipelineDone) { $form.Close(); return }
     if ($script:currentStep -lt 3) { Set-TapeOSStep ($script:currentStep + 1) }
 })
 
@@ -982,7 +993,7 @@ try {
             }
         }
         if (-not $usedFramework) {
-            # Grabacion clasica: recovery de ChromeOS parcheado + GRUB en la ESP.
+            # Grabacion clasica: recovery del sistema base parcheado + GRUB en la ESP.
             $Form.Invoke([Action]{ $LblPhase.Text = 'Grabaçiôn en er pendraîh USB'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --'})
             Start-TapeOSUsbFlash `
                 -ImageFilePath $patched.PatchedImagePath `
@@ -1058,17 +1069,17 @@ $btnCreate.Add_Click({
                 } else {
                     [System.Windows.Forms.MessageBox]::Show("No se detectó ningún pendrive USB.`r`nConecta uno y pulsa 'Refrescar', o elige 'Crear el medio (.img)'.", "Pendrive no detectado", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning) | Out-Null
                 }
-                Set-TapeOSStep 3
+                Set-TapeOSStep 2
                 return
             }
             $targetUsb = $usbList[$cbUsbDrives.SelectedIndex]
             $confirm = [System.Windows.Forms.MessageBox]::Show("¿Êttâh çeguro de ke kierêh grabâh TapeOS en:`r`n$($targetUsb.DisplayName)?`r`n`r`nTÔ LÔ DATÔ DER PENDRAÎH ÇE BORRARÁN.", "Konfîrmaçiôn de Grabaçiôn", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Warning)
         } else {
-            $confirm = [System.Windows.Forms.MessageBox]::Show("Çe dehkargará y parcheará la imâhen de ChromeOS y çe kreará er medio de îttalaçiôn (.img) en:`r`n$($txtImageDir.Text)`r`n`r`nNo çe grabará en nîn pun pendraîh.", "Konfîrmaçiôn — Kreâh er medio", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Warning)
+            $confirm = [System.Windows.Forms.MessageBox]::Show("Çe dehkargará y parcheará la imâhen ofiçiâh y çe kreará er medio de îttalaçiôn (.img) en:`r`n$($txtImageDir.Text)`r`n`r`nNo çe grabará en nîn pun pendraîh.", "Konfîrmaçiôn — Kreâh er medio", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Warning)
         }
         if ($confirm -ne [System.Windows.Forms.DialogResult]::Yes) { return }
         Write-TapeOSLog "Confirmacion aceptada. Lanzando pipeline (runspace)..."
-        Set-TapeOSStep 5
+        Set-TapeOSStep 4
         $btnBack.Enabled = $false
         $btnNext.Visible = $false
 
@@ -1110,7 +1121,8 @@ $btnCreate.Add_Click({
                     $lblPhase.Text = 'Kompletao'
                     $pbStep5.Value = 100
                     $lblEta5.Text = 'Kompletao'
-                    $btnBack.Enabled = $true
+                    $script:pipelineDone = $true
+                    $btnNext.Text = if ($script:langEPA) { 'Çerrâh' } else { 'Cerrar' }
                     $btnNext.Visible = $true
                 }
             }

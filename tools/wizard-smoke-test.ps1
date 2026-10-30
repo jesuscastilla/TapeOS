@@ -46,6 +46,9 @@ try {
     $lineas += ("DIAG-REC: " + $script:rec.RecoveryCodename)
     $lineas += ("DIAG-CHIP0-BACKCOLOR: " + $stepLabels[0].BackColor.ToString())
     $lineas += ("DIAG-HWINFO: " + ($lblHwInfo.Text -replace "`r`n", " | "))
+    Set-TapeOSStep 4
+    $form.Refresh()
+    $lineas += ("DIAG-PANEL-EJECUCION: visible=" + $pnl6.Visible + " barraVisible=" + $pbStep5.Visible + " barraTop=" + $pbStep5.Top + " faseVisible=" + $lblPhase.Visible)
     Set-Content -Path "$env:ProgramData\TapeOS\wizard-layout-check.log" -Encoding UTF8 -Force -Value $lineas
     $snapDir = 'G:\TapeOS\dist'
     if (-not (Test-Path -LiteralPath $snapDir)) { New-Item -ItemType Directory -Path $snapDir -Force | Out-Null }

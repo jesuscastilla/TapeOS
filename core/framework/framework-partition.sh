@@ -1,5 +1,5 @@
 ﻿#!/bin/bash
-# Crea la tabla GPT de Brunch (12 particiones) en el destino. Port de chromeos-install.sh.
+# Crea la tabla GPT del framework (12 particiones) en el destino. Port del instalador del sistema.
 set -e
 blocksize()
 {

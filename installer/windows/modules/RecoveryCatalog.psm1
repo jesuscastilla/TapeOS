@@ -1,8 +1,8 @@
 ﻿<#
 .SYNOPSIS
-    Catálogo y Gestor de Imágenes de Recuperación de ChromeOS para TapeOS
+    Catálogo y Gestor de Imágenes de Recuperación del Sistema para TapeOS
 .DESCRIPTION
-    Proporciona información sobre codenames de ChromeOS, descarga metadatos
+    Proporciona información sobre codenames del sistema, descarga metadatos
     desde cros.tech y ayuda a seleccionar la mejor imagen para equipos modernos y legacy.
 #>
 

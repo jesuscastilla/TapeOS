@@ -3,7 +3,7 @@
     Módulo de Detección de Hardware para TapeOS
 .DESCRIPTION
     Detecta arquitectura de CPU, generación, firmware (UEFI/BIOS), BitLocker,
-    almacenamiento y recomienda el perfil óptimo de ChromeOS / TapeOS.
+    almacenamiento y recomienda el perfil óptimo del sistema / TapeOS.
 #>
 
 function Get-TapeOSWifiOption {

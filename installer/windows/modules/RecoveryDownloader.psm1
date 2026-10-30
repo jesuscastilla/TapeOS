@@ -1,6 +1,6 @@
 ﻿<#
 .SYNOPSIS
-    Módulo de Descarga Oficial de Imágenes de Recuperación de ChromeOS
+    Módulo de Descarga Oficial de Imágenes de Recuperación del Sistema
 .DESCRIPTION
     Consulta la API en tiempo real de Chromium Dash (Google) para obtener la versión
     más reciente y actualizada del canal estable, y la descarga con barra de progreso.
@@ -15,7 +15,7 @@ function Get-TapeOSLatestRecoveryInfo {
 
     Write-Verbose "Consultando Chromium Dash API para el board '$BoardCodename'..."
 
-    # Mapeo de codenames de equipos a baseboards oficiales de ChromeOS
+    # Mapeo de codenames de equipos a baseboards oficiales del sistema
     $boardMap = @{
         "rammus"= "rammus"# Intel 4th-9th Gen
         "voxel"= "volteer"# Intel 11th-13th Gen

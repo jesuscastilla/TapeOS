@@ -1,4 +1,4 @@
-#!/bin/busybox sh
+﻿#!/bin/busybox sh
 # ==============================================================================
 # TapeOS initramfs /init
 #
@@ -62,7 +62,7 @@ find_esp() {
     return 1
 }
 
-# --- Localizar ROOT-A (particion ext4 con /etc/lsb-release de ChromeOS) ------
+# --- Localizar ROOT-A (particion ext4 con /etc/lsb-release del sistema base) ------
 find_root_a() {
     local d base p dev
     for d in /sys/class/block/*; do
@@ -123,7 +123,7 @@ fi
 # --- MODO NORMAL --------------------------------------------------------------
 ROOTA=$(find_root_a)
 if [ -z "$ROOTA" ]; then
-    log "FATAL: no se encontro la particion ROOT-A de ChromeOS."
+    log "FATAL: no se encontro la particion ROOT-A del sistema base."
     log "Sugerencia: arranca con 'Diagnostico verbose' para ver los mensajes."
     exec sh
 fi
@@ -149,7 +149,7 @@ for p in /patches/[0-9]*.sh; do
     fi
 done
 
-# Preparar el nuevo root y ceder el control a ChromeOS
+# Preparar el nuevo root y ceder el control al sistema
 mkdir -p /roota/proc /roota/sys /roota/dev /roota/run
 mount -t proc proc /roota/proc 2>/dev/null || true
 mount -t sysfs sysfs /roota/sys 2>/dev/null || true

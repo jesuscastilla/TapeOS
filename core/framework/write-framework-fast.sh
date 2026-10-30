@@ -1,6 +1,6 @@
 ﻿#!/bin/bash
 # write-brunch-fast.sh <src.bin> <dst> - copia rapida de particiones Brunch
-# La tabla GPT debe existir ya en el destino (la crea chromeos-install.sh).
+# La tabla GPT debe existir ya en el destino (la crea el instalador del sistema).
 set -e
 SRC="$1"; DST="$2"
 BRDIR="${TAPEOOS_FRAMEWORK_DIR:-$(cd "$(dirname "$0")/../.." && pwd)/dist/framework}"
@@ -35,7 +35,7 @@ copy_part() {
     fast_dd "$img" "$ob" "$db" "$bytes"
 }
 
-# Mismo mapeo que chromeos-install.sh (install_singleboot)
+# Mismo mapeo que el instalador del sistema (install_singleboot)
 copy_part 1 "$SRC" 1
 copy_part 2 "$SRC" 4
 copy_part 3 "$SRC" 3
