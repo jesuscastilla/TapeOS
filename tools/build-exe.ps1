@@ -128,6 +128,17 @@ if (Test-Path (Join-Path $brunchScriptSrc "install-framework-usb.sh")) {
         [void]$sb.AppendLine("[System.IO.File]::WriteAllBytes((Join-Path `$bsDir '$($_.Name)'), [Convert]::FromBase64String('$bsB64'))")
     }
     Write-Host "[TapeOS] Scripts del framework TapeOS incluidos en el bundle."
+
+# Config de URL de imagenes (NAS o servidor propio)
+$cfgFile = Join-Path (Split-Path -Parent $PSScriptRoot) "tapeos-config.json"
+if (Test-Path $cfgFile) {
+    $cfgB64 = Get-Base64 -Path $cfgFile
+    [void]$sb.AppendLine('')
+    [void]$sb.AppendLine('$assetsDir = Join-Path $appDir ''assets''')
+    [void]$sb.AppendLine('New-Item -ItemType Directory -Force -Path $assetsDir | Out-Null')
+    [void]$sb.AppendLine("[System.IO.File]::WriteAllBytes((Join-Path `$assetsDir 'tapeos-config.json'), [Convert]::FromBase64String('$cfgB64'))")
+    Write-Host "[TapeOS] Config de URL de imagenes incluida."
+}
 }
 
 [void]$sb.AppendLine('& $mainPath')

@@ -928,6 +928,7 @@ Import-Module (Join-Path $ModuleDir "ImagePatcher.psm1") -Force
 Import-Module (Join-Path $ModuleDir "UsbFlasher.psm1") -Force
 Import-Module (Join-Path $ModuleDir "BootManager.psm1") -Force
 Import-Module (Join-Path $ModuleDir "FrameworkInstaller.psm1") -Force
+Import-Module (Join-Path $ModuleDir "ImageCatalog.psm1") -Force
 
 try {
     Write-PipelineLog "Pipeline (runspace) iniciado"
@@ -1028,6 +1029,21 @@ try {
             $c = Get-ChildItem -Path (Join-Path $imgDir ("TapeOS-$Codename-*.img")) -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
             if ($c) { $tapeosImg = $c; break }
         }
+        if (-not $tapeosImg) {
+            try {
+                $Form.Invoke([Action]{ $LblPhase.Text = '📥 Dehkargando imâhen TapeOS dêhde er çerbidôh...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
+                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -ProgressCallback {
+                    param($pct, $mb, $tot)
+                    try {
+                        $pctInt = [math]::Min(100, [int]$pct)
+                        $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = "Dehkargao $mb MB de $tot MB" })
+                    } catch { }
+                }
+                $tapeosImg = Get-Item -LiteralPath $remoteImg
+            } catch {
+                Write-PipelineLog ("Descarga de imagen remota no disponible: " + $_.Exception.Message)
+            }
+        }
         $usedFramework = $false
         if ($tapeosImg) {
             try {
@@ -1049,7 +1065,22 @@ try {
                 $Form.Invoke([Action]{ $LogBox.AppendText("[Imagen] $($tapeosImg.Name) grabada en er pendraîh.`r`n") })
             } catch {
                 Write-PipelineLog ("Grabacion de imagen TapeOS fallo: " + $_.Exception.Message)
-                $usedFramework = $false
+                if (-not $tapeosImg) {
+            try {
+                $Form.Invoke([Action]{ $LblPhase.Text = '📥 Dehkargando imâhen TapeOS dêhde er çerbidôh...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
+                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -ProgressCallback {
+                    param($pct, $mb, $tot)
+                    try {
+                        $pctInt = [math]::Min(100, [int]$pct)
+                        $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = "Dehkargao $mb MB de $tot MB" })
+                    } catch { }
+                }
+                $tapeosImg = Get-Item -LiteralPath $remoteImg
+            } catch {
+                Write-PipelineLog ("Descarga de imagen remota no disponible: " + $_.Exception.Message)
+            }
+        }
+        $usedFramework = $false
             }
         }
         if ($frameworkAssetsDir -and $frameworkScriptDir -and (Test-TapeOSWsl)) {
@@ -1073,6 +1104,21 @@ try {
             $c = Get-ChildItem -Path (Join-Path $imgDir ("TapeOS-$Codename-*.img")) -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
             if ($c) { $tapeosImg = $c; break }
         }
+        if (-not $tapeosImg) {
+            try {
+                $Form.Invoke([Action]{ $LblPhase.Text = '📥 Dehkargando imâhen TapeOS dêhde er çerbidôh...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
+                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -ProgressCallback {
+                    param($pct, $mb, $tot)
+                    try {
+                        $pctInt = [math]::Min(100, [int]$pct)
+                        $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = "Dehkargao $mb MB de $tot MB" })
+                    } catch { }
+                }
+                $tapeosImg = Get-Item -LiteralPath $remoteImg
+            } catch {
+                Write-PipelineLog ("Descarga de imagen remota no disponible: " + $_.Exception.Message)
+            }
+        }
         $usedFramework = $false
         if ($tapeosImg) {
             try {
@@ -1094,7 +1140,22 @@ try {
                 $Form.Invoke([Action]{ $LogBox.AppendText("[Imagen] $($tapeosImg.Name) grabada en er pendraîh.`r`n") })
             } catch {
                 Write-PipelineLog ("Grabacion de imagen TapeOS fallo: " + $_.Exception.Message)
-                $usedFramework = $false
+                if (-not $tapeosImg) {
+            try {
+                $Form.Invoke([Action]{ $LblPhase.Text = '📥 Dehkargando imâhen TapeOS dêhde er çerbidôh...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
+                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -ProgressCallback {
+                    param($pct, $mb, $tot)
+                    try {
+                        $pctInt = [math]::Min(100, [int]$pct)
+                        $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = "Dehkargao $mb MB de $tot MB" })
+                    } catch { }
+                }
+                $tapeosImg = Get-Item -LiteralPath $remoteImg
+            } catch {
+                Write-PipelineLog ("Descarga de imagen remota no disponible: " + $_.Exception.Message)
+            }
+        }
+        $usedFramework = $false
             }
         }
             }

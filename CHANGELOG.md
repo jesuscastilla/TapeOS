@@ -2,6 +2,15 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.42] — 30-10-2026
+
+### Nobedáêh
+- **Catalogo de imagenes sin WSL**: el asistente descarga la imagen preconstruida del NAS (URL configurable en `tapeos-config.json`, hostname publico), verifica SHA256, descomprime (.img.gz) y la graba. Sin WSL en el destino.
+- **Primeras imagenes publicadas**: voxel M168 y rammus M149 (hibridas UEFI+BIOS, con todos los parches) en el NAS con catalogo `images.json`.
+- `tools/publish-images.ps1` (catalogo + subida SSH) y `ImageCatalog.psm1` (descarga/verificacion/descompresion con progreso).
+- EXE aligerado: los artefactos del framework viajan en las imagenes, no en el bundle (265 KB).
+- Limpieza de espacio: recoveries, imagenes intermedias y EXEs antiguos eliminados (local y remoto gestionado).
+
 ## [v1.0.0-alpha.41] — 30-10-2026
 
 ### Nobedáêh
