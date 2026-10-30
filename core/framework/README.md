@@ -21,6 +21,7 @@ openFyde/FydeOS para TapeOS Free) a PCs x86_64 con sus parches propios.
 - `94-tapeos-hardware.sh`     -> WiFi/audio/tactil por opciones detectadas
 - `95-tapeos-zram.sh`         -> siempre (zram 150 %)
 - `96-tapeos-install.sh`      -> `install_tapeos` (instalador a disco duro)
+- `97-tapeos-crostini.sh`     -> siempre (terminal Linux/Crostini + Centro de software Flatpak/GNOME Software; Chromium en Free)
 
 ## Menu GRUB (sin menus de configuracion del framework base)
 

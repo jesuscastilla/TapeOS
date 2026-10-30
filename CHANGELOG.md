@@ -2,6 +2,13 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.43] — 30-10-2026
+
+### Nobedáêh
+- **Terminal Linux automatica (Crostini)**: parche `97-tapeos-crostini.sh` habilita Crostini desde el primer arranque en ambas versiones.
+- **Centro de software**: Flatpak + GNOME Software + Flathub instalados dentro del contenedor con lanzador "Centro de software TapeOS"; en la version Free ademas Chromium (navegador libre).
+- Wrapper `tapeos-software-center` en el sistema (vsh a penguin) y script del contenedor.
+
 ## [v1.0.0-alpha.42] — 30-10-2026
 
 ### Nobedáêh
