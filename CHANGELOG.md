@@ -2,6 +2,12 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.45] — 30-10-2026
+
+### Nobedáêh
+- **Catálogo con variantes**: `images.json` ahora distingue `version: full | free`; la imagen TapeOS Free (APU/AMD) esta publicada en el NAS.
+- **Instalador integrado**: al elegir "Software Libre" (sin Google Play) descarga y graba la imagen Free automaticamente; con Google Play usa la imagen full de la board elegida.
+
 ## [v1.0.0-alpha.44] — 30-10-2026
 
 ### Nobedáêh

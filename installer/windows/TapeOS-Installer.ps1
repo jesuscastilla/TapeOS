@@ -1032,7 +1032,7 @@ try {
         if (-not $tapeosImg) {
             try {
                 $Form.Invoke([Action]{ $LblPhase.Text = '📥 Dehkargando imâhen TapeOS dêhde er çerbidôh...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
-                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -ProgressCallback {
+                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -Version $(if ($EnableGoogleApps) { 'full' } else { 'free' }) -ProgressCallback {
                     param($pct, $mb, $tot)
                     try {
                         $pctInt = [math]::Min(100, [int]$pct)
@@ -1068,7 +1068,7 @@ try {
                 if (-not $tapeosImg) {
             try {
                 $Form.Invoke([Action]{ $LblPhase.Text = '📥 Dehkargando imâhen TapeOS dêhde er çerbidôh...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
-                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -ProgressCallback {
+                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -Version $(if ($EnableGoogleApps) { 'full' } else { 'free' }) -ProgressCallback {
                     param($pct, $mb, $tot)
                     try {
                         $pctInt = [math]::Min(100, [int]$pct)
@@ -1107,7 +1107,7 @@ try {
         if (-not $tapeosImg) {
             try {
                 $Form.Invoke([Action]{ $LblPhase.Text = '📥 Dehkargando imâhen TapeOS dêhde er çerbidôh...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
-                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -ProgressCallback {
+                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -Version $(if ($EnableGoogleApps) { 'full' } else { 'free' }) -ProgressCallback {
                     param($pct, $mb, $tot)
                     try {
                         $pctInt = [math]::Min(100, [int]$pct)
@@ -1143,7 +1143,7 @@ try {
                 if (-not $tapeosImg) {
             try {
                 $Form.Invoke([Action]{ $LblPhase.Text = '📥 Dehkargando imâhen TapeOS dêhde er çerbidôh...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
-                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -ProgressCallback {
+                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -Version $(if ($EnableGoogleApps) { 'full' } else { 'free' }) -ProgressCallback {
                     param($pct, $mb, $tot)
                     try {
                         $pctInt = [math]::Min(100, [int]$pct)

@@ -36,13 +36,14 @@ function Get-TapeOSRemoteImage {
     param(
         [Parameter(Mandatory=$true)][string]$Codename,
         [string]$BaseUrl,
+        [string]$Version = "full",
         [string]$DestDir = "C:\TapeOS\images",
         [scriptblock]$ProgressCallback = $null
     )
     if (-not $BaseUrl) { $BaseUrl = Get-TapeOSImagesBaseUrl }
     $cat = Get-TapeOSImageCatalog -BaseUrl $BaseUrl
     if (-not $cat -or -not $cat.images) { throw "No se pudo obtener el catalogo de imagenes de $BaseUrl" }
-    $entry = $cat.images | Where-Object { $_.board -eq $Codename } | Select-Object -First 1
+    $entry = $cat.images | Where-Object { $_.version -eq $Version } | Where-Object { if ($Version -eq "free") { $true } else { $_.board -eq $Codename } } | Select-Object -First 1
     if (-not $entry) { throw "No hay imagen para la board '$Codename' en el catalogo." }
     New-Item -ItemType Directory -Path $DestDir -Force | Out-Null
     $gzPath = Join-Path $DestDir $entry.file
