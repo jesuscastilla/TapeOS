@@ -16,7 +16,7 @@ function Get-TapeOSImagesBaseUrl {
         if (Test-Path -LiteralPath $c) {
             try {
                 $cfg = Get-Content -LiteralPath $c -Raw | ConvertFrom-Json
-                if ($cfg.imagesBaseUrl) { return $cfg.imagesBaseUrl.TrimEnd('/') + '/' }
+                if ($cfg.imagesBaseUrl) { return $cfg.imagesBaseUrl.TrimEnd('/') + '/'}
             } catch { }
         }
     }
@@ -47,9 +47,9 @@ function Get-TapeOSRemoteImage {
     )
     if (-not $BaseUrl) { $BaseUrl = Get-TapeOSImagesBaseUrl }
     $cat = Get-TapeOSImageCatalog -BaseUrl $BaseUrl
-    if (-not $cat -or -not $cat.images) { throw "No se pudo obtener el catalogo de imagenes de $BaseUrl" }
+    if (-not $cat -or -not $cat.images) { throw "No se pudo obtener el catalogo de imagenes de $BaseUrl"}
     $entry = $cat.images | Where-Object { $_.version -eq $Version } | Where-Object { if ($Version -eq "free") { $true } else { $_.board -eq $Codename } } | Select-Object -First 1
-    if (-not $entry) { throw "No hay imagen para la board '$Codename' en el catalogo." }
+    if (-not $entry) { throw "No hay imagen para la board '$Codename'en el catalogo."}
     New-Item -ItemType Directory -Path $DestDir -Force | Out-Null
     $gzPath = Join-Path $DestDir $entry.file
     $imgPath = $gzPath -replace '\.gz$', ''
@@ -61,7 +61,7 @@ function Get-TapeOSRemoteImage {
         $curl = Get-Command curl.exe -ErrorAction SilentlyContinue
         if ($curl) {
             & curl.exe -sS -L -o $gzPath $url
-            if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $gzPath)) { throw "Descarga fallida (curl exit $LASTEXITCODE)" }
+            if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $gzPath)) { throw "Descarga fallida (curl exit $LASTEXITCODE)"}
         } else {
             $script:dlDone = $false
             $wc = New-Object System.Net.WebClient
@@ -80,7 +80,7 @@ function Get-TapeOSRemoteImage {
         }
     }
     $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $gzPath).Hash.ToLower()
-    if ($hash -ne $entry.sha256.ToLower()) { Remove-Item -LiteralPath $gzPath -Force; throw "SHA256 de $($entry.file) no coincide: $hash" }
+    if ($hash -ne $entry.sha256.ToLower()) { Remove-Item -LiteralPath $gzPath -Force; throw "SHA256 de $($entry.file) no coincide: $hash"}
     Write-Host "[TapeOS] Descomprimiendo $($entry.file) ..."
     $in = [System.IO.File]::OpenRead($gzPath)
     $out = [System.IO.File]::Create($imgPath)

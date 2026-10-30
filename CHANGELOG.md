@@ -2,6 +2,12 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.51] — 30-10-2026
+
+### Cambios
+- **Sin emojis**: eliminados todos los emojis de la interfaz del instalador y de los mensajes de los modulos (textos limpios, sin caracteres pictograficos).
+- Limpieza de espacios residuales dejados por los emojis al inicio de los textos.
+
 ## [v1.0.0-alpha.50] — 30-10-2026
 
 ### Cambios

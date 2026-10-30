@@ -36,7 +36,7 @@ function New-TapeOSGrubConfig {
     if (-not (Test-Path $parent)) { New-Item -Path $parent -ItemType Directory -Force | Out-Null }
 
     $optsList = @("enable_updates")
-    if (-not $EnableGoogleApps) { $optsList += "no_google_play" }
+    if (-not $EnableGoogleApps) { $optsList += "no_google_play"}
     foreach ($opt in $FrameworkOptions) { if ($opt) { $optsList += $opt } }
     $optionsStr = $optsList -join ","
 
@@ -47,9 +47,9 @@ function New-TapeOSGrubConfig {
 
     $recoveryEntry = ""
     if ($RootPartuuid) {
-        $hashParam = if ($KernelHash) { "kern_b_hash=$KernelHash" } else { "" }
+        $hashParam = if ($KernelHash) { "kern_b_hash=$KernelHash"} else { ""}
         $recoveryEntry = @"
-menuentry "6. Arrancar el recovery original de ChromeOS" --class os {
+menuentry "6. Arrancar el recovery original de ChromeOS"--class os {
     linux $KernelPath init=/sbin/init rootwait ro noresume loglevel=7 noinitrd console=tty0 ramoops.ecc=1 tpm_tis.force=0 intel_pmc_core.warn_on_s0ix_failures=1 xdomain=0 intel_iommu=on i915.modeset=1 cros_efi root=PARTUUID=$RootPartuuid $hashParam
 }
 
@@ -75,7 +75,7 @@ set color_normal=white/black
 set color_highlight=black/light-gray
 terminal_output console
 
-menuentry "1. Arrancar TapeOS - modo normal" --class os {
+menuentry "1. Arrancar TapeOS - modo normal"--class os {
     if [ -f $TestKernelPath ] && [ -f $InitrdPath ]; then
         linux $TestKernelPath $base
         initrd $InitrdPath
@@ -85,7 +85,7 @@ menuentry "1. Arrancar TapeOS - modo normal" --class os {
     fi
 }
 
-menuentry "2. Arrancar TapeOS - Diagnostico verbose (ver mensajes)" --class os {
+menuentry "2. Arrancar TapeOS - Diagnostico verbose (ver mensajes)"--class os {
     if [ -f $TestKernelPath ] && [ -f $InitrdPath ]; then
         linux $TestKernelPath $base $verboseExtra
         initrd $InitrdPath
@@ -95,7 +95,7 @@ menuentry "2. Arrancar TapeOS - Diagnostico verbose (ver mensajes)" --class os {
     fi
 }
 
-menuentry "3. Arrancar TapeOS - Modo seguro (sin graficos)" --class os {
+menuentry "3. Arrancar TapeOS - Modo seguro (sin graficos)"--class os {
     if [ -f $TestKernelPath ] && [ -f $InitrdPath ]; then
         linux $TestKernelPath $base $safeExtra
         initrd $InitrdPath
@@ -105,7 +105,7 @@ menuentry "3. Arrancar TapeOS - Modo seguro (sin graficos)" --class os {
     fi
 }
 
-menuentry "4. Instalar TapeOS en un disco duro" --class os {
+menuentry "4. Instalar TapeOS en un disco duro"--class os {
     if [ -f $TestKernelPath ] && [ -f $InitrdPath ]; then
         linux $TestKernelPath $base $installExtra
         initrd $InitrdPath
@@ -115,7 +115,7 @@ menuentry "4. Instalar TapeOS en un disco duro" --class os {
     fi
 }
 
-menuentry "5. Arrancar TapeOS con el kernel del recovery de ChromeOS" --class os {
+menuentry "5. Arrancar TapeOS con el kernel del recovery de ChromeOS"--class os {
     if [ -f $KernelPath ] && [ -f $InitrdPath ]; then
         linux $KernelPath $base $verboseExtra
         initrd $InitrdPath
@@ -126,17 +126,17 @@ menuentry "5. Arrancar TapeOS con el kernel del recovery de ChromeOS" --class os
 }
 
 $recoveryEntry
-menuentry "7. Consola de comandos GRUB" --class settings {
+menuentry "7. Consola de comandos GRUB"--class settings {
     commandline
 }
 
-menuentry "8. Apagar el equipo" --class halt {
+menuentry "8. Apagar el equipo"--class halt {
     halt
 }
 "@
 
     Set-Content -Path $OutputPath -Value $grubTemplate -Encoding ASCII
-    Write-Host "[TapeOS BootManager] Menu GRUB generado en '$OutputPath'." -ForegroundColor Green
+    Write-Host "[TapeOS BootManager] Menu GRUB generado en '$OutputPath'."-ForegroundColor Green
 }
 
 function Write-TapeOSGrubToEsp {
@@ -160,9 +160,9 @@ function Write-TapeOSGrubToEsp {
     Start-Sleep -Milliseconds 800
 
     $esp = Get-Partition -DiskNumber $DiskNumber -ErrorAction SilentlyContinue |
-        Where-Object { $_.GptType -eq '{c12a7328-f81f-11d2-ba4b-00a0c93ec93b}' } |
+        Where-Object { $_.GptType -eq '{c12a7328-f81f-11d2-ba4b-00a0c93ec93b}'} |
         Select-Object -First 1
-    if (-not $esp) { throw "No se encontro la particion EFI (ESP) en el disco $DiskNumber." }
+    if (-not $esp) { throw "No se encontro la particion EFI (ESP) en el disco $DiskNumber."}
 
     $letter = $null
     $assigned = $false
@@ -172,7 +172,7 @@ function Write-TapeOSGrubToEsp {
         foreach ($candidate in @('Z','Y','X','W','V','U','T')) {
             if (-not (Test-Path "${candidate}:\")) { $letter = $candidate; break }
         }
-        if (-not $letter) { throw "No hay letra de unidad libre para montar la ESP del disco $DiskNumber." }
+        if (-not $letter) { throw "No hay letra de unidad libre para montar la ESP del disco $DiskNumber."}
         Set-Partition -DiskNumber $DiskNumber -PartitionNumber $esp.PartitionNumber -NewDriveLetter $letter -ErrorAction Stop
         $assigned = $true
         Start-Sleep -Milliseconds 1200
@@ -180,7 +180,7 @@ function Write-TapeOSGrubToEsp {
 
     try {
         $cfgPath = Join-Path "${letter}:" 'efi\boot\grub.cfg'
-        if (-not (Test-Path -LiteralPath (Split-Path $cfgPath))) { throw "La ESP del disco $DiskNumber no contiene la carpeta efi\boot." }
+        if (-not (Test-Path -LiteralPath (Split-Path $cfgPath))) { throw "La ESP del disco $DiskNumber no contiene la carpeta efi\boot."}
 
         $rootPartuuid = ""
         $kernelHash = ""
@@ -213,7 +213,7 @@ function Write-TapeOSGrubToEsp {
             -EnableGoogleApps $EnableGoogleApps -FrameworkOptions $FrameworkOptions `
             -Timeout $Timeout | Out-Null
 
-        Write-Host "[TapeOS BootManager] Menu inyectado en $cfgPath (PARTUUID=$rootPartuuid, initramfs=$initramfsInjected, kernel=$kernelInjected)." -ForegroundColor Green
+        Write-Host "[TapeOS BootManager] Menu inyectado en $cfgPath (PARTUUID=$rootPartuuid, initramfs=$initramfsInjected, kernel=$kernelInjected)."-ForegroundColor Green
         return [PSCustomObject]@{
             EspDrive          = "${letter}:"
             ConfigPath        = $cfgPath
@@ -224,7 +224,7 @@ function Write-TapeOSGrubToEsp {
         }
     } finally {
         if ($assigned) {
-            try { Remove-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber $esp.PartitionNumber -AccessPath "${letter}:\" -ErrorAction SilentlyContinue } catch { }
+            try { Remove-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber $esp.PartitionNumber -AccessPath "${letter}:\"-ErrorAction SilentlyContinue } catch { }
         }
     }
 }

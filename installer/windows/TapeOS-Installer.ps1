@@ -24,14 +24,14 @@ $script:__tapeosLogFile = Join-Path $env:ProgramData "TapeOS\tapeos-installer.lo
 try { New-Item -ItemType Directory -Force -Path (Split-Path $script:__tapeosLogFile) | Out-Null } catch { }
 function Write-TapeOSLog {
     param([string]$Msg)
-    try { Add-Content -Path $script:__tapeosLogFile -Value ("[{0}] {1}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"), $Msg) -Encoding UTF8 } catch { }
+    try { Add-Content -Path $script:__tapeosLogFile -Value ("[{0}] {1}"-f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"), $Msg) -Encoding UTF8 } catch { }
 }
 Write-TapeOSLog "=== TapeOS GUI (wizard) iniciada ==="
 try {
     [System.Windows.Forms.Application]::SetUnhandledExceptionMode([System.Windows.Forms.UnhandledExceptionMode]::CatchException)
     [System.Windows.Forms.Application]::add_ThreadException({
         param($sender, $e)
-        Write-TapeOSLog ("UNHANDLED ThreadException: " + $e.Exception.ToString())
+        Write-TapeOSLog ("UNHANDLED ThreadException: "+ $e.Exception.ToString())
         try { [System.Windows.Forms.MessageBox]::Show("Errôh inepperao:`r`n$($e.Exception.Message)", "TapeOS", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error) | Out-Null } catch { }
     })
 } catch { }
@@ -102,7 +102,7 @@ $script:rec = $null
 
 # DPI-aware: evita el escalado borroso de Windows en pantallas de alta densidad
 try {
-    Add-Type -TypeDefinition 'using System.Runtime.InteropServices; public class TapeOSNative { [DllImport("user32.dll")] public static extern bool SetProcessDPIAware(); }' -ErrorAction Stop
+    Add-Type -TypeDefinition 'using System.Runtime.InteropServices; public class TapeOSNative { [DllImport("user32.dll")] public static extern bool SetProcessDPIAware(); }'-ErrorAction Stop
     [TapeOSNative]::SetProcessDPIAware() | Out-Null
 } catch { }
 
@@ -364,7 +364,7 @@ $lblAppsTitle.AutoSize = $true
 $pnl3.Controls.Add($lblAppsTitle)
 
 $radioLibre = New-Object System.Windows.Forms.RadioButton
-$radioLibre.Text = "🔓 Çoftware Libre — çîn Googlêh Play (rekomendao)"
+$radioLibre.Text = "Çoftware Libre — çîn Googlêh Play (rekomendao)"
 $radioLibre.Font = New-Object System.Drawing.Font("Segoe UI", 10)
 $radioLibre.ForeColor = [System.Drawing.Color]::FromArgb(35, 48, 40)
 $radioLibre.Location = New-Object System.Drawing.Point(24, 58)
@@ -373,7 +373,7 @@ $radioLibre.Checked = $true
 $pnl3.Controls.Add($radioLibre)
 
 $radioGoogleApps = New-Object System.Windows.Forms.RadioButton
-$radioGoogleApps.Text = "🛍️ Kon Googlêh Play — Android kompleto"
+$radioGoogleApps.Text = "Kon Googlêh Play — Android kompleto"
 $radioGoogleApps.Font = New-Object System.Drawing.Font("Segoe UI", 10)
 $radioGoogleApps.ForeColor = [System.Drawing.Color]::FromArgb(35, 48, 40)
 $radioGoogleApps.Location = New-Object System.Drawing.Point(24, 96)
@@ -408,7 +408,7 @@ $lblMediaTitle.AutoSize = $true
 $pnl4.Controls.Add($lblMediaTitle)
 
 $radioImageOnly = New-Object System.Windows.Forms.RadioButton
-$radioImageOnly.Text = "📀 Kreâh er medio de îttalaçiôn (.img) — guâddâlo en er dîkko"
+$radioImageOnly.Text = "Kreâh er medio de îttalaçiôn (.img) — guâddâlo en er dîkko"
 $radioImageOnly.Font = New-Object System.Drawing.Font("Segoe UI", 10)
 $radioImageOnly.ForeColor = [System.Drawing.Color]::FromArgb(35, 48, 40)
 $radioImageOnly.Location = New-Object System.Drawing.Point(24, 58)
@@ -425,7 +425,7 @@ $txtImageDir.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Wind
 $pnl4.Controls.Add($txtImageDir)
 
 $btnBrowseDir = New-Object System.Windows.Forms.Button
-$btnBrowseDir.Text = "📂 Ehkaminâh..."
+$btnBrowseDir.Text = "Ehkaminâh..."
 $btnBrowseDir.Location = New-Object System.Drawing.Point(674, 98)
 $btnBrowseDir.Size = New-Object System.Drawing.Size(252, 32)
 $btnBrowseDir.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Right
@@ -433,7 +433,7 @@ $pnl4.Controls.Add($btnBrowseDir)
 Set-TapeOSButtonStyle -Btn $btnBrowseDir -Kind 'secondary'
 
 $radioUsb = New-Object System.Windows.Forms.RadioButton
-$radioUsb.Text = "💾 Live-USB — Grabâh en un pendraîh USB y arrankâh dêhde él"
+$radioUsb.Text = "Live-USB — Grabâh en un pendraîh USB y arrankâh dêhde él"
 $radioUsb.Font = New-Object System.Drawing.Font("Segoe UI", 10)
 $radioUsb.ForeColor = [System.Drawing.Color]::FromArgb(35, 48, 40)
 $radioUsb.Location = New-Object System.Drawing.Point(24, 158)
@@ -452,7 +452,7 @@ $cbUsbDrives.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Wind
 $pnl4.Controls.Add($cbUsbDrives)
 
 $btnRefreshUsb = New-Object System.Windows.Forms.Button
-$btnRefreshUsb.Text = "🔄 Refrehkâh"
+$btnRefreshUsb.Text = "Refrehkâh"
 $btnRefreshUsb.Location = New-Object System.Drawing.Point(674, 198)
 $btnRefreshUsb.Size = New-Object System.Drawing.Size(252, 32)
 $btnRefreshUsb.Enabled = $false
@@ -470,7 +470,7 @@ $lblUsbWarning.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Wi
 $pnl4.Controls.Add($lblUsbWarning)
 # Opcion de firmware: BIOS Legacy (sin UEFI)
 $chkBiosMode = New-Object System.Windows.Forms.CheckBox
-$chkBiosMode.Text = "🖥️ Modo BIÔ (çin UEFI)"
+$chkBiosMode.Text = "Modo BIÔ (çin UEFI)"
 $chkBiosMode.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
 $chkBiosMode.Location = New-Object System.Drawing.Point(24, 300)
 $chkBiosMode.AutoSize = $true
@@ -624,18 +624,18 @@ function Set-TapeOSStep {
     $btnBack.Enabled = ($StepIndex -gt 0 -and $StepIndex -lt 4)
     $btnNext.Visible = ($StepIndex -lt 3)
     if ($StepIndex -eq 3) {
-        $sumMode = if ($radioImageOnly.Checked) { "Îttaladôh (.img) → $($txtImageDir.Text)" } else { "Live-USB → $(if ($cbUsbDrives.SelectedItem) { $cbUsbDrives.SelectedItem.ToString() } else { '(çelehçiona pendraîh)' })" }
+        $sumMode = if ($radioImageOnly.Checked) { "Îttaladôh (.img) → $($txtImageDir.Text)"} else { "Live-USB → $(if ($cbUsbDrives.SelectedItem) { $cbUsbDrives.SelectedItem.ToString() } else { '(çelehçiona pendraîh)'})"}
         $lblSummary.Text = @"
 $(if ($script:langEPA) {
-"• Rekûperaçiôn (automátika): $($script:rec.RecoveryCodename.ToUpper()) $(if ($script:recoveryInfo) { "- Milestone $($script:recoveryInfo.Milestone)" } else { '' })
-• Aplikâçionêh: $(if ($radioLibre.Checked) { 'Çoftware Libre (APK + Aurora Çtore)' } else { 'Googlêh Play (Çtore + Android)' })
+"• Rekûperaçiôn (automátika): $($script:rec.RecoveryCodename.ToUpper()) $(if ($script:recoveryInfo) { "- Milestone $($script:recoveryInfo.Milestone)"} else { ''})
+• Aplikâçionêh: $(if ($radioLibre.Checked) { 'Çoftware Libre (APK + Aurora Çtore)'} else { 'Googlêh Play (Çtore + Android)'})
 • Medio: $sumMode
-• Parcheh de hardware: $(if ($script:patchList) { $script:patchList } else { 'nîn guno' })"
+• Parcheh de hardware: $(if ($script:patchList) { $script:patchList } else { 'nîn guno'})"
 } else {
-"• Recovery (automático): $($script:rec.RecoveryCodename.ToUpper()) $(if ($script:recoveryInfo) { "- Milestone $($script:recoveryInfo.Milestone)" } else { '' })
-• Aplicaciones: $(if ($radioLibre.Checked) { 'Software Libre (APK + Aurora Store)' } else { 'Google Play (Store + Android)' })
+"• Recovery (automático): $($script:rec.RecoveryCodename.ToUpper()) $(if ($script:recoveryInfo) { "- Milestone $($script:recoveryInfo.Milestone)"} else { ''})
+• Aplicaciones: $(if ($radioLibre.Checked) { 'Software Libre (APK + Aurora Store)'} else { 'Google Play (Store + Android)'})
 • Medio: $sumMode
-• Parches de hardware: $(if ($script:patchList) { $script:patchList } else { 'ninguno' })"
+• Parches de hardware: $(if ($script:patchList) { $script:patchList } else { 'ninguno'})"
 })
 "@
     }
@@ -655,31 +655,31 @@ function Refresh-UsbList {
 
 function Format-ETA {
     param([double]$Seconds)
-    if ($Seconds -lt 0 -or [double]::IsInfinity($Seconds) -or [double]::IsNaN($Seconds)) { return "--" }
-    if ($Seconds -lt 60) { return ("{0:N0} ç" -f $Seconds) }
-    if ($Seconds -lt 3600) { return ("{0:N0} min {1:N0} ç" -f [math]::Floor($Seconds / 60), ($Seconds % 60)) }
-    return ("{0:N1} orâ" -f ($Seconds / 3600))
+    if ($Seconds -lt 0 -or [double]::IsInfinity($Seconds) -or [double]::IsNaN($Seconds)) { return "--"}
+    if ($Seconds -lt 60) { return ("{0:N0} ç"-f $Seconds) }
+    if ($Seconds -lt 3600) { return ("{0:N0} min {1:N0} ç"-f [math]::Floor($Seconds / 60), ($Seconds % 60)) }
+    return ("{0:N1} orâ"-f ($Seconds / 3600))
 }
 
 function Get-HwSummaryText {
     param([bool]$EPA)
     if (-not $script:hwReport) {
-        return if ($EPA) { "Deteôtando el hardware...`r`n`r`n" } else { "Detectando el hardware...`r`n`r`n" }
+        return if ($EPA) { "Deteôtando el hardware...`r`n`r`n"} else { "Detectando el hardware...`r`n`r`n"}
     }
-    $wifiSummary = if ($script:hwReport.Network.WiFi.Count -gt 0) { (($script:hwReport.Network.WiFi | ForEach-Object { $_.Name }) -join ', ') } else { '—' }
-    $btSummary = if ($script:hwReport.Network.Bluetooth.Count -gt 0) { (($script:hwReport.Network.Bluetooth | ForEach-Object { $_.Name }) -join ', ') } else { '—' }
-    $audioSummary = if ($script:hwReport.Audio.Count -gt 0) { (($script:hwReport.Audio | ForEach-Object { $_.Name }) -join ', ') } else { '—' }
-    $touchSummary = if ($script:hwReport.Touchscreen.Count -gt 0) { (($script:hwReport.Touchscreen | ForEach-Object { $_.Name }) -join ', ') } else { '—' }
+    $wifiSummary = if ($script:hwReport.Network.WiFi.Count -gt 0) { (($script:hwReport.Network.WiFi | ForEach-Object { $_.Name }) -join ', ') } else { '—'}
+    $btSummary = if ($script:hwReport.Network.Bluetooth.Count -gt 0) { (($script:hwReport.Network.Bluetooth | ForEach-Object { $_.Name }) -join ', ') } else { '—'}
+    $audioSummary = if ($script:hwReport.Audio.Count -gt 0) { (($script:hwReport.Audio | ForEach-Object { $_.Name }) -join ', ') } else { '—'}
+    $touchSummary = if ($script:hwReport.Touchscreen.Count -gt 0) { (($script:hwReport.Touchscreen | ForEach-Object { $_.Name }) -join ', ') } else { '—'}
     $script:patchList = (($script:hwReport.FrameworkPatches | ForEach-Object { $_.Option }) -join ', ')
-    $gpuSummary = (($script:hwReport.GPU | ForEach-Object { "$($_.Name) $(if ($_.VendorId -eq '10DE') { '(NVIDIA)' } elseif ($_.VendorId -eq '1002') { '(AMD)' } elseif ($_.VendorId -eq '8086') { '(Intel)' } else { '' })" }) -join ', ')
+    $gpuSummary = (($script:hwReport.GPU | ForEach-Object { "$($_.Name) $(if ($_.VendorId -eq '10DE') { '(NVIDIA)'} elseif ($_.VendorId -eq '1002') { '(AMD)'} elseif ($_.VendorId -eq '8086') { '(Intel)'} else { ''})"}) -join ', ')
     if ($EPA) {
-        $sbon  = if ($script:hwReport.Firmware.SecureBoot) { 'Attibo ' } else { 'Inattibo ' }
-        $blon  = if ($script:hwReport.Security.BitLockerActive) { 'ATTIBO ' } else { 'Inattibo ' }
-        $wifi  = if ($wifiSummary -ne '—') { $wifiSummary } else { 'No detêttao' }
-        $bt    = if ($btSummary -ne '—') { $btSummary } else { 'No detêttao' }
-        $audio = if ($audioSummary -ne '—') { $audioSummary } else { 'Çoportao' }
-        $touch = if ($touchSummary -ne '—') { $touchSummary } else { 'No detêttá' }
-        $patches = if ($script:patchList) { $script:patchList } else { 'nîn guno neçeçario' }
+        $sbon  = if ($script:hwReport.Firmware.SecureBoot) { 'Attibo '} else { 'Inattibo '}
+        $blon  = if ($script:hwReport.Security.BitLockerActive) { 'ATTIBO '} else { 'Inattibo '}
+        $wifi  = if ($wifiSummary -ne '—') { $wifiSummary } else { 'No detêttao'}
+        $bt    = if ($btSummary -ne '—') { $btSummary } else { 'No detêttao'}
+        $audio = if ($audioSummary -ne '—') { $audioSummary } else { 'Çoportao'}
+        $touch = if ($touchSummary -ne '—') { $touchSummary } else { 'No detêttá'}
+        $patches = if ($script:patchList) { $script:patchList } else { 'nîn guno neçeçario'}
         return @"
 • CPU: $($script:hwReport.CPU.Name) ($($script:hwReport.CPU.Generation))
 • Firmware: $($script:hwReport.Firmware.Type)  |  Secure Boot: $sbon  |  BitLocker: $blon
@@ -689,13 +689,13 @@ function Get-HwSummaryText {
 • Parcheh de hardware detêttáô: $patches
 "@
     } else {
-        $sbon  = if ($script:hwReport.Firmware.SecureBoot) { 'Activo ' } else { 'Inactivo ✅' }
-        $blon  = if ($script:hwReport.Security.BitLockerActive) { 'ACTIVO ⚠️' } else { 'Inactivo ✅' }
-        $wifi  = if ($wifiSummary -ne '—') { $wifiSummary } else { 'No detectado' }
-        $bt    = if ($btSummary -ne '—') { $btSummary } else { 'No detectado' }
-        $audio = if ($audioSummary -ne '—') { $audioSummary } else { 'Soportado' }
-        $touch = if ($touchSummary -ne '—') { $touchSummary } else { 'No detectado' }
-        $patches = if ($script:patchList) { $script:patchList } else { 'ninguno necesario' }
+        $sbon  = if ($script:hwReport.Firmware.SecureBoot) { 'Activo '} else { 'Inactivo'}
+        $blon  = if ($script:hwReport.Security.BitLockerActive) { 'ACTIVO'} else { 'Inactivo'}
+        $wifi  = if ($wifiSummary -ne '—') { $wifiSummary } else { 'No detectado'}
+        $bt    = if ($btSummary -ne '—') { $btSummary } else { 'No detectado'}
+        $audio = if ($audioSummary -ne '—') { $audioSummary } else { 'Soportado'}
+        $touch = if ($touchSummary -ne '—') { $touchSummary } else { 'No detectado'}
+        $patches = if ($script:patchList) { $script:patchList } else { 'ninguno necesario'}
         return @"
 • CPU: $($script:hwReport.CPU.Name) ($($script:hwReport.CPU.Generation))
 • Firmware: $($script:hwReport.Firmware.Type)  |  Secure Boot: $sbon  |  BitLocker: $blon
@@ -710,10 +710,10 @@ function Get-HwSummaryText {
 function Get-AppsExplainText {
     param([bool]$EPA)
     if ($radioLibre.Checked) {
-        if ($EPA) { return "TapeOS 100% libre: çîn nîn pun çerbiçio de Google.`r`nLâ aplikâçionêh Android çe îttalan mediante arxibô APK o la tienda Aurora (arrepôi êtico de Play).`r`nÎdeal pa privâçidá, reûtiliçaçiôn de ekîpô bîehô y comunidá de çoftware libre." }
+        if ($EPA) { return "TapeOS 100% libre: çîn nîn pun çerbiçio de Google.`r`nLâ aplikâçionêh Android çe îttalan mediante arxibô APK o la tienda Aurora (arrepôi êtico de Play).`r`nÎdeal pa privâçidá, reûtiliçaçiôn de ekîpô bîehô y comunidá de çoftware libre."}
         return "TapeOS 100% libre: sin ningún servicio de Google.`r`nLas aplicaciones Android se instalan mediante archivos APK o la tienda Aurora (sustituto ético de Play).`r`nIdeal para privacidad, reutilización de equipos antiguos y comunidad de software libre."
     } else {
-        if ($EPA) { return "Inkluye Play Çtore y lô çerbiçiô de Google.`r`nLa baçe der çîttema (ChromiumOS) çige çiendo libre, pero çe añaden komponentê propietariô de Google pa dâh çoportê kompleto a lâ aplikâçionêh Android." }
+        if ($EPA) { return "Inkluye Play Çtore y lô çerbiçiô de Google.`r`nLa baçe der çîttema (ChromiumOS) çige çiendo libre, pero çe añaden komponentê propietariô de Google pa dâh çoportê kompleto a lâ aplikâçionêh Android."}
         return "Incluye Play Store y los servicios de Google.`r`nLa base del sistema (ChromiumOS) sigue siendo libre, pero se añaden componentes propietarios de Google para dar soporte completo a las aplicaciones Android."
     }
 }
@@ -722,34 +722,34 @@ function Set-TapeOSLanguage {
     param([string]$Lang)
     $isEPA = ($Lang -eq "Andaluz")
     $script:langEPA = $isEPA
-    $titleLabel.Text = if ($isEPA) { "TapeOS Îttaladôh Uniberçâh" } else { "TapeOS instalador universal" }
-    $subtitleLabel.Text = if ($isEPA) { "Açîtente de îttalaçiôn · Andalûh" } else { "Asistente de instalación · Español" }
+    $titleLabel.Text = if ($isEPA) { "TapeOS Îttaladôh Uniberçâh"} else { "TapeOS instalador universal"}
+    $subtitleLabel.Text = if ($isEPA) { "Açîtente de îttalaçiôn · Andalûh"} else { "Asistente de instalación · Español"}
     for ($i = 0; $i -lt 5; $i++) { $stepLabels[$i].Text = if ($isEPA) { $stepNamesEPA[$i] } else { $stepNamesES[$i] } }
-    $lblHwTitle.Text = if ($isEPA) { "Detêççiôn de hardware" } else { "Detección de hardware" }
+    $lblHwTitle.Text = if ($isEPA) { "Detêççiôn de hardware"} else { "Detección de hardware"}
     $lblHwInfo.Text = Get-HwSummaryText $isEPA
     if ($script:rec) {
-        $lblRecInfo.Text = if ($isEPA) { "✅ Rekûperaçiôn çelehçioná automátikamente [$($script:rec.RecoveryCodename.ToUpper())] kon kernel [$($script:rec.Kernel)]." } else { "✅ Recovery seleccionado automáticamente [$($script:rec.RecoveryCodename.ToUpper())] con kernel [$($script:rec.Kernel)]." }
+        $lblRecInfo.Text = if ($isEPA) { "Rekûperaçiôn çelehçioná automátikamente [$($script:rec.RecoveryCodename.ToUpper())] kon kernel [$($script:rec.Kernel)]."} else { "Recovery seleccionado automáticamente [$($script:rec.RecoveryCodename.ToUpper())] con kernel [$($script:rec.Kernel)]."}
     } else {
         $lblRecInfo.Text = "..."
     }
-    $lblAppsTitle.Text = if ($isEPA) { "Aplikâçionêh y çoftware" } else { "Aplicaciones y software" }
-    $radioLibre.Text = if ($isEPA) { "🔓 Çoftware Libre — çîn Googlêh Play (rekomendao)" } else { "🔓 Software Libre — sin Google Play (recomendado)" }
-    $radioGoogleApps.Text = if ($isEPA) { "🛍️ Kon Googlêh Play — Android kompleto" } else { "🛍️ Con Google Play — Android completo" }
+    $lblAppsTitle.Text = if ($isEPA) { "Aplikâçionêh y çoftware"} else { "Aplicaciones y software"}
+    $radioLibre.Text = if ($isEPA) { "Çoftware Libre — çîn Googlêh Play (rekomendao)"} else { "Software Libre — sin Google Play (recomendado)"}
+    $radioGoogleApps.Text = if ($isEPA) { "Kon Googlêh Play — Android kompleto"} else { "Con Google Play — Android completo"}
     $lblAppsExplain.Text = Get-AppsExplainText $isEPA
-    $lblMediaTitle.Text = if ($isEPA) { "Medio de îttalaçiôn" } else { "Medio de instalación" }
-    $radioUsb.Text = if ($isEPA) { "💾 Live-USB — Grabâh en un pendraîh USB y arrankâh dêhde él" } else { "💾 Live-USB — Grabar en un pendrive USB y arrancar desde él" }
-    $btnRefreshUsb.Text = if ($isEPA) { "🔄 Refrehkâh" } else { "🔄 Refrescar" }
-    $radioImageOnly.Text = if ($isEPA) { "📀 Kreâh er medio de îttalaçiôn (.img) — guâddâlo en er dîkko" } else { "📀 Crear el medio de instalación (.img) — guardarlo en el disco" }
-    $btnBrowseDir.Text = if ($isEPA) { "📂 Ehkaminâh..." } else { "📂 Examinar..." }
-    $lblUsbWarning.Text = if ($isEPA) { "⚠️ OHO: Er pendraîh çelehçionao çe formateará po kompleto pa îttalâh TapeOS." } else { "⚠️ ATENCIÓN: El pendrive seleccionado se formateará por completo para instalar TapeOS." }
-    $chkBiosMode.Text = if ($isEPA) { "🖥️ Modo BIÔ (çin UEFI)" } else { "🖥️ Modo BIOS (sin UEFI)" }
-    $lblBiosInfo.Text = if ($isEPA) { "Pa ekîpô anteriôh a ~2012 çin UEFI: arrankâh por MBR en lûgâh de EFI. La imâhen de TapeOS êh îbriá (çirbe pa lô dô modô); márkalo çolo çi tu ekîpo arranka únikamente en BIÔ Legâyy." } else { "Para equipos anteriores a ~2012 sin UEFI: arranque por MBR en lugar de EFI. La imagen de TapeOS es híbrida (sirve para ambos modos); márcalo solo si tu equipo arranca únicamente en BIOS Legacy." }
-    $lblSumTitle.Text = if ($isEPA) { "Reçûmen de la îttalaçiôn" } else { "Resumen de la instalación" }
-    $btnCreate.Text = if ($isEPA) { "⚡ Dehkargâh, Parcheâh y Kreâh (1-Klik)" } else { "⚡ Descargar, Parchear y Crear (1-Clic)" }
-    $lblEta5.Text = if ($isEPA) { "Êttimao: --" } else { "Estimado: --" }
-    $btnBack.Text = if ($isEPA) { "‹ Anteriôh" } else { "‹ Anterior" }
-    $btnNext.Text = if ($isEPA) { "Çiguiente ›" } else { "Siguiente ›" }
-    $lblEta1.Text = if ($isEPA) { "Êttimao: 0 ç (kompletao)" } else { "Estimado: 0 s (completado)" }
+    $lblMediaTitle.Text = if ($isEPA) { "Medio de îttalaçiôn"} else { "Medio de instalación"}
+    $radioUsb.Text = if ($isEPA) { "Live-USB — Grabâh en un pendraîh USB y arrankâh dêhde él"} else { "Live-USB — Grabar en un pendrive USB y arrancar desde él"}
+    $btnRefreshUsb.Text = if ($isEPA) { "Refrehkâh"} else { "Refrescar"}
+    $radioImageOnly.Text = if ($isEPA) { "Kreâh er medio de îttalaçiôn (.img) — guâddâlo en er dîkko"} else { "Crear el medio de instalación (.img) — guardarlo en el disco"}
+    $btnBrowseDir.Text = if ($isEPA) { "Ehkaminâh..."} else { "Examinar..."}
+    $lblUsbWarning.Text = if ($isEPA) { "OHO: Er pendraîh çelehçionao çe formateará po kompleto pa îttalâh TapeOS."} else { "ATENCIÓN: El pendrive seleccionado se formateará por completo para instalar TapeOS."}
+    $chkBiosMode.Text = if ($isEPA) { "Modo BIÔ (çin UEFI)"} else { "Modo BIOS (sin UEFI)"}
+    $lblBiosInfo.Text = if ($isEPA) { "Pa ekîpô anteriôh a ~2012 çin UEFI: arrankâh por MBR en lûgâh de EFI. La imâhen de TapeOS êh îbriá (çirbe pa lô dô modô); márkalo çolo çi tu ekîpo arranka únikamente en BIÔ Legâyy."} else { "Para equipos anteriores a ~2012 sin UEFI: arranque por MBR en lugar de EFI. La imagen de TapeOS es híbrida (sirve para ambos modos); márcalo solo si tu equipo arranca únicamente en BIOS Legacy."}
+    $lblSumTitle.Text = if ($isEPA) { "Reçûmen de la îttalaçiôn"} else { "Resumen de la instalación"}
+    $btnCreate.Text = if ($isEPA) { "Dehkargâh, Parcheâh y Kreâh (1-Klik)"} else { "Descargar, Parchear y Crear (1-Clic)"}
+    $lblEta5.Text = if ($isEPA) { "Êttimao: --"} else { "Estimado: --"}
+    $btnBack.Text = if ($isEPA) { "‹ Anteriôh"} else { "‹ Anterior"}
+    $btnNext.Text = if ($isEPA) { "Çiguiente ›"} else { "Siguiente ›"}
+    $lblEta1.Text = if ($isEPA) { "Êttimao: 0 ç (kompletao)"} else { "Estimado: 0 s (completado)"}
     if ($script:currentStep -eq 3) { Set-TapeOSStep 3 }
 }
 
@@ -807,14 +807,14 @@ param(
 $ErrorActionPreference = 'Stop'
 function Write-PipelineLog {
     param([string]$Msg)
-    try { Add-Content -Path $LogFile -Value ("[{0}] {1}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"), $Msg) -Encoding UTF8 } catch { }
+    try { Add-Content -Path $LogFile -Value ("[{0}] {1}"-f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"), $Msg) -Encoding UTF8 } catch { }
 }
 function F-Eta {
     param([double]$S)
-    if ($S -lt 0 -or [double]::IsNaN($S) -or [double]::IsInfinity($S)) { return '--' }
-    if ($S -lt 60) { return ('{0:N0} ç' -f $S) }
-    if ($S -lt 3600) { return ('{0:N0} min {1:N0} ç' -f [math]::Floor($S / 60), ($S % 60)) }
-    return ('{0:N1} orâ' -f ($S / 3600))
+    if ($S -lt 0 -or [double]::IsNaN($S) -or [double]::IsInfinity($S)) { return '--'}
+    if ($S -lt 60) { return ('{0:N0} ç'-f $S) }
+    if ($S -lt 3600) { return ('{0:N0} min {1:N0} ç'-f [math]::Floor($S / 60), ($S % 60)) }
+    return ('{0:N1} orâ'-f ($S / 3600))
 }
 Import-Module (Join-Path $ModuleDir "RecoveryDownloader.psm1") -Force
 Import-Module (Join-Path $ModuleDir "ImagePatcher.psm1") -Force
@@ -829,13 +829,13 @@ try {
     $Form.Invoke([Action]{ $LogBox.AppendText("`r`n[Iniçio] Proçeço de îttalaçiôn arranká.`r`n") })
 
     # --- FASE 1: Dehkarga ---
-    $Form.Invoke([Action]{ $LblPhase.Text = '📥 Dehkarga de la imâhen ofiçiâh'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
+    $Form.Invoke([Action]{ $LblPhase.Text = 'Dehkarga de la imâhen ofiçiâh'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --'})
     $info = Get-TapeOSLatestRecoveryInfo -BoardCodename $Codename
     $downloadDir = "C:\TapeOS\downloads"
     $destZip = Join-Path $downloadDir $info.FileName
     if ((Test-Path $destZip) -and (Get-Item $destZip).Length -gt 100MB) {
         Write-PipelineLog "ZIP previo encontrado; se reutiliza: $destZip"
-        $Form.Invoke([Action]{ $LogBox.AppendText("[Dehkarga] Dehkarga anteriôh enkontrá; çe reûtiliça.`r`n"); $ProgressBar.Value = 100; $LblEta.Text = 'Kompletao: 0 ç' })
+        $Form.Invoke([Action]{ $LogBox.AppendText("[Dehkarga] Dehkarga anteriôh enkontrá; çe reûtiliça.`r`n"); $ProgressBar.Value = 100; $LblEta.Text = 'Kompletao: 0 ç'})
     } else {
         $dlSw = [System.Diagnostics.Stopwatch]::StartNew()
         Start-TapeOSDownload -Url $info.Url -DestinationFile $destZip -ProgressCallback {
@@ -843,21 +843,21 @@ try {
             try {
                 $sp = if ($dlSw.Elapsed.TotalSeconds -gt 1) { $received / $dlSw.Elapsed.TotalSeconds } else { 0 }
                 $eta = if ($sp -gt 0) { ($total - $received) / $sp } else { -1 }
-                $etaStr = 'Êttimao: ' + (F-Eta $eta)
+                $etaStr = 'Êttimao: '+ (F-Eta $eta)
                 $pctInt = [math]::Min(100, [int]$percent)
                 $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = $etaStr })
             } catch {
-                Write-PipelineLog ("ERROR callback descarga: " + $_.Exception.ToString())
+                Write-PipelineLog ("ERROR callback descarga: "+ $_.Exception.ToString())
             }
         } | Out-Null
     }
 
     # --- FASE 2: Parcheo ---
-    $Form.Invoke([Action]{ $LblPhase.Text = '🩹 Parcheo TapeOS (Legacy EFI + swtpm + GPU)'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
+    $Form.Invoke([Action]{ $LblPhase.Text = 'Parcheo TapeOS (Legacy EFI + swtpm + GPU)'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --'})
     $ptSw = [System.Diagnostics.Stopwatch]::StartNew()
     $patched = Invoke-TapeOSImagePatch `
         -RecoveryZipPath $destZip `
-        -OutputDir "C:\TapeOS\patched" `
+        -OutputDir "C:\TapeOS\patched"`
         -EnableIA32 ($HwReport.Firmware.IsIA32UEFI) `
         -EnableLegacyGPU $true `
         -EnableSwtpm $true `
@@ -868,29 +868,29 @@ try {
             try {
                 $el = $ptSw.Elapsed.TotalSeconds
                 $eta = if ($pct -gt 0) { ($el * (100 - $pct) / $pct) } else { -1 }
-                $etaStr = 'Êttimao: ' + (F-Eta $eta)
+                $etaStr = 'Êttimao: '+ (F-Eta $eta)
                 $pctInt = [int]$pct
-                $msgLine = "  • $msg`r`n"
+                $msgLine = "• $msg`r`n"
                 $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = $etaStr; $LogBox.AppendText($msgLine) })
             } catch {
-                Write-PipelineLog ("ERROR callback parcheo: " + $_.Exception.ToString())
+                Write-PipelineLog ("ERROR callback parcheo: "+ $_.Exception.ToString())
             }
         }
 
     # --- FASE 3: Grabaçiôn u medio ---
     if ($ImageOnlyMode) {
-        $Form.Invoke([Action]{ $LblPhase.Text = 'Kreando er medio de îttalaçiôn (.img)'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
+        $Form.Invoke([Action]{ $LblPhase.Text = 'Kreando er medio de îttalaçiôn (.img)'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --'})
         $destDir = $ImageDestDir.Trim()
-        if (-not $destDir) { $destDir = "C:\TapeOS\images" }
+        if (-not $destDir) { $destDir = "C:\TapeOS\images"}
         New-Item -ItemType Directory -Path $destDir -Force | Out-Null
-        $imgName = "TapeOS-$($info.Board)-M$($info.Milestone)-$(if ($EnableGoogleApps) { 'googleapps' } else { 'aurora' }).img"
+        $imgName = "TapeOS-$($info.Board)-M$($info.Milestone)-$(if ($EnableGoogleApps) { 'googleapps'} else { 'aurora'}).img"
         $imgPath = Join-Path $destDir $imgName
         $cpSw = [System.Diagnostics.Stopwatch]::StartNew()
         Copy-Item -Path $patched.PatchedImagePath -Destination $imgPath -Force
         if (Test-Path $patched.ConfigFile) { Copy-Item -Path $patched.ConfigFile -Destination (Join-Path $destDir "grub.cfg") -Force }
         $fwAsset = @((Join-Path $ModuleDir "..\assets\tapeos-initramfs.cpio.gz"), "C:\TapeOS\tapeos-initramfs.cpio.gz", (Join-Path $env:TEMP "TapeOS-App\assets\tapeos-initramfs.cpio.gz")) | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
         if ($fwAsset) { Copy-Item -LiteralPath $fwAsset -Destination (Join-Path $destDir "tapeos-initramfs.cpio.gz") -Force }
-        $elapsedStr = 'Kompletao en ' + (F-Eta $cpSw.Elapsed.TotalSeconds)
+        $elapsedStr = 'Kompletao en '+ (F-Eta $cpSw.Elapsed.TotalSeconds)
         $Form.Invoke([Action]{
             $ProgressBar.Value = 100
             $LblEta.Text = $elapsedStr
@@ -912,9 +912,9 @@ try {
         }
         # Opciones del framework para esta maquina (parches automaticos segun hardware)
         $frameworkOptions = (($HwReport.FrameworkPatches | ForEach-Object { $_.Option } | Where-Object { $_ }) -join ",")
-        if (-not $EnableGoogleApps) { $frameworkOptions = if ($frameworkOptions) { $frameworkOptions + ",no_google_play" } else { "no_google_play" } }
-        if (-not $frameworkOptions) { $frameworkOptions = "enable_updates" }
-        Write-PipelineLog ("Opciones TapeOS: " + $frameworkOptions)
+        if (-not $EnableGoogleApps) { $frameworkOptions = if ($frameworkOptions) { $frameworkOptions + ",no_google_play"} else { "no_google_play"} }
+        if (-not $frameworkOptions) { $frameworkOptions = "enable_updates"}
+        Write-PipelineLog ("Opciones TapeOS: "+ $frameworkOptions)
 
         # 1) Imagen completa TapeOS (local o descargada): se graba directo, no hace falta WSL.
         $tapeosImg = $null
@@ -932,17 +932,17 @@ try {
         }
         if (-not $tapeosImg) {
             try {
-                $Form.Invoke([Action]{ $LblPhase.Text = '📥 Dehkargando imâhen TapeOS dêhde er çerbidôh...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
-                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -Version $(if ($EnableGoogleApps) { 'full' } else { 'free' }) -ProgressCallback {
+                $Form.Invoke([Action]{ $LblPhase.Text = 'Dehkargando imâhen TapeOS dêhde er çerbidôh...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --'})
+                $remoteImg = Get-TapeOSRemoteImage -Codename $Codename -Version $(if ($EnableGoogleApps) { 'full'} else { 'free'}) -ProgressCallback {
                     param($pct, $mb, $tot)
                     try {
                         $pctInt = [math]::Min(100, [int]$pct)
-                        $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = "Dehkargao $mb MB de $tot MB" })
+                        $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = "Dehkargao $mb MB de $tot MB"})
                     } catch { }
                 }
                 $tapeosImg = Get-Item -LiteralPath $remoteImg
             } catch {
-                Write-PipelineLog ("Descarga de imagen remota no disponible: " + $_.Exception.Message)
+                Write-PipelineLog ("Descarga de imagen remota no disponible: "+ $_.Exception.Message)
             }
         }
 
@@ -950,7 +950,7 @@ try {
         $usedFramework = $false
         if ($tapeosImg) {
             try {
-                $Form.Invoke([Action]{ $LblPhase.Text = "💾 Grabando la imagen de TapeOS ($($tapeosImg.Name))..."; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
+                $Form.Invoke([Action]{ $LblPhase.Text = "Grabando la imagen de TapeOS ($($tapeosImg.Name))..."; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --'})
                 Start-TapeOSUsbFlash `
                     -ImageFilePath $tapeosImg.FullName `
                     -PhysicalDriveId $TargetUsb.DeviceID `
@@ -958,32 +958,32 @@ try {
                         param($pct, $speedMBs, $written, $total)
                         try {
                             $eta = if ($speedMBs -gt 0) { (($total - $written) / 1MB) / $speedMBs } else { -1 }
-                            $etaStr = 'Êttimao: ' + (F-Eta $eta) + " ($speedMBs MB/s)"
+                            $etaStr = 'Êttimao: '+ (F-Eta $eta) + " ($speedMBs MB/s)"
                             $pctInt = [math]::Min(100, [int]$pct)
                             $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = $etaStr })
-                        } catch { Write-PipelineLog ("ERROR callback imagen: " + $_.Exception.ToString()) }
+                        } catch { Write-PipelineLog ("ERROR callback imagen: "+ $_.Exception.ToString()) }
                     } | Out-Null
                 $usedFramework = $true
                 $fwMsg = "`r`nImagen TapeOS grabada: menu normal/verbose/seguro/instalar."
                 $Form.Invoke([Action]{ $LogBox.AppendText("[Imagen] $($tapeosImg.Name) grabada en er pendraîh.`r`n") })
             } catch {
-                Write-PipelineLog ("Grabacion de imagen TapeOS fallo: " + $_.Exception.Message)
+                Write-PipelineLog ("Grabacion de imagen TapeOS fallo: "+ $_.Exception.Message)
             }
         }
         if (-not $usedFramework -and $frameworkAssetsDir -and $frameworkScriptDir -and (Test-TapeOSWsl)) {
             try {
-                $Form.Invoke([Action]{ $LblPhase.Text = 'Îttalando TapeOS (WSL)...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: ~5 min' })
+                $Form.Invoke([Action]{ $LblPhase.Text = 'Îttalando TapeOS (WSL)...'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: ~5 min'})
                 Invoke-TapeOSFrameworkInstall -ImageFilePath $patched.PatchedImagePath -DiskNumber $TargetUsb.DiskNumber -FrameworkScriptDir $frameworkScriptDir -FrameworkAssetsDir $frameworkAssetsDir -Options $frameworkOptions | Out-Null
                 $usedFramework = $true
                 $fwMsg = "`r`nTapeOS instalado: menu de 6 entradas, parches automaticos segun el hardware y Aurora Store disponible."
                 $Form.Invoke([Action]{ $LogBox.AppendText("[TapeOS] Îttalaçiôn kompletá.`r`n") })
             } catch {
-                Write-PipelineLog ("Instalacion TapeOS fallo; se usa la grabacion clasica: " + $_.Exception.Message)
+                Write-PipelineLog ("Instalacion TapeOS fallo; se usa la grabacion clasica: "+ $_.Exception.Message)
             }
         }
         if (-not $usedFramework) {
             # Grabacion clasica: recovery de ChromeOS parcheado + GRUB en la ESP.
-            $Form.Invoke([Action]{ $LblPhase.Text = '💾 Grabaçiôn en er pendraîh USB'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --' })
+            $Form.Invoke([Action]{ $LblPhase.Text = 'Grabaçiôn en er pendraîh USB'; $ProgressBar.Value = 0; $LblEta.Text = 'Êttimao: --'})
             Start-TapeOSUsbFlash `
                 -ImageFilePath $patched.PatchedImagePath `
                 -PhysicalDriveId $TargetUsb.DeviceID `
@@ -991,14 +991,14 @@ try {
                     param($pct, $speedMBs, $written, $total)
                     try {
                         $eta = if ($speedMBs -gt 0) { (($total - $written) / 1MB) / $speedMBs } else { -1 }
-                        $etaStr = 'Êttimao: ' + (F-Eta $eta) + " ($speedMBs MB/s)"
+                        $etaStr = 'Êttimao: '+ (F-Eta $eta) + " ($speedMBs MB/s)"
                         $pctInt = [math]::Min(100, [int]$pct)
                         $Form.Invoke([Action]{ $ProgressBar.Value = $pctInt; $LblEta.Text = $etaStr })
                     } catch {
-                        Write-PipelineLog ("ERROR callback grabaçiôn: " + $_.Exception.ToString())
+                        Write-PipelineLog ("ERROR callback grabaçiôn: "+ $_.Exception.ToString())
                     }
                 } | Out-Null
-            $Form.Invoke([Action]{ $LblPhase.Text = '🩹 Inyettando er arrankâh TapeOS (GRUB + initramfs)'; $LblEta.Text = 'Êttimao: --' })
+            $Form.Invoke([Action]{ $LblPhase.Text = 'Inyettando er arrankâh TapeOS (GRUB + initramfs)'; $LblEta.Text = 'Êttimao: --'})
             $initramfsPath = ""
             foreach ($cand in @((Join-Path $ModuleDir "..\assets\tapeos-initramfs.cpio.gz"), "C:\TapeOS\tapeos-initramfs.cpio.gz", (Join-Path $env:TEMP "TapeOS-App\assets\tapeos-initramfs.cpio.gz"))) {
                 if (Test-Path -LiteralPath $cand) { $initramfsPath = (Resolve-Path -LiteralPath $cand).Path; break }
@@ -1010,17 +1010,17 @@ try {
             $espInfo = $null
             try {
                 $espInfo = Write-TapeOSGrubToEsp -DiskNumber $TargetUsb.DiskNumber -Timeout 15 -InitramfsPath $initramfsPath -KernelImagePath $kernelImagePath
-                Write-PipelineLog ("ESP: menu GRUB inyectado. PARTUUID=" + $espInfo.RootPartuuid + ", initramfs=" + $espInfo.InitramfsInjected)
+                Write-PipelineLog ("ESP: menu GRUB inyectado. PARTUUID="+ $espInfo.RootPartuuid + ", initramfs="+ $espInfo.InitramfsInjected)
             } catch {
-                Write-PipelineLog ("AVISO: no se pudo inyectar el menu GRUB en la ESP: " + $_.Exception.Message)
+                Write-PipelineLog ("AVISO: no se pudo inyectar el menu GRUB en la ESP: "+ $_.Exception.Message)
             }
-            if ($espInfo -and $espInfo.InitramfsInjected -and $espInfo.KernelInjected) { $fwMsg = "`r`nFramework TapeOS inyettao: arrankêh normal/verbose/çeguro y êntrá de îttalaçiôn a dîkko dûhô dipponiblêh en er menú GRUB." } else { $fwMsg = "`r`n⚠️ AVISO: no çe enkontró er initramfs der framework (tapeos-initramfs.cpio.gz); er medio çolo arrankará er rekûperaçiôn ofiçiâh." }
+            if ($espInfo -and $espInfo.InitramfsInjected -and $espInfo.KernelInjected) { $fwMsg = "`r`nFramework TapeOS inyettao: arrankêh normal/verbose/çeguro y êntrá de îttalaçiôn a dîkko dûhô dipponiblêh en er menú GRUB."} else { $fwMsg = "`r`n AVISO: no çe enkontró er initramfs der framework (tapeos-initramfs.cpio.gz); er medio çolo arrankará er rekûperaçiôn ofiçiâh."}
         }
         # 3) Cierre comun: todas las rutas muestran el resultado final.
         $Form.Invoke([Action]{
             $ProgressBar.Value = 100
             $LblEta.Text = 'Kompletao'
-            $LogBox.AppendText("`r`n¡PROÇEÇO KOMPLETAO KON ÉXITO!`r`nEr pendraîh êttá lîtta pa arrankâh en kualkiêh ekîpo kon EFI.`r`n" + $fwMsg + "`r`n")
+            $LogBox.AppendText("`r`n¡PROÇEÇO KOMPLETAO KON ÉXITO!`r`nEr pendraîh êttá lîtta pa arrankâh en kualkiêh ekîpo kon EFI.`r`n"+ $fwMsg + "`r`n")
             [System.Windows.Forms.MessageBox]::Show(
                 "¡TapeOS çe á grabao kon éxito en tu pendraîh!`r`n`r`nYa pueêh reiníçiâh er ekîpo y arrankâh dêhde er pendraîh USB (têkla F12/F11/Eç en er logo).",
                 "Grabaçiôn Kompletá", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information
@@ -1029,7 +1029,7 @@ try {
     }
     Write-PipelineLog "Pipeline finalizado con exito."
 } catch {
-    Write-PipelineLog ("ERROR pipeline: " + $_.Exception.ToString())
+    Write-PipelineLog ("ERROR pipeline: "+ $_.Exception.ToString())
     try {
         $Form.Invoke([Action]{
             $LogBox.AppendText("ERRÔH: $($_.Exception.Message)`r`n")
@@ -1101,10 +1101,10 @@ $btnCreate.Add_Click({
                     $null = $script:pipelinePS.EndInvoke($script:pipelineAsync)
                     Write-TapeOSLog "Pipeline completado sin errores."
                 } catch {
-                    Write-TapeOSLog ("ERROR al finalizar pipeline: " + $_.Exception.ToString())
+                    Write-TapeOSLog ("ERROR al finalizar pipeline: "+ $_.Exception.ToString())
                 } finally {
                     $script:pipelinePS.Dispose(); $script:pipelineRunspace.Dispose()
-                    $lblPhase.Text = '✅ Kompletao'
+                    $lblPhase.Text = 'Kompletao'
                     $pbStep5.Value = 100
                     $lblEta5.Text = 'Kompletao'
                     $btnBack.Enabled = $true
@@ -1114,7 +1114,7 @@ $btnCreate.Add_Click({
         })
         $script:watchTimer.Start()
     } catch {
-        Write-TapeOSLog ("ERROR en boton Crear: " + $_)
+        Write-TapeOSLog ("ERROR en boton Crear: "+ $_)
         try { [System.Windows.Forms.MessageBox]::Show("Errôh inepperao al iniçiâh er proçeço:`r`n$($_.Exception.Message)", "TapeOS", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error) | Out-Null } catch { }
     }
 })
@@ -1135,7 +1135,7 @@ function Initialize-TapeOSDetection {
         $form.ActiveControl = $btnNext
         Write-TapeOSLog "Deteccion de hardware completada (inicializacion de la GUI)."
     } catch {
-        Write-TapeOSLog ("ERROR en deteccion (inicializacion): " + $_.Exception.ToString())
+        Write-TapeOSLog ("ERROR en deteccion (inicializacion): "+ $_.Exception.ToString())
         try { [System.Windows.Forms.MessageBox]::Show("Errôh en la detêççiôn de hardware:`r`n$($_.Exception.Message)", "TapeOS", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error) | Out-Null } catch { }
     }
 }

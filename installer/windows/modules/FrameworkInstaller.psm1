@@ -2,7 +2,7 @@
 .SYNOPSIS
     Instalador del motor de compatibilidad TapeOS a traves de WSL para el asistente Windows.
 .DESCRIPTION
-    Detecta WSL, expone el disco destino con 'wsl --mount --bare' y ejecuta
+    Detecta WSL, expone el disco destino con 'wsl --mount --bare'y ejecuta
         $cmd = "bash $wslScripts/install-framework-usb.sh $wslBin $devName $wslAssets ""$Options"""
     capa TapeOS: parches, Aurora Store, GRUB sin menu de configuracion).
 #>
@@ -31,17 +31,17 @@ function Invoke-TapeOSFrameworkInstall {
         [Parameter(Mandatory=$true)][string]$FrameworkScriptDir, # carpeta core/framework (Windows)
         [Alias('BrunchAssetsDir')]
         [Parameter(Mandatory=$true)][string]$FrameworkAssetsDir, # carpeta con rootc.img, efi_legacy.img, tapeos-tools, AuroraStore.apk
-        [string]$Options = "enable_updates"  # opciones de framework (parches automaticos segun hardware)
+        [string]$Options = "enable_updates"# opciones de framework (parches automaticos segun hardware)
     )
 
-    if (-not (Test-TapeOSWsl)) { throw "WSL no esta disponible: no se puede instalar TapeOS." }
+    if (-not (Test-TapeOSWsl)) { throw "WSL no esta disponible: no se puede instalar TapeOS."}
 
     # Soltar volumenes del disco para que WSL pueda montarlo en exclusiva
     $parts = Get-Partition -DiskNumber $DiskNumber -ErrorAction SilentlyContinue
     foreach ($p in $parts) {
         foreach ($ap in @($p.AccessPaths)) {
             if ($ap -like '\\?\Volume{*}\') {
-                & mountvol.exe "$ap" /p 2>$null | Out-Null
+                & mountvol.exe "$ap"/p 2>$null | Out-Null
             }
         }
     }
@@ -58,20 +58,20 @@ function Invoke-TapeOSFrameworkInstall {
         # Identificar /dev/sdX por tamano exacto en bytes
         $winSizeBytes = [long](Get-Disk -Number $DiskNumber).Size
         $devName = ""
-        $lsblk = (& wsl.exe -u root -e bash -c "lsblk -b -o NAME,SIZE,RO" 2>$null | Out-String).Trim()
+        $lsblk = (& wsl.exe -u root -e bash -c "lsblk -b -o NAME,SIZE,RO"2>$null | Out-String).Trim()
         foreach ($line in ($lsblk -split "`r?`n")) {
             if ($line -match '^(sd[a-z]+)\s+(\d+)\s+\d$') {
                 if ([long]$Matches[2] -eq $winSizeBytes) { $devName = "/dev/$($Matches[1])"; break }
             }
         }
-        if (-not $devName) { throw "No se pudo localizar el disco $DiskNumber dentro de WSL." }
+        if (-not $devName) { throw "No se pudo localizar el disco $DiskNumber dentro de WSL."}
 
-        Write-Host "[TapeOS] Disco WSL: $devName ($winSizeBytes bytes)" -ForegroundColor Cyan
+        Write-Host "[TapeOS] Disco WSL: $devName ($winSizeBytes bytes)"-ForegroundColor Cyan
 
-        Write-Host "[TapeOS] Ejecutando: $cmd" -ForegroundColor Cyan
+        Write-Host "[TapeOS] Ejecutando: $cmd"-ForegroundColor Cyan
         & wsl.exe -u root -e bash -c $cmd
-        if ($LASTEXITCODE -ne 0) { throw "La instalacion de TapeOS fallo (exit $LASTEXITCODE)." }
-        Write-Host "[TapeOS] Instalacion completada en $devName." -ForegroundColor Green
+        if ($LASTEXITCODE -ne 0) { throw "La instalacion de TapeOS fallo (exit $LASTEXITCODE)."}
+        Write-Host "[TapeOS] Instalacion completada en $devName."-ForegroundColor Green
     } finally {
         & wsl.exe --unmount $dev 2>$null | Out-Null
     }

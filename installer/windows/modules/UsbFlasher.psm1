@@ -29,15 +29,15 @@ function Get-TapeOSUsbDrives {
 
     # Fuente 1: BusType USB (Get-Disk)
     try {
-        $usbNumbers += @(Get-Disk | Where-Object { $_.BusType -eq 'USB' } | Select-Object -ExpandProperty Number)
+        $usbNumbers += @(Get-Disk | Where-Object { $_.BusType -eq 'USB'} | Select-Object -ExpandProperty Number)
     } catch {
         Write-Warning "Fûente 1 (BusType USB) no dipponible: $_"
     }
 
-    # Fuente 2: MediaType "External" (adaptadores SSD/HDD-USB con UASP se
+    # Fuente 2: MediaType "External"(adaptadores SSD/HDD-USB con UASP se
     #           reportan como SCSI con medio externo, no como USB)
     try {
-        $usbNumbers += @(Get-CimInstance Win32_DiskDrive | Where-Object { $_.MediaType -match 'External' } | ForEach-Object { [int]$_.Index })
+        $usbNumbers += @(Get-CimInstance Win32_DiskDrive | Where-Object { $_.MediaType -match 'External'} | ForEach-Object { [int]$_.Index })
     } catch {
         Write-Warning "Fûente 2 (MediaType External) no dipponible: $_"
     }
@@ -54,7 +54,7 @@ function Get-TapeOSUsbDrives {
                     if ($d) { $usbNumbers += [int]$d.Index }
                     break
                 }
-                $parent = (Get-PnpDeviceProperty -InstanceId $cur.InstanceId -KeyName 'DEVPKEY_Device_Parent' -ErrorAction SilentlyContinue).Data
+                $parent = (Get-PnpDeviceProperty -InstanceId $cur.InstanceId -KeyName 'DEVPKEY_Device_Parent'-ErrorAction SilentlyContinue).Data
                 if (-not $parent) { break }
                 $cur = Get-PnpDevice -InstanceId $parent -ErrorAction SilentlyContinue
             }
@@ -73,8 +73,8 @@ function Get-TapeOSUsbDrives {
             if ($disk.IsSystem -or $disk.IsBoot) { continue }
 
             $partitions = Get-Partition -DiskNumber $number -ErrorAction SilentlyContinue
-            $letters = ($partitions | Where-Object { $_.DriveLetter } | ForEach-Object { "$($_.DriveLetter):" }) -join ", "
-            if (-not $letters) { $letters = "Sin partición asignada" }
+            $letters = ($partitions | Where-Object { $_.DriveLetter } | ForEach-Object { "$($_.DriveLetter):"}) -join ", "
+            if (-not $letters) { $letters = "Sin partición asignada"}
 
             $drives += [PSCustomObject]@{
                 DiskNumber   = $number
@@ -123,7 +123,7 @@ function Start-TapeOSUsbFlash {
         throw "¡ÇEGURIDÁ! Er dêttino $PhysicalDriveId no êttá en la lîtta de dippoçitivô USB detêttáô. Operaçiôn abortá."
     }
 
-    Write-Host "[TapeOS UsbFlasher] Preparando escritura en $PhysicalDriveId..." -ForegroundColor Cyan
+    Write-Host "[TapeOS UsbFlasher] Preparando escritura en $PhysicalDriveId..."-ForegroundColor Cyan
 
     # Preparar el disco: desmontar TODOS los volumenes (incluidas ESP sin letra,
     # que Windows protege y bloquean la escritura directa) y limpiar la tabla
@@ -136,8 +136,8 @@ function Start-TapeOSUsbFlash {
             foreach ($p in $parts) {
                 foreach ($ap in @($p.AccessPaths)) {
                     if ($ap -like '\\?\Volume{*}\') {
-                        Write-Host "[TapeOS UsbFlasher] Dehmmontando er bolûmen $ap..." -ForegroundColor Gray
-                        $null = & mountvol.exe "$ap" /p 2>&1
+                        Write-Host "[TapeOS UsbFlasher] Dehmmontando er bolûmen $ap..."-ForegroundColor Gray
+                        $null = & mountvol.exe "$ap"/p 2>&1
                     }
                 }
             }
@@ -146,12 +146,12 @@ function Start-TapeOSUsbFlash {
         }
         Start-Sleep -Milliseconds 500
 
-        $dpScript = Join-Path $env:TEMP ("tapeos-diskpart-" + $DiskNum + ".txt")
+        $dpScript = Join-Path $env:TEMP ("tapeos-diskpart-"+ $DiskNum + ".txt")
         try {
             Set-Content -Path $dpScript -Value ("select disk $DiskNum`r`nclean") -Encoding ASCII
             $dpOut = (& diskpart.exe /s $dpScript 2>&1 | Out-String)
             $dpSummary = ($dpOut.Trim() -replace "`r`n", '; ')
-            Write-Host "[TapeOS UsbFlasher] diskpart clean: $dpSummary" -ForegroundColor Gray
+            Write-Host "[TapeOS UsbFlasher] diskpart clean: $dpSummary"-ForegroundColor Gray
         } catch {
             Write-Warning "diskpart no dipponible: $_"
         } finally {
@@ -167,7 +167,7 @@ function Start-TapeOSUsbFlash {
     $bufferSize = 1MB # Chunk compatible con el marshaling de WriteFile
     $buffer = New-Object byte[] $bufferSize
 
-    Write-Host "[TapeOS UsbFlasher] Grabando $([math]::Round($totalBytes / 1GB, 2)) GB en $PhysicalDriveId..." -ForegroundColor Yellow
+    Write-Host "[TapeOS UsbFlasher] Grabando $([math]::Round($totalBytes / 1GB, 2)) GB en $PhysicalDriveId..."-ForegroundColor Yellow
 
     $maxAttempts = 2
     $attempt = 0
@@ -215,12 +215,12 @@ function Start-TapeOSUsbFlash {
             $null = [TapeOSWin32.NativeMethods]::FlushFileBuffers($hFile)
             $stopwatch.Stop()
             $done = $true
-            Write-Host "[TapeOS UsbFlasher] Grabaçiôn finaliçá kon éxito en $([math]::Round($stopwatch.Elapsed.TotalSeconds, 1)) çegundô." -ForegroundColor Green
+            Write-Host "[TapeOS UsbFlasher] Grabaçiôn finaliçá kon éxito en $([math]::Round($stopwatch.Elapsed.TotalSeconds, 1)) çegundô."-ForegroundColor Green
             return $true
         } catch {
             $errMsg = $_.Exception.Message
             if ($attempt -lt $maxAttempts) {
-                Write-Host "[TapeOS UsbFlasher] Intento $attempt fallío ($errMsg). Limpiando er dîkko y reintentando..." -ForegroundColor Yellow
+                Write-Host "[TapeOS UsbFlasher] Intento $attempt fallío ($errMsg). Limpiando er dîkko y reintentando..."-ForegroundColor Yellow
                 Invoke-TapeOSDismountAndClean -DiskNum $targetNumber
                 continue
             }

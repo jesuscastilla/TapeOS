@@ -98,7 +98,7 @@ function Get-TapeOSRecommendedRecovery {
     param([string]$Codename)
     $found = $Script:RecoveryCatalog | Where-Object { $_.Codename -eq $Codename }
     if ($found) { return $found }
-    return $Script:RecoveryCatalog | Where-Object { $_.Codename -eq 'rammus' }
+    return $Script:RecoveryCatalog | Where-Object { $_.Codename -eq 'rammus'}
 }
 
 function Get-CrosTechDownloadUrl {

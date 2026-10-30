@@ -28,7 +28,7 @@ function Expand-TapeOSArchive {
         New-Item -Path $DestinationPath -ItemType Directory -Force | Out-Null
     }
 
-    Write-Host "[TapeOS DiskManager] Dehkomprimiendo '$ArchivePath'..." -ForegroundColor Cyan
+    Write-Host "[TapeOS DiskManager] Dehkomprimiendo '$ArchivePath'..."-ForegroundColor Cyan
 
     if ($ArchivePath.EndsWith('.zip', [System.StringComparison]::OrdinalIgnoreCase)) {
         [System.IO.Compression.ZipFile]::ExtractToDirectory($ArchivePath, $DestinationPath)
@@ -42,7 +42,7 @@ function Expand-TapeOSArchive {
         throw "Formato de arxibo no rekonocío: $ArchivePath"
     }
 
-    Write-Host "[TapeOS DiskManager] Dehkompreçiôn finaliçá kon éxito." -ForegroundColor Green
+    Write-Host "[TapeOS DiskManager] Dehkompreçiôn finaliçá kon éxito."-ForegroundColor Green
 }
 
 function Get-TapeOSUSBTargets {
@@ -50,7 +50,7 @@ function Get-TapeOSUSBTargets {
     param()
 
     # Detectar unidades removibles / USB
-    $usbDrives = Get-CimInstance -ClassName Win32_DiskDrive | Where-Object { $_.InterfaceType -match 'USB' -or $_.MediaType -match 'Removable' }
+    $usbDrives = Get-CimInstance -ClassName Win32_DiskDrive | Where-Object { $_.InterfaceType -match 'USB'-or $_.MediaType -match 'Removable'}
     return $usbDrives
 }
 

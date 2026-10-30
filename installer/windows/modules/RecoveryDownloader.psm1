@@ -17,21 +17,21 @@ function Get-TapeOSLatestRecoveryInfo {
 
     # Mapeo de codenames de equipos a baseboards oficiales de ChromeOS
     $boardMap = @{
-        "rammus"  = "rammus"   # Intel 4th-9th Gen
-        "voxel"   = "volteer"  # Intel 11th-13th Gen
-        "volteer" = "volteer"
-        "jinlon"  = "hatch"    # Intel 10th Gen
-        "hatch"   = "hatch"
-        "kanix"   = "brya"     # Intel 14th Gen / Core Ultra
-        "brya"    = "brya"
-        "gumboz"  = "zork"     # AMD Ryzen
-        "zork"    = "zork"
-        "grunt"   = "grunt"    # AMD Legacy APUs
-        "samus"   = "rammus"   # Fallback estable para Intel 1st-3rd Gen
-        "cyan"    = "rammus"   # Fallback compatible para Atom
+        "rammus"= "rammus"# Intel 4th-9th Gen
+        "voxel"= "volteer"# Intel 11th-13th Gen
+        "volteer"= "volteer"
+        "jinlon"= "hatch"# Intel 10th Gen
+        "hatch"= "hatch"
+        "kanix"= "brya"# Intel 14th Gen / Core Ultra
+        "brya"= "brya"
+        "gumboz"= "zork"# AMD Ryzen
+        "zork"= "zork"
+        "grunt"= "grunt"# AMD Legacy APUs
+        "samus"= "rammus"# Fallback estable para Intel 1st-3rd Gen
+        "cyan"= "rammus"# Fallback compatible para Atom
     }
 
-    $targetBoard = if ($boardMap.ContainsKey($BoardCodename.ToLower())) { $boardMap[$BoardCodename.ToLower()] } else { "rammus" }
+    $targetBoard = if ($boardMap.ContainsKey($BoardCodename.ToLower())) { $boardMap[$BoardCodename.ToLower()] } else { "rammus"}
 
     $apiUrl = "https://chromiumdash.appspot.com/cros/fetch_serving_builds?deviceCategory=ChromeOS"
     try {
@@ -81,9 +81,9 @@ function Start-TapeOSDownload {
         New-Item -Path $parentDir -ItemType Directory -Force | Out-Null
     }
 
-    Write-Host "[TapeOS Downloader] Iniçiando dehkarga dêhde Google CDN..." -ForegroundColor Cyan
-    Write-Host "URL: $Url" -ForegroundColor Gray
-    Write-Host "Dêttino: $DestinationFile" -ForegroundColor Gray
+    Write-Host "[TapeOS Downloader] Iniçiando dehkarga dêhde Google CDN..."-ForegroundColor Cyan
+    Write-Host "URL: $Url"-ForegroundColor Gray
+    Write-Host "Dêttino: $DestinationFile"-ForegroundColor Gray
 
     # Asegurar TLS 1.2 en hosts antiguos (Windows PowerShell 5.1)
     try {
@@ -103,7 +103,7 @@ function Start-TapeOSDownload {
     try {
         # Descarga sincrona: segura dentro del hilo de trabajo (sin TPL async)
         $webClient.DownloadFile([System.Uri]$Url, $DestinationFile)
-        Write-Host "[TapeOS Downloader] Dehkarga kompletá kon éxito." -ForegroundColor Green
+        Write-Host "[TapeOS Downloader] Dehkarga kompletá kon éxito."-ForegroundColor Green
         return $DestinationFile
     } finally {
         $webClient.Dispose()

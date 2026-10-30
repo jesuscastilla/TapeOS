@@ -36,8 +36,8 @@ function Invoke-TapeOSImagePatch {
         New-Item -Path $OutputDir -ItemType Directory -Force | Out-Null
     }
 
-    if ($ProgressCallback) { & $ProgressCallback 10 "Ettrayendo la imâhen ofiçiâh de ChromeOS..." }
-    Write-Host "[TapeOS Patcher] Ettrayendo la imâhen de rekûperaçiôn..." -ForegroundColor Cyan
+    if ($ProgressCallback) { & $ProgressCallback 10 "Ettrayendo la imâhen ofiçiâh de ChromeOS..."}
+    Write-Host "[TapeOS Patcher] Ettrayendo la imâhen de rekûperaçiôn..."-ForegroundColor Cyan
 
     $extractedBin = $null
 
@@ -50,7 +50,7 @@ function Invoke-TapeOSImagePatch {
                 throw "No çe enkontró nîn pun arxibo .bin dentro de $RecoveryZipPath"
             }
             $targetBinPath = Join-Path $OutputDir $binEntry.Name
-            Write-Host "[TapeOS Patcher] Ettrayendo $($binEntry.Name) ($([math]::Round($binEntry.Length / 1GB, 2)) GB)..." -ForegroundColor Gray
+            Write-Host "[TapeOS Patcher] Ettrayendo $($binEntry.Name) ($([math]::Round($binEntry.Length / 1GB, 2)) GB)..."-ForegroundColor Gray
             
             [System.IO.Compression.ZipFileExtensions]::ExtractToFile($binEntry, $targetBinPath, $true)
             $extractedBin = $targetBinPath
@@ -61,24 +61,24 @@ function Invoke-TapeOSImagePatch {
         $extractedBin = $RecoveryZipPath
     }
 
-    if ($ProgressCallback) { & $ProgressCallback 50 "Aplikando parcheh de kompatibilidá TapeOS..." }
-    Write-Host "[TapeOS Patcher] Aplikando parcheh de kompatibilidá TapeOS..." -ForegroundColor Cyan
+    if ($ProgressCallback) { & $ProgressCallback 50 "Aplikando parcheh de kompatibilidá TapeOS..."}
+    Write-Host "[TapeOS Patcher] Aplikando parcheh de kompatibilidá TapeOS..."-ForegroundColor Cyan
 
     # Generar configuración de arranque y metadatos de parcheo
     $patchInfoFile = Join-Path $OutputDir "tapeos_patches.json"
     $appliedPatches = @()
-    if ($EnableLegacyGPU) { $appliedPatches += "10-legacy_gpu_freon" }
-    if ($EnableIA32) { $appliedPatches += "15-efi_ia32_runtime" }
-    if ($EnableSwtpm) { $appliedPatches += "20-swtpm_legacy_tpm" }
-    if (-not $EnableGoogleApps) { $appliedPatches += "40-no_google_play" }
+    if ($EnableLegacyGPU) { $appliedPatches += "10-legacy_gpu_freon"}
+    if ($EnableIA32) { $appliedPatches += "15-efi_ia32_runtime"}
+    if ($EnableSwtpm) { $appliedPatches += "20-swtpm_legacy_tpm"}
+    if (-not $EnableGoogleApps) { $appliedPatches += "40-no_google_play"}
     $appliedPatches += "30-legacy_audio_ucm"
-    if ($AdditionalFrameworkOptions.Count -gt 0) { $appliedPatches += "50-hardware_patches" }
+    if ($AdditionalFrameworkOptions.Count -gt 0) { $appliedPatches += "50-hardware_patches"}
 
     $bootloaders = @("bootx64.efi")
-    if ($EnableIA32) { $bootloaders += "bootia32.efi" }
+    if ($EnableIA32) { $bootloaders += "bootia32.efi"}
 
     # Estado de Google Apps (Play Store / Android)
-    $googleAppsStatus = if ($EnableGoogleApps) { "enabled" } else { "disabled" }
+    $googleAppsStatus = if ($EnableGoogleApps) { "enabled"} else { "disabled"}
 
     $patchData = [PSCustomObject]@{
         BaseRecovery = [System.IO.Path]::GetFileName($extractedBin)
@@ -86,8 +86,8 @@ function Invoke-TapeOSImagePatch {
         PatchesApplied = $appliedPatches
         Bootloaders = $bootloaders
         GoogleApps = $googleAppsStatus
-        AppStore = if ($EnableGoogleApps) { "playstore" } else { "aurora" }
-        ApkSideload = if ($EnableGoogleApps) { "disabled" } else { "enabled" }
+        AppStore = if ($EnableGoogleApps) { "playstore"} else { "aurora"}
+        ApkSideload = if ($EnableGoogleApps) { "disabled"} else { "enabled"}
         HardwarePatches = @($AdditionalFrameworkOptions)
         GeneratedAt = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
     }
@@ -98,26 +98,26 @@ function Invoke-TapeOSImagePatch {
 
     # Opciones de framework en la línea de kernel (options=<lista>)
     $kernelOptions = @("enable_updates")
-    if (-not $EnableGoogleApps) { $kernelOptions += "no_google_play" }
+    if (-not $EnableGoogleApps) { $kernelOptions += "no_google_play"}
     foreach ($opt in $AdditionalFrameworkOptions) {
         if ($opt) { $kernelOptions += $opt }
     }
-    if ($EnableLegacyGPU) { $kernelOptions += "i915.enable_guc=0"; $kernelOptions += "i915.enable_psr=0" }
-    if ($EnableIA32) { $kernelOptions += "efi=noruntime" }
+    if ($EnableLegacyGPU) { $kernelOptions += "i915.enable_guc=0"; $kernelOptions += "i915.enable_psr=0"}
+    if ($EnableIA32) { $kernelOptions += "efi=noruntime"}
     $optionsString = $kernelOptions -join " "
-    $normalMenuTitle = if ($EnableGoogleApps) { "TapeOS (ChromeOS Actualizado - Modo Normal)" } else { "TapeOS (ChromeOS - Sin Google Play / APK + Aurora)" }
+    $normalMenuTitle = if ($EnableGoogleApps) { "TapeOS (ChromeOS Actualizado - Modo Normal)"} else { "TapeOS (ChromeOS - Sin Google Play / APK + Aurora)"}
 
         # Menu GRUB de TapeOS (normal/verbose/seguro/instalacion) generado por BootManager
     Import-Module (Join-Path $PSScriptRoot "BootManager.psm1") -Force
     New-TapeOSGrubConfig -OutputPath $grubFile `
-        -KernelPath "/syslinux/vmlinuz.A" `
-        -InitrdPath "/tapeos/initramfs.img" `
+        -KernelPath "/syslinux/vmlinuz.A"`
+        -InitrdPath "/tapeos/initramfs.img"`
         -EnableGoogleApps $EnableGoogleApps `
         -FrameworkOptions $kernelOptions `
         -Timeout 15 | Out-Null
 
-    if ($ProgressCallback) { & $ProgressCallback 100 "Imâhen lîtta y parcheá." }
-    Write-Host "[TapeOS Patcher] ¡Imâhen parcheá y prepará kon éxito! (Googlêh Play: $googleAppsStatus)" -ForegroundColor Green
+    if ($ProgressCallback) { & $ProgressCallback 100 "Imâhen lîtta y parcheá."}
+    Write-Host "[TapeOS Patcher] ¡Imâhen parcheá y prepará kon éxito! (Googlêh Play: $googleAppsStatus)"-ForegroundColor Green
 
     return [PSCustomObject]@{
         PatchedImagePath = $extractedBin

@@ -23,25 +23,25 @@ function Get-TapeOSWifiOption {
 
     if ($vid -eq '14E4') {
         # Broadcom: chips FullMAC modernos (4360/4352/...) usan brcmfmac; los antiguos usan wl
-        if ($n -match '436|435') { return 'brcmfmac' }
+        if ($n -match '436|435') { return 'brcmfmac'}
         return 'broadcom_wl'
     }
-    if ($vid -eq '8086') { return 'iwlwifi_backport' }
+    if ($vid -eq '8086') { return 'iwlwifi_backport'}
 
     switch -Regex ($n) {
-        '8188eu'        { return 'rtl8188eu' }
-        '8188fu'        { return 'rtl8188fu' }
-        '8192eu'        { return 'rtl8192eu' }
-        '8723bs'        { return 'rtl8723bs' }
-        '8723bu'        { return 'rtl8723bu' }
-        '8723de'        { return 'rtl8723de' }
-        '8723du'        { return 'rtl8723du' }
-        '8812au'        { return 'rtl8812au' }
-        '8814au'        { return 'rtl8814au' }
-        '8821ce'        { return 'rtl8821ce' }
-        '8821cu'        { return 'rtl8821cu' }
-        '8851|8852'     { return 'rtl885xxx' }
-        'b82c|8822bu|8811bu' { return 'rtl88x2bu' }
+        '8188eu'{ return 'rtl8188eu'}
+        '8188fu'{ return 'rtl8188fu'}
+        '8192eu'{ return 'rtl8192eu'}
+        '8723bs'{ return 'rtl8723bs'}
+        '8723bu'{ return 'rtl8723bu'}
+        '8723de'{ return 'rtl8723de'}
+        '8723du'{ return 'rtl8723du'}
+        '8812au'{ return 'rtl8812au'}
+        '8814au'{ return 'rtl8814au'}
+        '8821ce'{ return 'rtl8821ce'}
+        '8821cu'{ return 'rtl8821cu'}
+        '8851|8852'{ return 'rtl885xxx'}
+        'b82c|8822bu|8811bu'{ return 'rtl88x2bu'}
     }
 
     # Qualcomm Atheros / MediaTek / Ralink: soportados por el kernel TapeOS sin parche extra
@@ -58,7 +58,7 @@ function Get-TapeOSHardwareReport {
     $cpu = Get-CimInstance -ClassName Win32_Processor | Select-Object -First 1
     $cpuName = $cpu.Name.Trim()
     $cpuArch = $cpu.Architecture # 0=x86, 9=x64, 12=ARM64
-    $cpuManufacturer = if ($cpu.Manufacturer -match 'Intel') { 'Intel' } elseif ($cpu.Manufacturer -match 'AMD') { 'AMD' } else { 'Other' }
+    $cpuManufacturer = if ($cpu.Manufacturer -match 'Intel') { 'Intel'} elseif ($cpu.Manufacturer -match 'AMD') { 'AMD'} else { 'Other'}
 
     # Determinar generación de CPU y arquitectura
     $cpuGen = "Unknown"
@@ -127,12 +127,12 @@ function Get-TapeOSHardwareReport {
 
     if ($fwEnv -match 'UEFI') {
         # Comprobar posibles tablets con UEFI de 32 bits (Atom Z3735F, etc.)
-        if ($cpuName -match 'Atom.*Z3' -or ($cpuArch -eq 0) -or (Test-Path "$env:SystemRoot\System32\bootia32.efi")) {
+        if ($cpuName -match 'Atom.*Z3'-or ($cpuArch -eq 0) -or (Test-Path "$env:SystemRoot\System32\bootia32.efi")) {
             $firmwareType = "UEFI_IA32"
         } else {
             $firmwareType = "UEFI_X64"
         }
-    } elseif ($fwEnv -match 'Legacy' -or $fwEnv -match 'BIOS') {
+    } elseif ($fwEnv -match 'Legacy'-or $fwEnv -match 'BIOS') {
         $firmwareType = "BIOS_LEGACY"
         $legacyDevice = $true
     } else {
@@ -169,7 +169,7 @@ function Get-TapeOSHardwareReport {
     $bitLockerActive = $false
     try {
         $blDrives = Get-BitLockerVolume -ErrorAction SilentlyContinue
-        if ($blDrives | Where-Object { $_.ProtectionStatus -eq 'On' }) {
+        if ($blDrives | Where-Object { $_.ProtectionStatus -eq 'On'}) {
             $bitLockerActive = $true
         }
     } catch {
@@ -224,7 +224,7 @@ function Get-TapeOSHardwareReport {
         $vid = ''
         if ($vm.Success) { $vid = (($vm.Groups[1].Value) + ($vm.Groups[2].Value)).ToUpper() }
         $friendly = [string]$pnp.FriendlyName
-        if ($friendly -match 'wi-?fi|wireless|802\.11|wlan' -and $friendly -notmatch 'virtual|direct') {
+        if ($friendly -match 'wi-?fi|wireless|802\.11|wlan'-and $friendly -notmatch 'virtual|direct') {
             $wifiAdapters += [PSCustomObject]@{
                 Name            = $friendly
                 VendorId        = $vid
@@ -242,7 +242,7 @@ function Get-TapeOSHardwareReport {
         if ($vm.Success) { $vid = (($vm.Groups[1].Value) + ($vm.Groups[2].Value)).ToUpper() }
         $friendly = [string]$pnp.FriendlyName
         $opt = ''
-        if ($friendly -match 'RT3290|RT3298') { $opt = 'rtbth' }
+        if ($friendly -match 'RT3290|RT3298') { $opt = 'rtbth'}
         if ($friendly -notmatch 'enumerador|enumerator|protocolo|protocol|RFCOMM') {
             $bluetoothAdapters += [PSCustomObject]@{
                 Name            = $friendly
@@ -257,8 +257,8 @@ function Get-TapeOSHardwareReport {
     Get-PnpDevice -Class MEDIA -PresentOnly -ErrorAction SilentlyContinue | ForEach-Object {
         $friendly = [string]$_.FriendlyName
         $opt = ''
-        if ($friendly -match 'ES8336|ESSX8336|Everest') { $opt = 'essx8336' }
-        elseif ($friendly -match 'RT5640|RT5645|RT5651|RT5670|ES8316|CX2072|CX2073|ALC269|ALC283|ALC256|Smart Sound|SST') { $opt = 'legacy_audio_ucm' }
+        if ($friendly -match 'ES8336|ESSX8336|Everest') { $opt = 'essx8336'}
+        elseif ($friendly -match 'RT5640|RT5645|RT5651|RT5670|ES8316|CX2072|CX2073|ALC269|ALC283|ALC256|Smart Sound|SST') { $opt = 'legacy_audio_ucm'}
         if ($opt) {
             $audioDevices += [PSCustomObject]@{ Name = $friendly; FrameworkOption = $opt }
         }
@@ -269,9 +269,9 @@ function Get-TapeOSHardwareReport {
     Get-PnpDevice -Class HIDClass -PresentOnly -ErrorAction SilentlyContinue | ForEach-Object {
         $friendly = [string]$_.FriendlyName
         $opt = ''
-        if ($friendly -match 'IPTS|iPTS') { $opt = 'ipts_touchscreen' }
-        elseif ($friendly -match 'ITHC|iTHC') { $opt = 'ithc_touchscreen' }
-        elseif ($friendly -match 'Goodix|GDIX') { $opt = 'goodix' }
+        if ($friendly -match 'IPTS|iPTS') { $opt = 'ipts_touchscreen'}
+        elseif ($friendly -match 'ITHC|iTHC') { $opt = 'ithc_touchscreen'}
+        elseif ($friendly -match 'Goodix|GDIX') { $opt = 'goodix'}
         if ($opt) {
             $touchDevices += [PSCustomObject]@{ Name = $friendly; FrameworkOption = $opt }
         }
@@ -280,30 +280,30 @@ function Get-TapeOSHardwareReport {
     # 11. GPU dedicada (dGPU): NVIDIA siempre; AMD cuando el equipo es Intel+AMD
     #     o hay mas de una GPU (Optimus/switchable). AMD APU + AMD CPU no lo necesita.
     $dgpuOption = ''
-    $hasNvidia = @($gpuList | Where-Object { $_.VendorId -eq '10DE' }).Count -gt 0
-    $hasAmd = @($gpuList | Where-Object { $_.VendorId -eq '1002' }).Count -gt 0
-    $amdNeedsDgpu = $hasAmd -and ($cpuManufacturer -eq 'Intel' -or @($gpuList).Count -gt 1)
-    if ($hasNvidia -or $amdNeedsDgpu -or @($gpuList).Count -gt 1) { $dgpuOption = 'dgpu' }
+    $hasNvidia = @($gpuList | Where-Object { $_.VendorId -eq '10DE'}).Count -gt 0
+    $hasAmd = @($gpuList | Where-Object { $_.VendorId -eq '1002'}).Count -gt 0
+    $amdNeedsDgpu = $hasAmd -and ($cpuManufacturer -eq 'Intel'-or @($gpuList).Count -gt 1)
+    if ($hasNvidia -or $amdNeedsDgpu -or @($gpuList).Count -gt 1) { $dgpuOption = 'dgpu'}
 
     $macbookOption = ''
     try {
         $csManufacturer = (Get-CimInstance -ClassName Win32_ComputerSystem).Manufacturer
-        if ($csManufacturer -match 'Apple') { $macbookOption = 'macbook_trackpad' }
+        if ($csManufacturer -match 'Apple') { $macbookOption = 'macbook_trackpad'}
     } catch {
         $macbookOption = ''
     }
 
     # 12. Agregar parches de framework detectados (sin duplicados)
     $frameworkPatches = @()
-    foreach ($w in $wifiAdapters) { if ($w.FrameworkOption) { $frameworkPatches += [PSCustomObject]@{ Option = $w.FrameworkOption; Component = "WiFi: $($w.Name)" } } }
-    foreach ($b in $bluetoothAdapters) { if ($b.FrameworkOption) { $frameworkPatches += [PSCustomObject]@{ Option = $b.FrameworkOption; Component = "Bluetooth: $($b.Name)" } } }
-    foreach ($a in $audioDevices) { $frameworkPatches += [PSCustomObject]@{ Option = $a.FrameworkOption; Component = "Audio: $($a.Name)" } }
-    foreach ($t in $touchDevices) { $frameworkPatches += [PSCustomObject]@{ Option = $t.FrameworkOption; Component = "Tâttîh: $($t.Name)" } }
+    foreach ($w in $wifiAdapters) { if ($w.FrameworkOption) { $frameworkPatches += [PSCustomObject]@{ Option = $w.FrameworkOption; Component = "WiFi: $($w.Name)"} } }
+    foreach ($b in $bluetoothAdapters) { if ($b.FrameworkOption) { $frameworkPatches += [PSCustomObject]@{ Option = $b.FrameworkOption; Component = "Bluetooth: $($b.Name)"} } }
+    foreach ($a in $audioDevices) { $frameworkPatches += [PSCustomObject]@{ Option = $a.FrameworkOption; Component = "Audio: $($a.Name)"} }
+    foreach ($t in $touchDevices) { $frameworkPatches += [PSCustomObject]@{ Option = $t.FrameworkOption; Component = "Tâttîh: $($t.Name)"} }
     if ($dgpuOption) {
-        $dgpuDesc = if ($hasNvidia) { 'dGPU NVIDIA (renderiça la iGPU)' } elseif ($hasAmd) { 'dGPU AMD (renderiça kon amdgpu)' } else { 'dGPU (çwîtcheable)' }
+        $dgpuDesc = if ($hasNvidia) { 'dGPU NVIDIA (renderiça la iGPU)'} elseif ($hasAmd) { 'dGPU AMD (renderiça kon amdgpu)'} else { 'dGPU (çwîtcheable)'}
         $frameworkPatches += [PSCustomObject]@{ Option = $dgpuOption; Component = $dgpuDesc }
     }
-    if ($macbookOption) { $frameworkPatches += [PSCustomObject]@{ Option = $macbookOption; Component = 'MacBook (trâkpa Apple)' } }
+    if ($macbookOption) { $frameworkPatches += [PSCustomObject]@{ Option = $macbookOption; Component = 'MacBook (trâkpa Apple)'} }
     $frameworkPatches = @($frameworkPatches | Sort-Object Option -Unique)
 
     # Construir objeto resumen de hardware
@@ -311,7 +311,7 @@ function Get-TapeOSHardwareReport {
         CPU = [PSCustomObject]@{
             Name = $cpuName
             Manufacturer = $cpuManufacturer
-            Architecture = if ($cpuArch -eq 9) { "x64" } elseif ($cpuArch -eq 0) { "x86" } else { "Other" }
+            Architecture = if ($cpuArch -eq 9) { "x64"} elseif ($cpuArch -eq 0) { "x86"} else { "Other"}
             Generation = $cpuGen
             IsLegacy = $legacyDevice
         }
@@ -325,7 +325,7 @@ function Get-TapeOSHardwareReport {
             BitLockerActive = $bitLockerActive
         }
         BitLocker = [PSCustomObject]@{
-            Status = if ($bitLockerActive) { 'Activo' } else { 'Inactivo' }
+            Status = if ($bitLockerActive) { 'Activo'} else { 'Inactivo'}
         }
         GPU = $gpuList
         Network = [PSCustomObject]@{
@@ -343,7 +343,7 @@ function Get-TapeOSHardwareReport {
             RecoveryCodename = $recommendedRecovery
             Kernel = $recommendedKernel
             RequiresLegacyPatches = $legacyDevice
-            BootloaderProfile = if ($firmwareType -eq "BIOS_LEGACY") { "MBR_GRUB_I386" } elseif ($firmwareType -eq "UEFI_IA32") { "UEFI_IA32_GRUB" } else { "UEFI_X64_GRUB" }
+            BootloaderProfile = if ($firmwareType -eq "BIOS_LEGACY") { "MBR_GRUB_I386"} elseif ($firmwareType -eq "UEFI_IA32") { "UEFI_IA32_GRUB"} else { "UEFI_X64_GRUB"}
         }
     }
 }
