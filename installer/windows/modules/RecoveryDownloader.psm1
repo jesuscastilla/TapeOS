@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Módulo de Descarga Oficial de Imágenes de Recuperación de ChromeOS
 .DESCRIPTION
@@ -87,7 +87,7 @@ function Start-TapeOSDownload {
 
     # Asegurar TLS 1.2 en hosts antiguos (Windows PowerShell 5.1)
     try {
-        [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+        try { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::SystemDefault } catch { [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12 }
     } catch { }
 
     $webClient = New-Object System.Net.WebClient

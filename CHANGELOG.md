@@ -2,6 +2,13 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.47] — 30-10-2026
+
+### Korreççionêh
+- **Descarga del catalogo arreglada**: el NAS sirve images.json con BOM UTF-8 y PS 5.1 lo decodificaba como ANSI (`ConvertFrom-Json` fallaba con "Primitivo JSON no valido"). Ahora se decodifican los bytes como UTF-8 y se elimina el BOM.
+- **TLS**: `RecoveryDownloader` ya no fija TLS 1.2 (rompia el canal seguro con el NAS); se usa `SystemDefault` en descargas y catalogo.
+- El fallback clasico ya no se activa por estos motivos: el flujo descarga la imagen del NAS y la graba.
+
 ## [v1.0.0-alpha.46] — 30-10-2026
 
 ### Korreççionêh

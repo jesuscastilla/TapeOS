@@ -23,11 +23,16 @@ function Get-TapeOSImagesBaseUrl {
     return "https://pelotxo.synology.me/tapeos/"
 }
 
+function Set-TapeOSTlsDefault { try { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::SystemDefault } catch { } }
+
 function Get-TapeOSImageCatalog {
     param([string]$BaseUrl)
+    Set-TapeOSTlsDefault
     try {
         $r = Invoke-WebRequest -Uri ($BaseUrl + "images.json") -UseBasicParsing -TimeoutSec 25
-        return ($r.Content | ConvertFrom-Json)
+        $content = [System.Text.Encoding]::UTF8.GetString($r.RawContentStream.ToArray())
+        $content = $content.TrimStart([char]0xFEFF)
+        return ($content | ConvertFrom-Json)
     } catch { return $null }
 }
 
@@ -50,6 +55,7 @@ function Get-TapeOSRemoteImage {
     $imgPath = $gzPath -replace '\.gz$', ''
     if (Test-Path -LiteralPath $imgPath) { return $imgPath }
     if (-not (Test-Path -LiteralPath $gzPath)) {
+        Set-TapeOSTlsDefault
         $url = $BaseUrl + $entry.file
         Write-Host "[TapeOS] Descargando $url ..."
         $script:dlDone = $false
