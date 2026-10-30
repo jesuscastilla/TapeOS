@@ -532,8 +532,9 @@ $lblPhase = New-Object System.Windows.Forms.Label
 $lblPhase.Text = "Êpperando..."
 $lblPhase.Font = New-Object System.Drawing.Font("Segoe UI", 15, [System.Drawing.FontStyle]::Bold)
 $lblPhase.ForeColor = [System.Drawing.Color]::FromArgb(23, 53, 43)
-$lblPhase.Location = New-Object System.Drawing.Point(24, 16)
-$lblPhase.Size = New-Object System.Drawing.Size(902, 28)
+$lblPhase.Location = New-Object System.Drawing.Point(24, 10)
+$lblPhase.Size = New-Object System.Drawing.Size(902, 38)
+$lblPhase.TextAlign = [System.Drawing.ContentAlignment]::MiddleLeft
 $lblPhase.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
 $pnl6.Controls.Add($lblPhase)
 

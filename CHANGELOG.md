@@ -2,6 +2,16 @@
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
 
+## [v1.0.0-alpha.54] — 30-10-2026
+
+### Correcciones
+- **Texto de fase sin recortes**: la etiqueta del paso de Ejecucion pasa de 28 a 38 px de alto con alineacion vertical centrada. El smoke test lo comprueba (`DIAG-CLIP`).
+- **Imagen Free que se colgaba en el logo**: `apply-free.sh` recreaba ROOT-A con el 5 % de reserva y copiaba con `tar` sin `--sparse`, asi que el rootfs (2605 MB) no cabia en la particion (faltaban ~6 MB) y quedaba incompleto. Ahora recrea con `-m 0` (sin reserva), sin journal, copia con `--sparse`, aplica los parches en caliente y verifica el resultado.
+- ROOT-A de FydeOS usa features ext4 propietarias (`ff000000`, R24-R31) que Linux no puede montar en rw: el script lo documenta y recrea la particion como ext4 estandar.
+
+### Cambios
+- Menu GRUB de Free: sin `noinitrd` y con `console=tty0` explicito para ver los mensajes en el modo verbose.
+
 ## [v1.0.0-alpha.53] — 30-10-2026
 
 ### Correcciones
