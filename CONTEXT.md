@@ -1,4 +1,4 @@
-﻿# Kontexto der Proyêtto — TapeOS (`G:\TapeOS`)
+# Kontexto der Proyêtto — TapeOS (`G:\TapeOS`)
 
 > **Êttao âttuâh (29-10-2026).** Framework e îttaladôh propiô pa yebâh **ChromeOS** a PC.
 > Ôhhetibo fundamentâh: permettîh la
@@ -64,6 +64,11 @@
    - Fuentes upstream descargadas en `upstream_sources/` e ignoradas en `.gitignore` para no contaminar el árbol de Git oficial.
    - Configuración lista para desarrollo en VS Code (`.vscode/settings.json`, `.vscode/tasks.json`).
    - Plantillas de incidencias y workflows de CI/CD en `.github/`.
+
+4. **Modelo de Distribución Sostenible: Late-Binding vs Monolitos Pre-parcheados**:
+   - **Desacoplamiento Base vs Capa TapeOS**: Se erradica de forma definitiva el modelo de compilar y distribuir imágenes de disco completas (`.img`/`.iso` de 3 a 5 GB) pre-parcheadas para cada combinación de hardware. Dicho enfoque genera una explosión combinatoria inasumible (múltiples familias de CPU × GPU dedicada/integrada × TPM físico/virtual × versión de Android/Store × milestone mensual de actualización).
+   - **Parcheo en tiempo de arranque (Runtime Injection)**: El instalador descarga la imagen base virgen (desde los servidores de Google o repositorios oficiales upstream). TapeOS solo distribuye su Framework ligero (~150-200 MB: kernel + initramfs + scripts de parcheo) y el instalador de Windows. Los parches se activan mediante variables en la línea de comandos de GRUB (`options=...`) y se inyectan en caliente durante el arranque mediante OverlayFS en memoria RAM sin alterar de forma destructiva la partición base.
+   - **Sostenibilidad y cero costes de hosting masivo**: Todo el ancho de banda y almacenamiento de los gigabytes del sistema operativo base recae en las fuentes upstream (Google CDN / openFyde); el desarrollador únicamente mantiene el instalador y el framework en GitHub Releases.
 
 ---
 
@@ -229,3 +234,9 @@ TapeOS/
 - **Tipo:** Arkîtêttûra | Bîtta
 - **Kambio:** Er arrankêh yá no muêttra ningún logo (cmdline `logo.nologo` + frames der splash a 1x1 negro en `apply-free.sh`). Er îttaladôh elihe automátikamente la baçe (Intel -> iris, AMD -> apu), la dehkarga der katálogo por board o la hennera kon WSL aplikando tô lô parxêh detêttáô (dgpu, wifi, audio, no_google_play). `publish-images.ps1` publika una entrá `free` por build.
 - **Impâtto:** `installer/windows/modules/ImageCatalog.psm1`, `TapeOS-Installer.ps1`, `core/free/apply-free.sh`, `core/free/grub/grub.cfg`, `tools/validate-pipeline.ps1`, `tools/publish-images.ps1`.
+
+## [05-11-2026] — Saneamiento arquitectónico: erradicación de monolitos y adopción estricta de Late-Binding
+
+- **Tipo:** Arquitectura | Configuración
+- **Cambio:** Erradicación del antipatrón de pre-hornear y alojar imágenes completas en el NAS personal por combinación de hardware y parches. Consolidación de la arquitectura sostenible *Late-Binding*: el desarrollador solo mantiene y distribuye el Framework TapeOS (~150-200 MB: kernel + initramfs + scripts de parches) y el instalador EXE. Las imágenes base se descargan directamente limpias desde los CDN oficiales (Google CDN para ChromeOS; base limpia openFyde para Free). Toda la compatibilidad (dGPU, GPU legacy, audio, swtpm, ia32, no_google_play) se inyecta dinámicamente en tiempo de arranque mediante `grub.cfg` (`options=...`) y OverlayFS en el initramfs. Actualizadas las reglas permanentes en `REGLAS.md`.
+- **Impacto:** `REGLAS.md`, `CONTEXT.md`, arquitectura de distribución, reducción masiva de coste de almacenamiento y mantenimiento a largo plazo.

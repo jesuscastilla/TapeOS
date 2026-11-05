@@ -1,6 +1,16 @@
-﻿# Îttoriâh de Kambiô (Xangelo) — TapeOS
+# Îttoriâh de Kambiô (Xangelo) — TapeOS
 
 Tô lâ modifikaçionêh notablêh de êtte proyêtto çe dokumentarán en êtte arxibo.
+
+## [v1.0.0-alpha.56] — 05-11-2026
+
+### Arquitectura y Saneamiento
+- **Erradicación del antipatrón de imágenes monolíticas**: prohibido pre-hornear y almacenar imágenes completas (.img de 3-5 GB) para cada combinación de GPU, hardware o parches en el NAS personal.
+- **Adopción estricta de Late-Binding**:
+  - Las imágenes base (ChromeOS oficial / openFyde) se descargan directamente desde sus fuentes upstream limpias.
+  - El único artefacto mantenido por TapeOS es el Framework ligero (~150-200 MB: kernel + initramfs + scripts) y el instalador EXE.
+  - Los parches (dGPU, GPU legacy, audio, swtpm, ia32, no_google_play) se inyectan en tiempo de arranque mediante `grub.cfg` (`options=...`) y se montan sobre RAM (OverlayFS) en el initramfs.
+- **Reglas del repositorio actualizadas**: incorporados los principios de viabilidad y distribución modular a `REGLAS.md` y `CONTEXT.md`.
 
 ## [v1.0.0-alpha.55] — 30-10-2026
 
